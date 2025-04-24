@@ -32,7 +32,9 @@ function modalPopDown() {
 document.getElementById("modalPopUp").style.display = "none";
 document.getElementById("modalPopDown").addEventListener("click", modalPopDown);
 
-document.getElementById("tableContent-cancel").addEventListener("click", modalPopDown);
+document
+  .getElementById("tableContent-cancel")
+  .addEventListener("click", modalPopDown);
 
 function populateModalTable() {
   const originalTableBody = document.querySelector("#crop-list-table tbody");
@@ -41,13 +43,13 @@ function populateModalTable() {
   modalTableBody.innerHTML = "";
 
   const rows = originalTableBody.querySelectorAll("tr");
-  rows.forEach(row => {
+  rows.forEach((row) => {
     const newRow = row.cloneNode(true);
 
-    newRow.addEventListener("click", function() {
+    newRow.addEventListener("click", function () {
       newRow.classList.toggle("selected");
     });
-    
+
     modalTableBody.appendChild(newRow);
   });
 }
@@ -61,8 +63,6 @@ const listButton = document.getElementById("list-button");
 
 listButton.addEventListener("click", showCropsModal);
 
-
-
 //delete tr
 let changesMade = false;
 
@@ -71,120 +71,137 @@ function refreshGraphData() {
   const rows = document.querySelectorAll("#crop-list-table tbody tr");
   cropLabels = [];
   cropData = [];
-  cropDetails = []; 
+  cropDetails = [];
 
   // Repopulate from current table state
-  rows.forEach(row => {
+  rows.forEach((row) => {
     cropLabels.push(row.cells[0].textContent);
     cropData.push(parseFloat(row.cells[1].textContent));
 
     cropDetails.push({
       name: row.cells[0].textContent,
-      quantity: row.cells[2].textContent, 
+      quantity: row.cells[2].textContent,
       profitPerSeed: row.cells[3].textContent,
-
     });
   });
 }
 
 // Updated delete handler
 function deleteHandler() {
-  const selectedRows = document.querySelectorAll("#modal-crop-table-body .selected");
-  
-  if (selectedRows.length > 0) {
+  const selectedRows = document.querySelectorAll(
+    "#modal-crop-table-body .selected"
+  );
 
-    selectedRows.forEach(modalRow => {
+  if (selectedRows.length > 0) {
+    selectedRows.forEach((modalRow) => {
       const cropName = modalRow.cells[0].textContent;
       const cropValue = parseFloat(modalRow.cells[1].textContent);
-      
+
       modalRow.remove();
-      
-      const originalRows = document.querySelectorAll("#crop-list-table tbody tr");
-      originalRows.forEach(originalRow => {
-        if (originalRow.cells[0].textContent === cropName && 
-            parseFloat(originalRow.cells[1].textContent) === cropValue) {
+
+      const originalRows = document.querySelectorAll(
+        "#crop-list-table tbody tr"
+      );
+      originalRows.forEach((originalRow) => {
+        if (
+          originalRow.cells[0].textContent === cropName &&
+          parseFloat(originalRow.cells[1].textContent) === cropValue
+        ) {
           originalRow.remove();
         }
       });
     });
 
-
     refreshGraphData();
-    
 
     updateGraph();
   } else {
     alert("Please select at least one crop to delete!");
   }
-};
+}
 
 //Add event listener for the edit button
 const tableContentEdit = document.getElementById("tableContent-edit");
 
-tableContentEdit.addEventListener("click", function() {
+tableContentEdit.addEventListener("click", function () {
   const isEditing = tableContentEdit.textContent === "Save Edit";
   const modalTableBody = document.getElementById("modal-crop-table-body");
   const rows = modalTableBody.querySelectorAll("tr");
 
   if (isEditing) {
-    //disable editing on all cells
-    rows.forEach(row => {
-      row.querySelectorAll("td").forEach(cell => {
+    rows.forEach((row) =>
+      row.querySelectorAll("td").forEach((cell) => {
         cell.contentEditable = "false";
-      });
-    });
-  
-    // clear and repopulate data arrays
+      })
+    );
+
     cropLabels.length = 0;
     cropData.length = 0;
     cropDetails.length = 0;
-  
-    rows.forEach(row => {
+
+    rows.forEach((row) => {
       const cells = row.querySelectorAll("td");
       const name = cells[0].textContent.trim();
       const seedPrice = parseFloat(cells[1].textContent.trim());
       const cropPrice = parseFloat(cells[2].textContent.trim());
       const growthDays = parseInt(cells[3].textContent.trim());
       const regrowth = cells[4].textContent.trim().toLowerCase() === "yes";
-      const regrowthEvery = regrowth ? parseInt(cells[5].textContent.trim()) : 0;
-  
+      const regrowthEvery = regrowth
+        ? parseInt(cells[5].textContent.trim())
+        : 0;
+
+      //recalculate harvests & profits
       const seasonDuration = 28;
       let harvests = 1;
-  
       if (regrowth && regrowthEvery > 0) {
-        const remainingDays = seasonDuration - growthDays;
-        harvests += Math.floor(remainingDays / regrowthEvery);
+        harvests += Math.floor((seasonDuration - growthDays) / regrowthEvery);
       }
-  
       const profitPerHarvest = cropPrice - seedPrice;
       const normalTotalProfit = profitPerHarvest * harvests;
       const profitPerSeed = normalTotalProfit;
-      const roi = (profitPerSeed / seedPrice) * 100;
-      const totalGrowthTime = regrowth ? 28 : growthDays;
-      const profitPerDay = normalTotalProfit / totalGrowthTime;
-  
+      const profitPerDay = normalTotalProfit / (regrowth ? 28 : growthDays);
+
+      //Push into your graph arrays
       cropLabels.push(name);
       cropData.push(profitPerSeed);
-  
+
+      //Store everything you need for tooltips + table
       cropDetails.push({
-        name: name,
-        quantity: cropPrice,
-        profitPerSeed: roi,
+        name,
+        seedPrice,
+        cropPrice,
         duration: growthDays,
-        harvests: harvests,
-        regrowth: regrowth ? `Yes (every ${regrowthEvery} days)` : "No",
-        normalTotalProfit: normalTotalProfit,
-        profitPerDay: profitPerDay,
+        harvests,
+        regrowth: regrowth ? "Yes" : "No",
+        regrowthEvery,
+        normalTotalProfit,
+        profitPerSeed,
+        profitPerDay,
       });
     });
-  
-    // Update the graph and switch button text
+
+    const cropListTableBody = document.querySelector("#crop-list-table tbody");
+    cropListTableBody.innerHTML = ""; // clear
+
+    cropDetails.forEach((detail) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${detail.name}</td>
+        <td>${detail.seedPrice}</td>
+        <td>${detail.cropPrice}</td>
+        <td>${detail.duration}</td>
+        <td>${detail.regrowth}</td>
+        <td>${detail.regrowthEvery || "-"}</td>
+      `;
+      cropListTableBody.appendChild(tr);
+    });
+
     updateGraph();
     tableContentEdit.textContent = "Edit";
   } else {
     //Enable editing
-    rows.forEach(row => {
-      row.querySelectorAll("td").forEach(cell => {
+    rows.forEach((row) => {
+      row.querySelectorAll("td").forEach((cell) => {
         cell.contentEditable = "true";
       });
     });
@@ -199,15 +216,13 @@ const tableContentDelete = document.getElementById("tableContent-delete");
 modalDelete.addEventListener("click", deleteHandler);
 tableContentDelete.addEventListener("click", deleteHandler);
 
-
 function saveChanges() {
   if (changesMade) {
- 
     updateGraph();
     populateModalTable();
-    changesMade = false; 
+    changesMade = false;
   }
-};
+}
 
 function toastPopUp() {
   let toastPopUp = document.getElementById("Toast");
@@ -250,7 +265,6 @@ cropForm.addEventListener("submit", function (event) {
   let cropGrowthDays = document.getElementById("crop-growth-days").value;
   let cropRegrowth = document.getElementById("crop-regrowth").checked;
   let cropRegrowthEvery = document.getElementById("crop-regrowth-every").value;
-  
 
   if (!cropName || !seedPrice || !cropGrowthDays || !cropPrice) {
     toastPopUp();
@@ -320,8 +334,6 @@ cropForm.addEventListener("submit", function (event) {
   allowRegrowthLive.style.display = "none";
 });
 
-
-
 function updateGraph() {
   if (window.myChart) {
     window.myChart.destroy();
@@ -330,13 +342,13 @@ function updateGraph() {
   // Use the current state of cropLabels and cropData
   const combinedData = cropLabels.map((label, index) => ({
     label: label,
-    value: cropData[index]
+    value: cropData[index],
   }));
 
   combinedData.sort((a, b) => b.value - a.value);
 
-  const sortedLabels = combinedData.map(item => item.label);
-  const sortedData = combinedData.map(item => item.value);
+  const sortedLabels = combinedData.map((item) => item.label);
+  const sortedData = combinedData.map((item) => item.value);
 
   window.myChart = new Chart(ctx, {
     type: "bar",
@@ -348,9 +360,9 @@ function updateGraph() {
           data: sortedData,
           borderColor: "rgb(57, 120, 65)",
           borderWidth: 1,
-          backgroundColor: ["rgb(48, 124, 42)"]
-        }
-      ]
+          backgroundColor: ["rgb(48, 124, 42)"],
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -359,9 +371,9 @@ function updateGraph() {
           beginAtZero: true,
           min: 0.0,
           ticks: {
-            stepSize: 0
-          }
-        }
+            stepSize: 0,
+          },
+        },
       },
       plugins: {
         tooltip: {
@@ -381,26 +393,22 @@ function updateGraph() {
                 `Harvests: ${crop.harvests}`,
                 `Regrowth: ${crop.regrowth}`,
                 `Total Profit: G$${crop.normalTotalProfit.toFixed(2)}`,
-                `Profit/Day: G$${crop.profitPerDay.toFixed(2)}`
+                `Profit/Day: G$${crop.profitPerDay.toFixed(2)}`,
               ].join("\n");
-            }
-          }
-        }
-      }
-    }
+            },
+          },
+        },
+      },
+    },
   });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  
   const Refresh = document.getElementById("Refresh");
   if (Refresh) {
-    console.log("refreshing..")
+    console.log("refreshing..");
     Refresh.addEventListener("click", updateGraph);
   } else {
     console.warn("Refresh button not found in DOM.");
   }
-
 });
-
-
