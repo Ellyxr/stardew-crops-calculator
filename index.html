@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="src\assets\icon3.png" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv='cache-control' content='no-cache'>
+  <meta http-equiv='expires' content='0'>
+  <meta http-equiv='pragma' content='no-cache'>
+
+  <title> Stardew Crops Calculator</title>
+  <link rel="stylesheet" href="src/index.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+  <div class="Main-container">
+    <div class="Main-container-content">
+      <div class="header">
+        <figure class="title"><span>&nbsp;</span></figure>
+
+      </div>
+      <div class="content-container">
+
+        <div class="Calculator-container">
+          <section class="Calculator-container-header">
+            <span>
+              Crop Calculator
+            </span>
+          </section>
+          <div class="Calculator-container-form">
+            <form id="crop-form">
+
+              <div class="form-group">
+                <label for="crop-name">Crop Name</label>
+                <input type="text" id="crop-name" name="cropName">
+              </div>
+
+              <div class="form-group">
+                <label for="seed-price">Seed Price</label>
+                <input type="number" id="seed-price" name="cropPrice">
+              </div>
+
+              <div class="form-group">
+                <label for="crop-growth-days"> Growth Days</label>
+                <input type="number" id="crop-growth-days" name="cropGrowthDays">
+
+              </div>
+
+              <div class="form-group">
+                <label for="crop-regrowth">Regrows? </label>
+                <input type="checkbox" id="crop-regrowth" name="cropRegrowth">
+
+              </div>
+
+              <div class="form-group" id="allowRegrowthLive" style="display: none;">
+                <label for="crop-regrowth-days"> Every </label>
+                <input type="number" id="crop-regrowth-every" name="cropRegrowthEvery">
+                <label for="crop-regrowth-every"> Days</label>
+              </div>
+
+              <div class="form-group">
+                <label for="crop-price">Crop Price</label>
+                <input type="number" id="crop-price" name="cropQuantity">
+              </div>
+
+              <button type="submit" id="crop-submit"> Add to list</button>
+            </form>
+          </div>
+        </div>
+
+
+        <div class="list-container">
+          <section class="list-container-header">
+            <span>
+              List Container
+            </span>
+          </section>
+          <div class="list-container-form">
+            <button type="submit">Import list </button>
+            <button type="submit">Export list</button>
+            <br><br>
+            <button class="list-button" id="list-button">Edit</button>
+
+            <div class="modalPopUp" id="modalPopUp">
+              <div class="modalPopUpContent">
+                <section class="titleContent">
+                  <div class="titleContent-header">
+
+
+                    <div class="titleContent-start">
+                      <span> Configure Crops </span>
+                    </div>
+
+                    <div class="titleContent-end">
+                      <span id="modalDelete"> ⛔ </span>
+                      <span id="modalPopDown"> ❌ </span>
+
+                    </div>
+                  </div>
+
+                  <table id="crop-list-table">
+                    <thead>
+                      <tr>
+                        <th>Crop Name</th>
+                        <th>Seed Price</th>
+                        <th>Crop Price</th>
+                        <th>Growth Days</th>
+                        <th>Regrows</th>
+                        <th>Every # Days</th>
+                      </tr>
+                    </thead>
+                  </table>
+                </section>
+
+                <section class="tableContent">
+                  <table id="modal-crop-table-body">
+                    <tbody>
+
+                    </tbody>
+                  </table>
+
+
+
+                  <div class="tableContent-button">
+
+                    <div class="tableContent-flex-left">
+                      <span> Clicking Delete or ⛔ will immediately reflect on the list! </span>
+
+                    </div>
+
+                    <div class="tableContent-flex-format">
+                      <div class="tableContent-flex-right">
+                        <button id="tableContent-edit"> Edit </button>
+
+                        <button id="tableContent-delete"> Delete </button>
+                      </div>
+
+                      <div class="tableContent-flex-bottom">
+                        <button id="tableContent-cancel"> Nevermind </button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+
+              </div>
+            </div>
+
+            <input type="text" id="list-search" name="listSearch" placeholder="Search Crops..">
+
+            </form>
+
+
+            <table id="crop-list-table">
+              <thead>
+                <tr>
+                  <th>Crop Name</th>
+                  <th>Seed Price</th>
+                  <th>Crop Price</th>
+                  <th>Growth Days</th>
+                  <th>Regrows</th>
+                  <th>Every # Days</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="graph-container">
+          <section class="graph-container-header">
+            <span>
+              Graph Container
+            </span>
+          </section>
+          <div class="graph-container-graph">
+            <div class="form-group" id="form-group-graph">
+              <label for="crop-duration">Default Duration</label>
+              <input type="checkbox" id="crop-duration" name="cropDuration">
+              <label for="crop-customDuration">Custom</label>
+              <input type="number" id="crop-customDuration" name="cropCustomDuration" placeholder="1" class="tipaklong">
+              <button id="Refresh"> Calculate</button>
+            </div>
+
+            <p id="no-crops-yet"> No added crops yet!
+            </p>
+            <canvas id="crop-canvas"></canvas>
+            <p> Note: Profits that are between 0-1 will not show up in the canvas!
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="Toast"> Make sure to fill fields first! </div>
+
+  <script src="src/logic/cropsHandler.js"></script>
+</body>
+
+</html>
