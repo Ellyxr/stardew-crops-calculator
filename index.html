@@ -21,7 +21,7 @@
     <div class="Main-container-content">
       <div class="header">
         <figure class="title"><span>&nbsp;</span></figure>
-
+        <p> 🌙</p>
       </div>
       <div class="content-container">
 
@@ -32,21 +32,33 @@
             </span>
           </section>
           <div class="Calculator-container-form">
+            <button class="crop-fieldButton" id="buttonField"> Single Field</button>
+            <form id="crop-formField" class="crop-singleField">  
+
+              <div class="form-group">
+                <label for="crop-name">Crop Details</label>
+                <textarea type="text" id="crop-name" name="cropName" placeholder="strawberry 100 8 no 0 120"> </textarea>
+              </div>
+
+              <button class="crop-submit"> Add to list</button>
+
+            </form>
+
             <form id="crop-form">
 
               <div class="form-group">
                 <label for="crop-name">Crop Name</label>
-                <input type="text" id="crop-name" name="cropName">
+                <input type="text" id="crop-name" name="cropName" placeholder="Strawberry">
               </div>
 
               <div class="form-group">
                 <label for="seed-price">Seed Price</label>
-                <input type="number" id="seed-price" name="cropPrice">
+                <input type="number" id="seed-price" name="cropPrice" placeholder="100">
               </div>
 
               <div class="form-group">
                 <label for="crop-growth-days"> Growth Days</label>
-                <input type="number" id="crop-growth-days" name="cropGrowthDays">
+                <input type="number" id="crop-growth-days" name="cropGrowthDays" placeholder="10">
 
               </div>
 
@@ -58,16 +70,16 @@
 
               <div class="form-group" id="allowRegrowthLive" style="display: none;">
                 <label for="crop-regrowth-days"> Every </label>
-                <input type="number" id="crop-regrowth-every" name="cropRegrowthEvery">
+                <input type="number" id="crop-regrowth-every" name="cropRegrowthEvery" placeholder="3">
                 <label for="crop-regrowth-every"> Days</label>
               </div>
 
               <div class="form-group">
                 <label for="crop-price">Crop Price</label>
-                <input type="number" id="crop-price" name="cropQuantity">
+                <input type="number" id="crop-price" name="cropQuantity" placeholder="120">
               </div>
 
-              <button type="submit" id="crop-submit"> Add to list</button>
+              <button type="submit" id="crop-submit" class="crop-submit "> Add to list</button>
             </form>
           </div>
         </div>

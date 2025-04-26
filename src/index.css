@@ -65,7 +65,6 @@ button:focus-visible {
 
 .header {
   display: flex;
-  flex-direction: column;
   width: 40%;
   height: 4rem;
   align-items: center;
@@ -127,6 +126,8 @@ button:focus-visible {
 .list-container,
 .graph-container {
   border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
 
 .Calculator-container {
@@ -162,7 +163,7 @@ button:focus-visible {
   min-width: 0;
 }
 
-#crop-submit {
+.crop-submit {
   width: 100%;
   font-size: 1rem;
 }
@@ -381,14 +382,13 @@ button:focus-visible {
 
 .tableContent table {
   overflow-y: auto;
-  display:block;
+  display: block;
   text-align: center;
   width: 100%;
   table-layout: fixed;
   box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
     rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
   max-height: 30vh;
-  
 }
 
 .tableContent tbody {
@@ -399,8 +399,6 @@ button:focus-visible {
   box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
     rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
   max-height: 2%;
-
-
 }
 
 .tableContent td {
@@ -417,7 +415,6 @@ button:focus-visible {
   align-items: center;
   justify-content: center;
   padding: 1em;
-
 }
 
 .tableContent-flex-left {
@@ -433,7 +430,6 @@ button:focus-visible {
 .tableContent-flex-format {
   display: flex;
   flex-direction: column;
-  
 }
 
 .tableContent-flex-right {
@@ -494,7 +490,34 @@ button:focus-visible {
   background-color: #9ac490 !important;
 }
 
+.crop-fieldButton {
+  margin-bottom: 0.4em;
+  color: #f9f9f9;
+}
 
+.crop-singleField {
+  min-width: 15em;
+  width: 80%;
+}
+.crop-singleField .form-group {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.crop-singleField .form-group label {
+  margin: 5px 0px;
+}
+
+.crop-singleField .form-group textarea {
+  width: 90%;
+  max-width: 16em;
+  padding: 10px;
+  overflow-x: scroll;
+}
+
+.crop-singleField button {
+  width: 90%;
+}
 
 @media (max-width: 768px) {
   body {

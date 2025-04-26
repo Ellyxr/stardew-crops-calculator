@@ -20,6 +20,24 @@ TODO:
 
 */
 
+const buttonField = document.getElementById("buttonField");
+document.getElementById("crop-formField").style.display = "none";
+
+buttonField.addEventListener("click", function() {
+  const isSingleField = buttonField.textContent.includes("Single Field");
+
+  if (isSingleField) {
+    buttonField.textContent = "Multiple Fields";
+    document.getElementById("crop-formField").style.display = "block";
+    document.getElementById("crop-form").style.display = "none";
+
+  } else {
+    buttonField.textContent = "Single Field";
+    document.getElementById("crop-formField").style.display = "none";
+    document.getElementById("crop-form").style.display = "block";
+  }
+});
+
 function modalPopUp() {
   document.getElementById("modalPopUp").style.display = "block";
   populateModalTable();
