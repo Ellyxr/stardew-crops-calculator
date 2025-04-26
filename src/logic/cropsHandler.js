@@ -358,14 +358,19 @@ function updateGraph() {
         {
           label: "Total Profit",
           data: sortedData,
-          borderColor: "rgb(57, 120, 65)",
-          borderWidth: 1,
-          backgroundColor: ["rgb(48, 124, 42)"],
+          borderColor: "rgb(57, 120, 65)", // Change bar border color
+          borderWidth: 1, // Change bar border width
+          backgroundColor: ["rgb(48, 124, 42)"], // Change bar fill color
         },
       ],
     },
     options: {
       responsive: true,
+      // Make tooltip follow cursor
+      interaction: {
+        intersect: false, // Shows tooltip when hovering anywhere in the chart area
+        mode: "index", // Shows tooltip for all items at the same index (x-axis position)
+      },
       scales: {
         y: {
           beginAtZero: true,
@@ -377,24 +382,69 @@ function updateGraph() {
       },
       plugins: {
         tooltip: {
+          // ===== APPEARANCE SETTINGS =====
+          backgroundColor: "rgba(197, 214, 221, 0.9)", // Change tooltip background color/opacity
+          titleColor: "rgb(40, 40, 40)", // Change title text color
+          bodyColor: "rgb(57, 57, 57)", // Change body text color
+          footerColor: "rgb(57, 57, 57, 0.6)", // Change footer text color
+          borderColor: "rgba(13, 146, 44, 0.8)", // Change tooltip border color
+          borderWidth: 2, // Change tooltip border width
+          cornerRadius: 6, // Change tooltip corner rounding
+          padding: 12, // Change internal padding
+
+          // ===== FONT SETTINGS =====
+          titleFont: {
+            size: 14, // Change title font size
+            weight: "bold", // Change title font weight
+          },
+          bodyFont: {
+            size: 12, // Change body font size
+          },
+          footerFont: {
+            size: 10, // Change footer font size
+          },
+
+          // ===== POSITIONING & BEHAVIOR =====
+          position: "nearest", // Options: 'average', 'nearest', or 'cursor'
+          caretSize: 8, // Change tooltip pointer size
+          displayColors: false, // Set to true to show color indicators
+          followCursor: true, // Makes tooltip follow mouse movement
+
+          // ===== CONTENT CUSTOMIZATION =====
           callbacks: {
-            label: function (context) {
-              const label = context.dataset.label || "";
-              return `${label}: G$${context.raw.toFixed(2)}`;
+            title: function (context) {
+              // Customize the title text (appears at top)
+              return context[0].label;
             },
-            afterLabel: function (context) {
+            label: function (context) {
+              // Main content section (appears below title)
               const crop = cropDetails.find((c) => c.name === context.label);
               if (!crop) return "";
 
               return [
+                `Total Profit: G$${context.raw.toFixed(2)}`,
+                `Profit/Day: G$${crop.profitPerDay.toFixed(2)}`,
+              ];
+            },
+            afterLabel: function (context) {
+              // Additional details section (appears below main content)
+              const crop = cropDetails.find((c) => c.name === context.label);
+              if (!crop) return "";
+
+              return [
+                "--------------------------------",
                 `Sell Price: ${crop.quantity}`,
                 `Profit Per Seed: ${crop.profitPerSeed}`,
                 `Duration: ${crop.duration} days`,
                 `Harvests: ${crop.harvests}`,
-                `Regrowth: ${crop.regrowth}`,
-                `Total Profit: G$${crop.normalTotalProfit.toFixed(2)}`,
-                `Profit/Day: G$${crop.profitPerDay.toFixed(2)}`,
+                `Regrowth: ${crop.regrowth ? crop.regrowth + " days" : "None"}`,
+                "--------------------------------",
+                `Normal Total Profit: G$${crop.normalTotalProfit.toFixed(2)}`,
               ].join("\n");
+            },
+            footer: function (context) {
+              // Footer section (appears at bottom)
+              return "Click for more details"; // Change footer text
             },
           },
         },
