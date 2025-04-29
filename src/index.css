@@ -519,6 +519,15 @@ button:focus-visible {
   width: 90%;
 }
 
+.form-group small {
+  color:#626f62;
+}
+
+.form-group small:nth-of-type(2) {
+  color:#4c554c;
+}
+
+
 @media (max-width: 768px) {
   body {
     overflow-y: scroll;

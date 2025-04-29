@@ -33,14 +33,17 @@
           </section>
           <div class="Calculator-container-form">
             <button class="crop-fieldButton" id="buttonField"> Single Field</button>
+            
             <form id="crop-formField" class="crop-singleField">  
 
               <div class="form-group">
-                <label for="crop-name">Crop Details</label>
-                <textarea type="text" id="crop-name" name="cropName" placeholder="strawberry 100 8 no 0 120"> </textarea>
+                <label for="crop-singleTextField">Crop Details</label>
+                <small>Crop name, Seed price, Growth days, Regrowth?, Every # days, Crop price</small> <br />
+                <small> [Strawberry 100 8 no 9 120,] </small>
+                <textarea type="text" id="crop-singleTextField" name="cropName" placeholder="strawberry 100 8 no 0 120" rows="4"></textarea>
               </div>
 
-              <button class="crop-submit"> Add to list</button>
+              <button class="crop-submit" id="crop-submit"> Add to list</button>
 
             </form>
 
