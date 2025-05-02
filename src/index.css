@@ -144,13 +144,22 @@ button:focus-visible {
   width: 90%;
   display: flex;
   flex-direction: column;
+  align-items: center;
   margin: auto;
+  
 }
+
+.Calculator-container-form button{
+  width: 100%;
+}
+
 
 .Calculator-container-form .form-group {
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
+  width: 100%;
+  padding: 0.4em 0.6em;
+  margin: auto;
 }
 
 .Calculator-container-form .form-group label {
@@ -160,6 +169,7 @@ button:focus-visible {
 
 .Calculator-container-form .form-group input {
   flex: 1;
+  padding: 0.4em;
   min-width: 0;
 }
 
@@ -493,12 +503,43 @@ button:focus-visible {
 .crop-fieldButton {
   margin-bottom: 0.4em;
   color: #f9f9f9;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  display: inline-block;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+  
+
+  background: linear-gradient(45deg, #03a007, #48cb1d, #389e3c);
+  background-size: 200% 200%; 
+
+  animation: gradientPulse 3s ease infinite;
+  transition: transform 0.2s;
+}
+
+@keyframes gradientPulse {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.crop-fieldButton:hover {
+  animation: gradientPulse 2.5s ease infinite; 
+  transform: translateY(-1px); 
+}
+
+.crop-fieldButton:active {
+  transform: translateY(1px); 
 }
 
 .crop-singleField {
   min-width: 15em;
   width: 80%;
 }
+
 .crop-singleField .form-group {
   flex-direction: column;
   align-items: flex-start;
@@ -509,14 +550,13 @@ button:focus-visible {
 }
 
 .crop-singleField .form-group textarea {
-  width: 90%;
-  max-width: 16em;
+  width: 100%;
   padding: 10px;
   overflow-x: scroll;
 }
 
 .crop-singleField button {
-  width: 90%;
+  width: 100%;
 }
 
 .form-group small {
@@ -526,7 +566,6 @@ button:focus-visible {
 .form-group small:nth-of-type(2) {
   color:#4c554c;
 }
-
 
 @media (max-width: 768px) {
   body {
@@ -559,7 +598,7 @@ button:focus-visible {
   }
 
   .Calculator-container {
-    max-height: 20rem;
+    max-height: 28rem;
     flex-basis: 1rem;
     max-width: 100%;
   }
@@ -582,13 +621,14 @@ button:focus-visible {
     width: 100%;
     border-collapse: collapse;
     display: block;
-    max-height: 8rem;
+    max-height: 10rem;
     overflow-y: unset;
+
   }
 
   #crop-list-table thead {
     position: sticky;
-    top: 0;
+    top: 0;  
   }
 
   #crop-list-table tr {
