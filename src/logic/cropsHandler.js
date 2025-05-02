@@ -610,3 +610,17 @@ document.addEventListener("DOMContentLoaded", function () {
     console.warn("Refresh button not found in DOM.");
   }
 });
+
+document.getElementById("list-search").addEventListener("input", function() {
+  const searchQuery = this.value.toLowerCase();
+  const rows = document.querySelectorAll("#crop-list-table tbody tr");
+
+  rows.forEach((row) => {
+    const cropName = row.cells[0].textContent.toLowerCase();
+    if (cropName.includes(searchQuery)) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  });
+});
