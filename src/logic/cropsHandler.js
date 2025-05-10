@@ -43,6 +43,7 @@ function modalPopUp() {
   populateModalTable();
 }
 
+
 function modalPopDown() {
   document.getElementById("modalPopUp").style.display = "none";
 }
@@ -74,13 +75,29 @@ function populateModalTable() {
 
 function showCropsModal() {
   modalPopUp();
+  
 }
 
-const listButton = document.getElementById("list-button");
-//const saveChanges = document.getElementById("tableContent-Save");
 
+
+const listButton = document.getElementById("list-button");
 listButton.addEventListener("click", showCropsModal);
 
+// Debug: Check if script is running
+console.log("Script loaded!"); // This should appear in console when page loads
+
+
+// Debug: Check if button exists
+if (!listButton) {
+  console.error("Could not find #list-button element!");
+} else {
+  console.log("Button found:", listButton);
+  
+  listButton.addEventListener("click", function() {
+    console.log("I'm clicked!"); // This should appear when clicked
+    showCropsModal();
+  });
+}
 //delete tr
 let changesMade = false;
 
@@ -353,6 +370,10 @@ cropForm.addEventListener("submit", function (event) {
   allowRegrowthLive.style.display = "none";
 });
 
+
+//const saveChanges = document.getElementById("tableContent-Save");
+
+
 //single Field
 document.getElementById("crop-submit").addEventListener("click", function(e) {
   e.preventDefault();
@@ -402,18 +423,20 @@ document.getElementById("crop-submit").addEventListener("click", function(e) {
   document.getElementById("crop-singleTextField").value = "";
 });
 
+
 function addCropToTable(data) {
   try {
     const Seed_Price = parseFloat(data.seedPrice);
     const growthDays = parseInt(data.cropGrowthDays);
     const regrowthEvery = parseInt(data.cropRegrowthEvery) || 0;
-    const Crop_Price = parseInt(data.cropPrice);
-
+    const origPrice = parseInt(data.cropPrice);
+    const Crop_Price = parseInt(data.cropPrice) * 5; // Only change this line to multiply by 5
+    
     if (isNaN(Seed_Price) || isNaN(growthDays) || isNaN(Crop_Price)) {
       throw new Error("Invalid numeric input");
     }
 
-    // calc
+    // All calculations remain exactly the same as before
     const seasonDuration = 28;
     let harvests = 1;
 
@@ -422,21 +445,24 @@ function addCropToTable(data) {
       harvests += Math.floor(remainingDays / regrowthEvery);
     }
 
-    const profitPerHarvest = Crop_Price - Seed_Price;
+    const profitPerHarvest = origPrice - Seed_Price;
     const normalTotalProfit = profitPerHarvest * harvests;
     const profitPerSeed = normalTotalProfit;
     const roi = (profitPerSeed / Seed_Price) * 100;
     const totalGrowthTime = data.cropRegrowth ? 28 : growthDays;
     const profitPerDay = normalTotalProfit / totalGrowthTime;
 
-    //update cropDetails
+    // Update cropDetails (unchanged from original)
     cropDetails.push({
       name: data.cropName,
-      quantity: Crop_Price,
+      sellPrice: origPrice,
+      totalSellPrice: Crop_Price,
+      quantity: 5, // Just showing that we're working with 5 crops
       profitPerSeed: roi,
       duration: growthDays,
       harvests: harvests,
       regrowth: data.cropRegrowth ? `Yes (every ${regrowthEvery} days)` : "No",
+      regrowthEvery: regrowthEvery,
       normalTotalProfit: normalTotalProfit,
       profitPerDay: profitPerDay,
     });
@@ -446,10 +472,10 @@ function addCropToTable(data) {
     newRow.innerHTML = `
       <td>${data.cropName}</td>
       <td>${Seed_Price.toFixed(2)}</td>
-      <td>${Crop_Price}</td>
+      <td>${Crop_Price}</td> <!-- This will now show price × 5 -->
       <td>${growthDays}</td>
       <td>${data.cropRegrowth ? "Yes" : "No"}</td>
-      <td>${data.cropRegrowth ? regrowthEvery : "-"}</td>
+      <td>${data.cropRegrowth ? cropRegrowthEvery : "-"}</td>
     `;
     cropListTableBody.appendChild(newRow);
 
@@ -506,18 +532,31 @@ function updateGraph() {
         {
           label: "Total Profit",
           data: sortedData,
-          borderColor: "rgb(57, 120, 65)", // Change bar border color
-          borderWidth: 1, // Change bar border width
-          backgroundColor: ["rgb(48, 124, 42)"], // Change bar fill color
+          borderWidth: 1,
+          backgroundColor: sortedLabels.map(() => "rgb(48, 124, 42)"),
+          borderRadius: 6,
+          borderSkipped: false,
         },
       ],
     },
     options: {
       responsive: true,
-      // Make tooltip follow cursor
       interaction: {
-        intersect: false, // Shows tooltip when hovering anywhere in the chart area
-        mode: "index", // Shows tooltip for all items at the same index (x-axis position)
+        intersect: false,
+        mode: 'nearest',
+        axis: 'x'
+      },
+      onHover: (event, chartElement) => {
+        if (event.native && chartElement.length) {
+          const dataset = window.myChart.data.datasets[0];
+          const activeIndex = chartElement[0].index;
+          
+          dataset.backgroundColor = sortedLabels.map((_, index) => 
+            index === activeIndex ? "rgb(48, 124, 42)" : "rgba(46, 54, 64, 0.6)"
+          );
+          
+          window.myChart.update();
+        }
       },
       scales: {
         y: {
@@ -527,77 +566,82 @@ function updateGraph() {
             stepSize: 0,
           },
         },
+        x: {
+          grid: {
+            display: false,
+          }
+        }
       },
       plugins: {
+        legend: {
+          display: false
+        },
         tooltip: {
-          // ===== APPEARANCE SETTINGS =====
-          backgroundColor: "rgba(197, 214, 221, 0.9)", // Change tooltip background color/opacity
-          titleColor: "rgb(40, 40, 40)", // Change title text color
-          bodyColor: "rgb(57, 57, 57)", // Change body text color
-          footerColor: "rgb(57, 57, 57, 0.6)", // Change footer text color
-          borderColor: "rgba(13, 146, 44, 0.8)", // Change tooltip border color
-          borderWidth: 2, // Change tooltip border width
-          cornerRadius: 6, // Change tooltip corner rounding
-          padding: 12, // Change internal padding
-
-          // ===== FONT SETTINGS =====
+          enabled: true,
+          mode: 'nearest',
+          position: 'nearest',
+          backgroundColor: "rgba(197, 214, 221, 0.9)",
+          titleColor: "rgb(40, 40, 40)",
+          bodyColor: "rgb(57, 57, 57)",
+          footerColor: "rgb(57, 57, 57, 0.6)",
+          borderColor: "rgba(13, 146, 44, 0.8)",
+          borderWidth: 2,
+          cornerRadius: 6,
+          padding: 12,
           titleFont: {
-            size: 14, // Change title font size
-            weight: "bold", // Change title font weight
+            size: 14,
+            weight: "bold",
           },
           bodyFont: {
-            size: 12, // Change body font size
+            size: 12,
           },
           footerFont: {
-            size: 10, // Change footer font size
+            size: 10,
           },
-
-          // ===== POSITIONING & BEHAVIOR =====
-          position: "nearest", // Options: 'average', 'nearest', or 'cursor'
-          caretSize: 8, // Change tooltip pointer size
-          displayColors: false, // Set to true to show color indicators
-          followCursor: true, // Makes tooltip follow mouse movement
-
-          // ===== CONTENT CUSTOMIZATION =====
+          caretSize: 8,
+          displayColors: false,
+          // This makes the tooltip follow the cursor smoothly
+          bodyAlign: 'left',
+          xAlign: 'center',
+          yAlign: 'bottom',
           callbacks: {
             title: function (context) {
-              // Customize the title text (appears at top)
               return context[0].label;
             },
             label: function (context) {
-              // Main content section (appears below title)
               const crop = cropDetails.find((c) => c.name === context.label);
               if (!crop) return "";
 
               return [
-                `Total Profit: G$${context.raw.toFixed(2)}`,
+                `Profit: G$${context.raw.toFixed(2)}`,
                 `Profit/Day: G$${crop.profitPerDay.toFixed(2)}`,
               ];
             },
             afterLabel: function (context) {
-              // Additional details section (appears below main content)
               const crop = cropDetails.find((c) => c.name === context.label);
               if (!crop) return "";
 
               return [
                 "--------------------------------",
-                `Sell Price: ${crop.quantity}`,
+                `Crop Price: ${crop.sellPrice}`,
                 `Profit Per Seed: ${crop.profitPerSeed}`,
-                `Duration: ${crop.duration} days`,
-                `Harvests: ${crop.harvests}`,
+                `Growth Days: ${crop.duration} days`,
+                `Quantity (Crops): ${crop.quantity}`,
+                `Total Sell Price: ${crop.totalSellPrice}`,
                 `Regrowth: ${crop.regrowth ? crop.regrowth + " days" : "None"}`,
+                `Regrowth: ${crop.regrowth ? "Every " + crop.regrowthEvery + " days" : "None"}`,
+
                 "--------------------------------",
                 `Normal Total Profit: G$${crop.normalTotalProfit.toFixed(2)}`,
               ].join("\n");
             },
             footer: function (context) {
-              // Footer section (appears at bottom)
-              return "Click for more details"; // Change footer text
+              return "Click for more details";
             },
-          },
+          }
         },
       },
-    },
+    }
   });
 }
 

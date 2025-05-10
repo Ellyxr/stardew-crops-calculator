@@ -65,19 +65,27 @@ button:focus-visible {
 
 .header {
   display: flex;
-  width: 40%;
+  width: 90%;
   height: 4rem;
   align-items: center;
   justify-content: center;
 }
 
+.changeLog {
+  font-size: 0.9em;
+  width: 12%;
+  margin: 0em 0em 0em 1em;
+  background-color:#0b8e0f;
+}
+
 .title {
   background-image: url("assets/title.png");
   background-size: contain;
-  background-position: center;
+  background-position: start;
   background-repeat: no-repeat;
   width: 100%;
-  height: 100%;
+  height: 50%;
+  margin: 0em 0em;
 }
 
 .Main-container {
@@ -99,7 +107,8 @@ button:focus-visible {
 
 .content-container {
   display: flex;
-  width: 50%;
+  width: 90%;
+  height: 120%;
   gap: 1rem;
   justify-content: center;
 }
@@ -141,25 +150,23 @@ button:focus-visible {
 
 .Calculator-container-form {
   padding: 1rem;
-  width: 90%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: auto;
+  justify-items: center;
   
 }
 
 .Calculator-container-form button{
-  width: 100%;
+  width: 80%;
 }
 
 
 .Calculator-container-form .form-group {
   display: flex;
-  align-items: center;
-  width: 100%;
   padding: 0.4em 0.6em;
-  margin: auto;
 }
 
 .Calculator-container-form .form-group label {
@@ -174,7 +181,7 @@ button:focus-visible {
 }
 
 .crop-submit {
-  width: 100%;
+  width: 100% !important;
   font-size: 1rem;
 }
 
@@ -205,22 +212,34 @@ button:focus-visible {
   color: #1a1a1a;
   flex: 2;
   min-height: 12rem;
-  max-height: 26rem;
+  
 }
 
 .list-container-form,
 .graph-container-graph {
-  padding: 1rem;
+  padding: 3rem 2rem;
 }
+
+.columnScroll {
+  overflow-y: auto;
+  height: 100%;
+  width: 100%;
+  flex: 3;
+  
+}
+
+/*END OF CONTAINERS*/
 
 .list-container-form table {
   width: 100%;
   border-collapse: collapse;
+  min-height: 1em;
+  max-height: 2em;
+  overflow-y: auto;
 }
 
 .list-container-form th {
-  border: 1px solid #ccc;
-  padding: 8px;
+  padding: 2px 8px;
 }
 
 #list-search {
@@ -243,6 +262,74 @@ button:focus-visible {
   padding: 0.4em 0.5em;
   font-size: 1em;
   font-weight: 500;
+}
+
+.list-container .list-container-header {
+  position: sticky;
+  top: 10;
+}
+
+.list-container .list-container-form {
+  position: sticky;
+  top: 0;
+}
+
+#crop-list-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#crop-list-table thead {
+  position: sticky;
+  top: 0;
+}
+
+
+#crop-list-table tbody td {
+  padding: 0rem 1.2rem 0rem 1rem;
+  text-align: start;
+}
+
+#crop-list-table td {
+  width: 10%;
+  
+}
+
+
+
+/*head*/
+#crop-list-table th:nth-child(1n) {
+  text-align: center;
+  background-color: #88b1a0;
+  border: none;
+}
+
+#crop-list-table th:nth-child(2n) {
+  text-align: center;
+  background-color: #a9c7b8;
+
+}
+
+/*body*/
+#crop-list-table td:nth-child(1n) {
+  text-align: center;
+  background-color: #7da494;
+  
+}
+
+#crop-list-table td:nth-child(2n) {
+  text-align: center;
+  background-color: #9bb6a9;
+}
+
+#crop-list-table tbody {
+  color: black;
+  box-shadow: rgba(2, 68, 10, 0.35) 0px -50px 36px -28px inset;
+}
+
+#crop-list-table tr:hover td {
+  filter: brightness(70%);
+
 }
 
 #crop-canvas {
@@ -291,47 +378,10 @@ button:focus-visible {
   padding: 0.4em 1em;
 }
 
-.list-container .list-container-header {
-  position: sticky;
-  top: 0;
-}
 
-.list-container .list-container-form {
-  position: sticky;
-  top: 0;
-}
-
-#crop-list-table {
-  width: 100%;
-  border-collapse: collapse;
-  overflow-y: auto;
-  display: block;
-  overflow-x: auto;
-}
-
-#crop-list-table thead {
-  position: sticky;
-  top: 0;
-}
-#crop-list-table tbody td {
-  padding: 0rem 1.2rem 0rem 1rem;
-  text-align: start;
-}
-
-#crop-list-table tr {
-  text-align: center;
-}
-
-#crop-list-table tbody {
-  color: black;
-  max-height: 8rem;
-  overflow-y: auto;
-  display: block;
-  box-shadow: rgba(2, 68, 10, 0.35) 0px -50px 36px -28px inset;
-}
 
 .modalPopUp {
-  display: flex;
+  display:flex ;
   position: fixed;
   z-index: 1;
   left: 0;
@@ -343,7 +393,8 @@ button:focus-visible {
 }
 
 .modalPopUpContent {
-  background-color: rgb(235, 235, 235);
+  background-color: rgba(244, 244, 244, 0.992);
+  backdrop-filter: blur(10px);
   margin: 8% auto;
   padding: 20px;
   border: 1px solid #03a007;
@@ -384,39 +435,56 @@ button:focus-visible {
 
 .titleContent th {
   background-color: #03a007;
-  text-shadow: 2px 1px 0px rgba(0, 0, 0, 0.6);
-  color: white;
+
+  color: rgb(14, 59, 74);
   padding: 10px;
   width: 14vw;
 }
 
-.tableContent table {
+/* Container for scrollable table */
+.tableContent {
+  max-height: 50vh;
   overflow-y: auto;
-  display: block;
-  text-align: center;
   width: 100%;
-  table-layout: fixed;
   box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
-    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
-  max-height: 30vh;
+              rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
 }
 
-.tableContent tbody {
-  overflow-y: auto;
-  text-align: center;
+/* Table styling */
+.tableContent table {
   width: 100%;
-  table-layout: fixed;
-  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
-    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
-  max-height: 2%;
+  table-layout: fixed; /* Ensures consistent column widths */
+  border-collapse: collapse; /* Remove cell spacing */
+  text-align: center;
+}
+
+/* Header row - sticky */
+.tableContent thead {
+  position: sticky;
+  top: 0;
+  background: white; /* Ensure header is visible when scrolling */
+}
+
+/* Cell alignment */
+.tableContent th,
+.tableContent td {
+  padding: 0px; /* Adjust as needed */
+  text-align: center;
+  width: auto; /* Let table-layout: fixed handle widths */
+}
+
+/* Optional: Add borders for clarity */
+.tableContent th,
+.tableContent td {
+  padding: 6px;
 }
 
 .tableContent td {
-  width: 100vw;
+  overflow-x:auto;
 }
 
 .tableContent tr:hover {
-  background-color: #dbdbdb;
+  background-color: #dbdbdb ;
 }
 
 .tableContent-button {
@@ -451,7 +519,8 @@ button:focus-visible {
 }
 
 #tableContent-delete {
-  background-color: #c9c9c9;
+  background-color: transparent;
+  border: 1px solid rgb(134, 134, 134);
   color: #242424;
 }
 
@@ -461,7 +530,7 @@ button:focus-visible {
 }
 
 #tableContent-cancel {
-  background-color: #c9c9c9;
+  background-color: transparent;
   color: #242424;
   width: 100%;
   margin: 0.4em 0.4em;
@@ -492,12 +561,13 @@ button:focus-visible {
 
 /* for clicking cells in modal */
 .selected {
-  background-color: #aad3a1;
+  background-color: #7fb29d;
   font-weight: bold;
+  color: #293b3b;
 }
 
 .selected:hover {
-  background-color: #9ac490 !important;
+  background-color: #6fa28d !important;
 }
 
 .crop-fieldButton {
@@ -539,6 +609,29 @@ button:focus-visible {
   min-width: 15em;
   width: 80%;
 }
+
+.graphButtonField {
+  display: flex;
+  flex-direction: column;
+}
+
+.graphRowField {
+  display: flex; 
+  flex-direction: row;
+  justify-content: center; 
+  align-items: center;     
+  width: 100%;
+}
+
+.graphRowField button{
+  font-size: 0.9em;
+  margin: -1em 0.2em 0em 0.2em;
+}
+
+.graphRowField button:active{
+  background-color: white;
+}
+
 
 .crop-singleField .form-group {
   flex-direction: column;
