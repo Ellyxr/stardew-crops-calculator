@@ -83,32 +83,32 @@ function showCropsModal() {
 const listButton = document.getElementById("list-button");
 listButton.addEventListener("click", showCropsModal);
 
-// Debug: Check if script is running
-console.log("Script loaded!"); // This should appear in console when page loads
+
+console.log("Script loaded!"); 
 
 
-// Debug: Check if button exists
+
 if (!listButton) {
   console.error("Could not find #list-button element!");
 } else {
   console.log("Button found:", listButton);
   
   listButton.addEventListener("click", function() {
-    console.log("I'm clicked!"); // This should appear when clicked
+    console.log("I'm clicked!"); 
     showCropsModal();
   });
 }
 //delete tr
 let changesMade = false;
 
-// New function to get fresh data from the table
+//New function to get fresh data from the table
 function refreshGraphData() {
   const rows = document.querySelectorAll("#crop-list-table tbody tr");
   cropLabels = [];
   cropData = [];
   cropDetails = [];
 
-  // Repopulate from current table state
+  //Repopulates from current table state
   rows.forEach((row) => {
     cropLabels.push(row.cells[0].textContent);
     cropData.push(parseFloat(row.cells[1].textContent));
@@ -121,7 +121,7 @@ function refreshGraphData() {
   });
 }
 
-// Updated delete handler
+// *Updated delete handler
 function deleteHandler() {
   const selectedRows = document.querySelectorAll(
     "#modal-crop-table-body .selected"
@@ -155,7 +155,7 @@ function deleteHandler() {
   }
 }
 
-//Add event listener for the edit button
+//*Add event listener for the edit button
 const tableContentEdit = document.getElementById("tableContent-edit");
 
 tableContentEdit.addEventListener("click", function () {
@@ -200,7 +200,7 @@ tableContentEdit.addEventListener("click", function () {
       cropLabels.push(name);
       cropData.push(profitPerSeed);
 
-      //Store everything you need for tooltips + table
+      //Store everything for tooltips + table
       cropDetails.push({
         name,
         seedPrice,
@@ -307,7 +307,9 @@ cropForm.addEventListener("submit", function (event) {
     return;
   }
 
+  // calculations for the actual tooltip
   // Convert values
+  /*
   const Seed_Price = parseFloat(seedPrice);
   const growthDays = parseInt(cropGrowthDays);
   const regrowthEvery = parseInt(cropRegrowthEvery) || 0;
@@ -327,22 +329,60 @@ cropForm.addEventListener("submit", function (event) {
   const normalTotalProfit = profitPerHarvest * harvests;
 
   const profitPerSeed = normalTotalProfit;
-  const roi = (profitPerSeed / Seed_Price) * 100;
+  const roi = (profitPerSeed / Seed_Price);
 
   const totalGrowthTime = cropRegrowth ? 28 : growthDays;
   const profitPerDay = normalTotalProfit / totalGrowthTime;
 
-  // Store details for tooltip
-  cropDetails.push({
-    name: cropName,
-    quantity: Crop_Price,
-    profitPerSeed: roi,
-    duration: growthDays,
-    harvests: harvests,
-    regrowth: cropRegrowth ? `Yes (every ${cropRegrowthEvery} days)` : "No",
-    normalTotalProfit: normalTotalProfit,
-    profitPerDay: profitPerDay,
-  });
+*/
+const Seed_Price = parseFloat(seedPrice);
+const growthDays = parseInt(cropGrowthDays);
+const regrowthEvery = parseInt(cropRegrowthEvery) || 0;
+const Crop_Price = parseInt(cropPrice);
+
+const seasonDuration = 28;
+let harvests = 1;
+
+if (cropRegrowth && regrowthEvery > 0) {
+  const remainingDays = seasonDuration - growthDays;
+  harvests += Math.floor(remainingDays / regrowthEvery);
+} else {
+  harvests = Math.floor(seasonDuration / growthDays);
+}
+
+// Calculations
+const totalRevenue = Crop_Price * harvests;
+const totalCost = cropRegrowth ? Seed_Price : Seed_Price * harvests;
+const totalProfit = totalRevenue - totalCost;
+const roi = totalProfit / totalCost;
+const profitPerDay = totalProfit / seasonDuration;
+
+// Calculate break-even point (harvests to recover seed cost)
+let breakEvenHarvests;
+if (cropRegrowth) {
+  breakEvenHarvests = Seed_Price / Crop_Price;
+} else {
+  breakEvenHarvests = Seed_Price / (Crop_Price - Seed_Price);
+}
+
+// Store details for tooltip -- THE ACTUAL TOOLTIP
+cropDetails.push({
+  name: cropName,
+  seedPrice: Seed_Price,
+  cropPrice: Crop_Price,
+  totalRevenue: totalRevenue,
+  totalCost: totalCost,
+  totalProfit: totalProfit,
+  roiPercent: (roi * 100).toFixed(1) + '%',
+  profitPerDay: profitPerDay.toFixed(2),
+  growthDays: growthDays,
+  harvests: harvests,
+  regrowth: cropRegrowth ? `Yes (every ${regrowthEvery} days)` : "No",
+  regrowthEvery: regrowthEvery,
+  breakEvenHarvests: breakEvenHarvests.toFixed(2),
+  goldPerTilePerDay: profitPerDay.toFixed(2),
+});
+
 
   // Update table
   document.getElementById("no-crops-yet").style.display = "none";
@@ -362,7 +402,7 @@ cropForm.addEventListener("submit", function (event) {
   cropListTableBody.appendChild(newRow);
 
   cropLabels.push(cropName);
-  cropData.push(profitPerSeed);
+  cropData.push(totalProfit);
 
   console.log(cropLabels, cropData);
   updateGraph();
@@ -423,7 +463,7 @@ document.getElementById("crop-submit").addEventListener("click", function(e) {
   document.getElementById("crop-singleTextField").value = "";
 });
 
-
+//calculates
 function addCropToTable(data) {
   try {
     const Seed_Price = parseFloat(data.seedPrice);
@@ -438,7 +478,7 @@ function addCropToTable(data) {
 
     // All calculations remain exactly the same as before
     const seasonDuration = 28;
-    let harvests = 1;
+    let harvests = 5;
 
     if (data.cropRegrowth && regrowthEvery > 0) {
       const remainingDays = seasonDuration - growthDays;
@@ -452,6 +492,7 @@ function addCropToTable(data) {
     const totalGrowthTime = data.cropRegrowth ? 28 : growthDays;
     const profitPerDay = normalTotalProfit / totalGrowthTime;
 
+    /*
     // Update cropDetails (unchanged from original)
     cropDetails.push({
       name: data.cropName,
@@ -466,7 +507,8 @@ function addCropToTable(data) {
       normalTotalProfit: normalTotalProfit,
       profitPerDay: profitPerDay,
     });
-
+*/
+    //updates table
     document.getElementById("no-crops-yet").style.display = "none";
     const newRow = document.createElement("tr");
     newRow.innerHTML = `
@@ -483,14 +525,14 @@ function addCropToTable(data) {
     cropData.push(profitPerSeed);
     
     updateGraph();
-    
+  
   } catch (error) {
     console.error("Error adding crop to table:", error);
     toastPopUp();
   }
 }
 
-function initializeChart() {
+function initializeChart() {                          
   if (window.myChart) {
     window.myChart.destroy();
   }
@@ -541,6 +583,7 @@ function updateGraph() {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: true,
       interaction: {
         intersect: false,
         mode: 'nearest',
@@ -577,68 +620,151 @@ function updateGraph() {
           display: false
         },
         tooltip: {
-          enabled: true,
+          enabled: false,
           mode: 'nearest',
           position: 'nearest',
-          backgroundColor: "rgba(197, 214, 221, 0.9)",
-          titleColor: "rgb(40, 40, 40)",
-          bodyColor: "rgb(57, 57, 57)",
-          footerColor: "rgb(57, 57, 57, 0.6)",
-          borderColor: "rgba(13, 146, 44, 0.8)",
-          borderWidth: 2,
-          cornerRadius: 6,
-          padding: 12,
-          titleFont: {
-            size: 14,
-            weight: "bold",
-          },
-          bodyFont: {
-            size: 12,
-          },
-          footerFont: {
-            size: 10,
-          },
-          caretSize: 8,
-          displayColors: false,
-          // This makes the tooltip follow the cursor smoothly
-          bodyAlign: 'left',
-          xAlign: 'center',
-          yAlign: 'bottom',
-          callbacks: {
-            title: function (context) {
-              return context[0].label;
-            },
-            label: function (context) {
-              const crop = cropDetails.find((c) => c.name === context.label);
-              if (!crop) return "";
+          external: (context) => {
+            const { tooltip } = context;
+            let tooltipEl = document.getElementById('chartjs-tooltip');
 
-              return [
-                `Profit: G$${context.raw.toFixed(2)}`,
-                `Profit/Day: G$${crop.profitPerDay.toFixed(2)}`,
-              ];
-            },
-            afterLabel: function (context) {
-              const crop = cropDetails.find((c) => c.name === context.label);
-              if (!crop) return "";
+            // Hide tooltip if no tooltip data or if mouse leaves the chart
+            if (!tooltip || !tooltip.opacity) {
+              if (tooltipEl) {
+                tooltipEl.style.opacity = '0';
+                tooltipEl.style.pointerEvents = 'none';
+              }
+              return;
+            }
 
-              return [
-                "--------------------------------",
-                `Crop Price: ${crop.sellPrice}`,
-                `Profit Per Seed: ${crop.profitPerSeed}`,
-                `Growth Days: ${crop.duration} days`,
-                `Quantity (Crops): ${crop.quantity}`,
-                `Total Sell Price: ${crop.totalSellPrice}`,
-                `Regrowth: ${crop.regrowth ? crop.regrowth + " days" : "None"}`,
-                `Regrowth: ${crop.regrowth ? "Every " + crop.regrowthEvery + " days" : "None"}`,
+            // Create tooltip element if it doesn't exist
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div');
+              tooltipEl.id = 'chartjs-tooltip';
+              tooltipEl.style.position = 'absolute';
+              tooltipEl.style.pointerEvents = 'none';
+              tooltipEl.style.zIndex = '9999';
+              tooltipEl.style.transition = 'opacity 0.2s ease';
+              document.body.appendChild(tooltipEl);
+            }
 
-                "--------------------------------",
-                `Normal Total Profit: G$${crop.normalTotalProfit.toFixed(2)}`,
-              ].join("\n");
-            },
-            footer: function (context) {
-              return "Click for more details";
-            },
-          }
+            // Show tooltip
+            tooltipEl.style.opacity = '1';
+            tooltipEl.style.pointerEvents = 'auto';
+
+            // Set tooltip position
+            const position = context.chart.canvas.getBoundingClientRect();
+            const bodyFont = context.chart.options.plugins.tooltip.bodyFont;
+
+            // Display, position, and set styles for font
+            tooltipEl.style.background = 'rgba(197, 214, 221, 0.9)';
+            tooltipEl.style.border = '2px solid rgba(13, 146, 44, 0.8)';
+            tooltipEl.style.borderRadius = '6px';
+            tooltipEl.style.padding = '12px';
+            tooltipEl.style.color = 'rgb(57, 57, 57)';
+            tooltipEl.style.font = `${bodyFont.size}px ${bodyFont.family}`;
+            tooltipEl.style.transform = 'translate(-50%, 0)';
+            tooltipEl.style.transition = 'all .1s ease';
+
+            // Calculate position to prevent clipping
+            const tooltipWidth = tooltipEl.offsetWidth;
+            const tooltipHeight = tooltipEl.offsetHeight;
+            const canvasWidth = position.width;
+            const canvasHeight = position.height;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const isMobile = windowWidth <= 768;
+
+            let left = position.left + tooltip.caretX;
+            let top = position.top + tooltip.caretY;
+
+            // Mobile-specific positioning
+            if (isMobile) {
+              // For mobile, position tooltip below the bar by default
+              top = position.top + tooltip.caretY + 10;
+              
+              // If tooltip would be clipped at bottom, position it above
+              if (top + tooltipHeight > windowHeight) {
+                top = position.top + tooltip.caretY - tooltipHeight - 20;
+              }
+
+              //Center horizontally
+              left = Math.max(10, Math.min(windowWidth - tooltipWidth - 10, 
+                position.left + (canvasWidth / 2) - (tooltipWidth / 2)));
+            } else {
+
+              //desktop
+              //Adjust horizontal position 
+              if (left + tooltipWidth > windowWidth) {
+                left = windowWidth - tooltipWidth - 10;
+              } else if (left < 0) {
+                left = 10;
+              }
+
+              //vertical position
+              if (top + tooltipHeight > windowHeight) {
+                top = windowHeight - tooltipHeight - 10;
+              } else if (top < 0) {
+                top = 10;
+              }
+            }
+
+            //calculated position
+            tooltipEl.style.left = `${left}px`;
+            tooltipEl.style.top = `${top}px`;
+
+            if (isMobile) {
+              tooltipEl.style.maxWidth = '90vw';
+              tooltipEl.style.fontSize = '11px';
+              tooltipEl.style.padding = '8px';
+            } else {
+              tooltipEl.style.maxWidth = 'none';
+              tooltipEl.style.fontSize = '12px';
+              tooltipEl.style.padding = '12px';
+            }
+
+            if (tooltip.body) {
+              const titleLines = tooltip.title || [];
+              const bodyLines = tooltip.body.map(bodyItem => bodyItem.lines);
+              const crop = cropDetails.find((c) => c.name === titleLines[0]);
+
+              let innerHtml = '<div>';
+
+              // Add title
+              titleLines.forEach(title => {
+                innerHtml += `<div style="font-weight: bold; font-size: 140%; color:rgb(12, 126, 16); margin-bottom: 5px;">${title}</div>`;
+              });
+
+              // Add body
+              bodyLines.forEach((body, i) => {
+                body.forEach(line => {
+                  innerHtml += `<div>${line}</div>`;
+                });
+              });
+
+              // where the label is based on the crop 
+              if (crop) {
+  innerHtml += `
+    <div style="margin-top: 5px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 5px;">
+      <div>Seed Price: ${crop.seedPrice}g</div>
+      <div>Crop Price: ${crop.cropPrice}g</div>
+      <div>Total Revenue: ${crop.totalRevenue}g</div>
+      <div>Total Cost: ${crop.totalCost}g</div>
+      <div>Total Profit: ${crop.totalProfit}g</div>
+      <div>ROI: ${crop.roiPercent}</div>
+      <div>Profit Per Day: ${crop.profitPerDay}g</div>
+      <div>Growth Days: ${crop.growthDays} days</div>
+      <div>Crops Sold (Harvests): ${crop.harvests}</div>
+      <div>Break-Even Harvests: ${crop.breakEvenHarvests}</div>
+      <div>Gold per Tile per Day: ${crop.goldPerTilePerDay}g</div>
+      <div>Regrowth: ${crop.regrowth ? crop.regrowth : "No"}</div>
+    </div>
+  `;
+}
+
+              innerHtml += '</div>';
+              tooltipEl.innerHTML = innerHtml;
+            }
+          },
         },
       },
     }
