@@ -75,7 +75,7 @@ button:focus-visible {
   font-size: 0.9em;
   width: 12%;
   margin: 0em 0em 0em 1em;
-  background-color:#0b8e0f;
+  background-color: #0b8e0f;
 }
 
 .title {
@@ -156,13 +156,11 @@ button:focus-visible {
   align-items: center;
   margin: auto;
   justify-items: center;
-  
 }
 
-.Calculator-container-form button{
+.Calculator-container-form button {
   width: 80%;
 }
-
 
 .Calculator-container-form .form-group {
   display: flex;
@@ -213,7 +211,6 @@ button:focus-visible {
   color: #1a1a1a;
   flex: 2;
   min-height: 12rem;
-  
 }
 
 .list-container-form,
@@ -226,7 +223,6 @@ button:focus-visible {
   height: 100%;
   width: 100%;
   flex: 3;
-  
 }
 
 /*END OF CONTAINERS*/
@@ -285,7 +281,6 @@ button:focus-visible {
   top: 0;
 }
 
-
 #crop-list-table tbody td {
   padding: 0rem 1.2rem 0rem 1rem;
   text-align: start;
@@ -293,10 +288,7 @@ button:focus-visible {
 
 #crop-list-table td {
   width: 10%;
-  
 }
-
-
 
 /*head*/
 #crop-list-table th:nth-child(1n) {
@@ -308,14 +300,12 @@ button:focus-visible {
 #crop-list-table th:nth-child(2n) {
   text-align: center;
   background-color: #a9c7b8;
-
 }
 
 /*body*/
 #crop-list-table td:nth-child(1n) {
   text-align: center;
   background-color: #7da494;
-  
 }
 
 #crop-list-table td:nth-child(2n) {
@@ -330,9 +320,7 @@ button:focus-visible {
 
 #crop-list-table tr:hover td {
   filter: brightness(70%);
-
 }
-
 
 #crop-canvas {
   height: auto !important;
@@ -342,7 +330,6 @@ button:focus-visible {
   align-content: center;
   align-items: center;
   overflow: visible !important;
-
   display: flex;
   width: 100%;
 }
@@ -383,10 +370,8 @@ button:focus-visible {
   padding: 0.4em 1em;
 }
 
-
-
 .modalPopUp {
-  display:flex ;
+  display: flex;
   position: fixed;
   z-index: 1;
   left: 0;
@@ -452,7 +437,7 @@ button:focus-visible {
   overflow-y: auto;
   width: 100%;
   box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
-              rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
 }
 
 /* Table styling */
@@ -485,11 +470,11 @@ button:focus-visible {
 }
 
 .tableContent td {
-  overflow-x:auto;
+  overflow-x: auto;
 }
 
 .tableContent tr:hover {
-  background-color: #dbdbdb ;
+  background-color: #dbdbdb;
 }
 
 .tableContent-button {
@@ -585,29 +570,35 @@ button:focus-visible {
   cursor: pointer;
   text-align: center;
   display: inline-block;
-  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
-  
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
+    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
 
   background: linear-gradient(45deg, #03a007, #48cb1d, #389e3c);
-  background-size: 200% 200%; 
+  background-size: 200% 200%;
 
   animation: gradientPulse 3s ease infinite;
   transition: transform 0.2s;
 }
 
 @keyframes gradientPulse {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .crop-fieldButton:hover {
-  animation: gradientPulse 2.5s ease infinite; 
-  transform: translateY(-1px); 
+  animation: gradientPulse 2.5s ease infinite;
+  transform: translateY(-1px);
 }
 
 .crop-fieldButton:active {
-  transform: translateY(1px); 
+  transform: translateY(1px);
 }
 
 .crop-singleField {
@@ -621,22 +612,21 @@ button:focus-visible {
 }
 
 .graphRowField {
-  display: flex; 
+  display: flex;
   flex-direction: row;
-  justify-content: center; 
-  align-items: center;     
+  justify-content: center;
+  align-items: center;
   width: 100%;
 }
 
-.graphRowField button{
+.graphRowField button {
   font-size: 0.9em;
   margin: -1em 0.2em 0em 0.2em;
 }
 
-.graphRowField button:active{
+.graphRowField button:active {
   background-color: white;
 }
-
 
 .crop-singleField .form-group {
   flex-direction: column;
@@ -658,14 +648,14 @@ button:focus-visible {
 }
 
 .form-group small {
-  color:#626f62;
+  color: #626f62;
 }
 
 .form-group small:nth-of-type(2) {
-  color:#4c554c;
+  color: #4c554c;
 }
 
-.form-group-row{
+.form-group-row {
   width: 100%;
   display: flex;
   flex-direction: row !important;
@@ -681,6 +671,36 @@ button:focus-visible {
 .form-group-row button {
   width: 30%;
   align-self: flex-end;
+}
+
+.tippy-box[data-theme~='custom'] {
+  background-color: rgba(197, 214, 221, 0.9);
+  border: 2px solid rgba(13, 146, 44, 0.8);
+  border-radius: 6px;
+  color: rgb(57, 57, 57);
+  font-size: 14px;
+  max-width: 300px;
+}
+
+.tippy-box[data-theme~='custom'] .tippy-content {
+  padding: 12px;
+}
+
+.tippy-box[data-theme~='custom'] .tippy-content .tippyBody {
+  display: flex;
+  flex-direction: column;
+}
+
+/*arrow only, style*/
+.tippy-box[data-theme~='custom'] .tippy-arrow {
+  color: rgba(197, 214, 221, 0.9);
+}
+
+.tippy-box[data-theme~='custom'] .tippy-arrow::before {
+  border-top-color: rgba(13, 146, 44, 0.8);
+  border-bottom-color: rgba(13, 146, 44, 0.8);
+  border-left-color: rgba(13, 146, 44, 0.8);
+  border-right-color: rgba(13, 146, 44, 0.8);
 }
 
 @media (max-width: 768px) {

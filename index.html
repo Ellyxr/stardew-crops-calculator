@@ -13,7 +13,11 @@
 
   <title> Stardew Crops Calculator</title>
   <link rel="stylesheet" href="src/index.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Add these to your HTML head -->
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -106,6 +110,8 @@
               <span>
                 Graph Container
               </span>
+              <!-- Place this anywhere in your body (will be positioned dynamically) -->
+              <div id="chartjs-tooltip" style="pointer-events: none; position: absolute; opacity: 0;"></div>
             </section>
             <div class="graph-container-graph">
 
