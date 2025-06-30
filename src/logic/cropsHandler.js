@@ -194,7 +194,6 @@ tableContentEdit.addEventListener("click", function () {
       cropLabels.push(name);
       cropData.push(profitPerSeed);
 
-      //Store everything for tooltips + table
       cropDetails.push({
         name,
         seedPrice,
@@ -228,7 +227,6 @@ tableContentEdit.addEventListener("click", function () {
     updateGraph();
     tableContentEdit.textContent = "Edit";
   } else {
-    //Enable editing
     rows.forEach((row) => {
       row.querySelectorAll("td").forEach((cell) => {
         cell.contentEditable = "true";
@@ -304,7 +302,7 @@ cropForm.addEventListener("submit", function (event) {
   const Seed_Price = parseFloat(seedPrice);
   const growthDays = parseInt(cropGrowthDays);
   const regrowthEvery = parseInt(cropRegrowthEvery) || 0;
-  const Crop_Price = parseInt(cropPrice); 
+  const Crop_Price = parseInt(cropPrice);
   const cropQualityValues = {
     normal: Crop_Price, // 120 (example)
     silver: Crop_Price * 1.25, // +25% value (150)
@@ -352,7 +350,7 @@ cropForm.addEventListener("submit", function (event) {
   cropDetails.push({
     name: cropName,
     seedPrice: Seed_Price,
-    cropPrice: Crop_Price, 
+    cropPrice: Crop_Price,
     qualityTiers: {
       normal: { value: cropQualityValues.normal, rate: dropRates.normal },
       silver: { value: cropQualityValues.silver, rate: dropRates.silver },
@@ -367,7 +365,7 @@ cropForm.addEventListener("submit", function (event) {
     profitPerDay: profitPerDay.toFixed(2),
     growthDays: growthDays,
     harvests: harvests,
-    regrowth: cropRegrowth ? `Yes (every ${regrowthEvery} days)` : "No",
+    regrowth: cropRegrowth ? ` ${regrowthEvery} Days` : "--",
     regrowthEvery: regrowthEvery,
     breakEvenHarvests: breakEvenHarvests.toFixed(2),
     goldPerTilePerDay: profitPerDay.toFixed(2),
@@ -394,6 +392,7 @@ cropForm.addEventListener("submit", function (event) {
   console.log(cropLabels, cropData);
   updateGraph();
   cropForm.reset();
+  console.log("cropform reset!");
   allowRegrowthLive.style.display = "none";
 });
 
@@ -456,7 +455,7 @@ function addCropToTable(data) {
     const growthDays = parseInt(data.cropGrowthDays);
     const regrowthEvery = parseInt(data.cropRegrowthEvery) || 0;
     const origPrice = parseInt(data.cropPrice);
-    const Crop_Price = parseInt(data.cropPrice) * 5; 
+    const Crop_Price = parseInt(data.cropPrice) * 5;
 
     if (isNaN(Seed_Price) || isNaN(growthDays) || isNaN(Crop_Price)) {
       throw new Error("Invalid numeric input");
@@ -532,8 +531,7 @@ function updateGraph() {
   const sortedLabels = combinedData.map((item) => item.label);
   const sortedData = combinedData.map((item) => item.value);
 
-
-window.myChart = new Chart(ctx, {
+  window.myChart = new Chart(ctx, {
     type: "bar",
     data: {
       labels: sortedLabels,
@@ -568,70 +566,112 @@ window.myChart = new Chart(ctx, {
 
           const cropName = sortedLabels[activeIndex];
           const cropValue = sortedData[activeIndex];
-          
-          const crop = cropDetails?.find(detail => detail.name === cropName);
-          
+
+          const crop = cropDetails?.find((detail) => detail.name === cropName);
+
           const tooltipContent = `
             <div style="max-height: 80vh; overflow-y: auto;">
               <div style="font-weight: bold; font-size: 140%; color: rgb(12, 126, 16); margin-bottom: 5px;">
                 ${cropName}
               </div>
               <div style="margin-bottom: 5px;" class="tippyBody">
-                <div>Total Profit: ${crop.totalProfit}g</div>
-                <div>roiPercent: ${crop.roiPercent}</div>
-                <div>ProfitPerDay: ${crop.profitPerDay}g</div>
 
-                <div>Normal Value: ${crop.qualityTiers.normal.value}g</div>
-                <div>Silver Value: ${crop.qualityTiers.silver.value}g</div>
-                <div>Gold Value: ${crop.qualityTiers.gold.value}g</div>
-                <div>Expected Valye: ${crop.qualityTiers.expectedValue}g</div>
-                <div>Adjusted Value: ${crop.qualityTiers.adjustedValue}g</div>
+              <section class="tippySection">
+              <span class="tippyHeading"> Harvest Summary </span>
+                <div> <span> Total Profit: </span> ${crop.totalProfit}g</div>
+                <div> <span>ROI Percent: </span> ${crop.roiPercent}</div>
+                <div> <span>ProfitPerDay: </span> ${crop.profitPerDay}g</div>
+              </section>
 
-                <div>Seed Price: ${crop.seedPrice}g</div>
-                <div>Crop Price: ${crop.cropPrice}g</div>
-                <div>Total Revenue: ${crop.totalRevenue}g</div>
-                <div>Total Cost: ${crop.totalCost}g</div>
+              <section class="tippySection">
+              <span class="tippyHeading"> Crop Quality & value </span>
+                <div> <span>Normal: </span> ${
+                  crop.qualityTiers.normal.value
+                }g</div>
+                <div> <span>Silver: </span> ${
+                  crop.qualityTiers.silver.value
+                }g</div>
+                <div> <span>Gold: </span> ${crop.qualityTiers.gold.value}g</div>
+                <div> <span>Expected AVG: </span> ${
+                  crop.qualityTiers.expectedValue
+                }g</div>
+                <div> <span>Adjusted Value: </span> ${
+                  crop.qualityTiers.adjustedValue
+                }g</div>
+              </section>
 
-                <div>Growth Days: ${crop.growthDays} days</div>
-                <div>Amt. of Harvests: ${crop.harvests}</div>
-                <div>Break Even: ${crop.breakEvenHarvests} harvests</div>
-                <div>Profit Per Day: ${crop.goldPerTilePerDay}g</div>
-                <div>Regrowth Days: ${crop.regrowth}</div>
+              <section class="tippySection">
+              <span class="tippyHeading"> Seed & Sell Prices </span>
+                <div> <span>Seed Cost: </span> ${crop.seedPrice}g</div>
+                <div> <span>Base Crop Price:</span> ${crop.cropPrice}g</div>
+                <div> <span>Total Revenue:</span> ${crop.totalRevenue}g</div>
+                <div> <span>Total Cost:</span> ${crop.totalCost}g</div>
+              </section>
+
+              <section class="tippySection">
+              <span class="tippyHeading"> Growth & Harvest Info </span>
+                <div> <span> Growth Days:</span> ${crop.growthDays} days</div>
+                <div> <span>Harvests Per Season:</span> ${crop.harvests}</div>
+                <div> <span>Break-Even Point:</span> ${
+                  crop.breakEvenHarvests
+                } harvests</div>
+                <div> <span>Regrows Every:</span> ${crop.regrowth}</div>
+              </section>
 
                 
               </div>
-              ${crop ? `
+              ${
+                crop
+                  ? `
                 <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(13, 146, 44, 0.3);">
-                  ${crop.description || crop.additionalInfo || ''}
+                  ${crop.description || crop.additionalInfo || ""}
                 </div>
-              ` : ''}
+              `
+                  : ""
+              }
             </div>
           `;
 
-          
           if (!tippyInstance) {
             tippyInstance = tippy(window.myChart.canvas, {
               content: tooltipContent,
               allowHTML: true,
-              trigger: 'manual',
-              hideOnClick: false,
+              hideOnClick: true,
               followCursor: true,
-              theme: 'custom',
-              placement: 'top',
+              theme: "custom",
+              placement: "top",
               offset: [0, 10],
-              animation: 'fade',
-              duration: [200, 150],
+              animation: "fade",
+              duration: [200, 50],
+              delay: 0,
+              popperOptions: {
+                modifiers: [
+                  {
+                    name: "flip",
+                    options: {
+                      fallbackPlacements: ["top", "bottom", "right", "left"],
+                    },
+                  },
+                  {
+                    name: "preventOverflow",
+                    options: {
+                      padding: 8,
+                      boundary: visualViewport,
+                    },
+                  },
+                ],
+              },
             });
           } else {
             tippyInstance.setContent(tooltipContent);
           }
-          
+
           tippyInstance.show();
         } else {
           if (tippyInstance) {
             tippyInstance.hide();
           }
-          
+
           //Resets all bar colors
           const dataset = window.myChart.data.datasets[0];
           dataset.backgroundColor = sortedLabels.map(() => "rgb(48, 124, 42)");
@@ -657,23 +697,21 @@ window.myChart = new Chart(ctx, {
           display: false,
         },
         tooltip: {
-          enabled: false, // Completely disable Chart.js tooltips
+          enabled: false, 
         },
       },
     },
-});
+  });
 
-//Handle mouse leave to hide tooltip
-window.myChart.canvas.addEventListener('mouseleave', () => {
-  if (tippyInstance) {
+  window.myChart.canvas.addEventListener("mousemove", (event) => {
+    tippyInstance.setProps({ getReferenceClientRect: () => event.target.getBoundingClientRect()});
+    instance.show();
+  });
+
+  window.myChart.canvas.addEventListener("mouseleave", () => {
     tippyInstance.hide();
-  }
-  
-  //Resets bar colors
-  const dataset = window.myChart.data.datasets[0];
-  dataset.backgroundColor = sortedLabels.map(() => "rgb(48, 124, 42)");
-  window.myChart.update();
-});
+  })
+
 }
 
 document.addEventListener("DOMContentLoaded", function () {

@@ -443,27 +443,25 @@ button:focus-visible {
 /* Table styling */
 .tableContent table {
   width: 100%;
-  table-layout: fixed; /* Ensures consistent column widths */
-  border-collapse: collapse; /* Remove cell spacing */
+  table-layout: fixed;
+  border-collapse: collapse;
   text-align: center;
 }
 
-/* Header row - sticky */
 .tableContent thead {
   position: sticky;
   top: 0;
-  background: white; /* Ensure header is visible when scrolling */
+  background: white;
 }
 
 /* Cell alignment */
 .tableContent th,
 .tableContent td {
-  padding: 0px; /* Adjust as needed */
+  padding: 0px;
   text-align: center;
-  width: auto; /* Let table-layout: fixed handle widths */
+  width: auto; 
 }
 
-/* Optional: Add borders for clarity */
 .tableContent th,
 .tableContent td {
   padding: 6px;
@@ -687,8 +685,33 @@ button:focus-visible {
 }
 
 .tippy-box[data-theme~='custom'] .tippy-content .tippyBody {
+  font-size: 0.8rem;
   display: flex;
   flex-direction: column;
+}
+
+.tippy-box[data-theme~='custom'] .tippy-content .tippyBody span {
+  font-weight: 600;
+  margin: 0.2em 0em 0.1em 0em;
+  color: rgb(2, 26, 8);
+}
+
+.tippy-box[data-theme~='custom'] .tippy-content .tippyBody .tippyHeading {
+  display: inline-block;
+  font-weight: 700;
+  margin: 0.2em 0em 0.1em 0em;
+  color: rgb(201, 213, 204);
+  background-color: #137c25;
+  width: 100%;
+  padding: 2px;
+
+  
+}
+
+.tippy-box[data-theme~='custom'] .tippy-content .tippyBody .tippySection {
+  margin: 0.5em 0em 0em 0em;
+  border-radius: 10px;
+  padding: 4px;
 }
 
 /*arrow only, style*/
