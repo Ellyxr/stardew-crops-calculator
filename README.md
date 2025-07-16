@@ -18,10 +18,6 @@ I wanted to share this to other modded gameplay enjoyers, like me, to get the mo
   </p>
 </div>
 
-### Built With
-* [![React][React.js]][React-url]
-* [![JQuery][JQuery.com]][JQuery-url]
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ROADMAP -->
@@ -30,7 +26,7 @@ Upcoming Features
 - [x] Add Basic Calculation
 - [x] Show the highest profit organized from left to right.
 - [x] "Edit" and "Delete" will create a pop-up modal that allows the user to freely edit the contents.
-- [ ] More tooltips for other qualities and types of produce.
+- [x] More tooltips for other qualities and types of produce.
 - [ ] Export list and import said list for better UX.
 - [ ] Auto-complete feature.
 
