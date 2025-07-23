@@ -15,7 +15,7 @@
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
-    "tippy.ks": "^6.3.7",
+    "tippy.js": "^6.3.7",
     "@eslint/js": "^9.21.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",

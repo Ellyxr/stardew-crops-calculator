@@ -22,6 +22,7 @@ TODO:
 
 let tippyInstance = null;
 
+
 const buttonField = document.getElementById("buttonField");
 document.getElementById("crop-formField").style.display = "none";
 
@@ -360,9 +361,45 @@ function calculateCropStats({
   };
 }
 
+// Always use this to add a crop
+function addCrop(stats) {
+  cropDetails.push(stats);
+  updateTable();
+  updateGraph();
+}
+
+// Update table from cropDetails
+function updateTable() {
+  cropListTableBody.innerHTML = "";
+  cropDetails.forEach(stats => {
+    const newRow = document.createElement("tr");
+    newRow.innerHTML = `
+      <td>${stats.name}</td>
+      <td>${stats.seedPrice}</td>
+      <td>${stats.cropPrice}</td>
+      <td>${stats.growthDays}</td>
+      <td>${stats.regrowthEvery > 0 ? "Yes" : "No"}</td>
+      <td>${stats.regrowthEvery > 0 ? stats.regrowthEvery : "-"}</td>
+    `;
+    cropListTableBody.appendChild(newRow);
+  });
+
+  const noCropsMsg = document.getElementById("no-crops-yet");
+  if (noCropsMsg) {
+    noCropsMsg.style.display = cropDetails.length === 0 ? "block" : 
+"none";
+  }
+}
+
+// Unified handler for both forms
+function handleCropSubmission(data) {
+  const stats = calculateCropStats(data);
+  addCrop(stats);
+}
+
+// Multiple field form
 cropForm.addEventListener("submit", function (event) {
   event.preventDefault();
-
   let cropName = document.getElementById("crop-name").value;
   let seedPrice = document.getElementById("seed-price").value;
   let cropPrice = document.getElementById("crop-price").value;
@@ -375,43 +412,16 @@ cropForm.addEventListener("submit", function (event) {
     return;
   }
 
-  const stats = calculateCropStats({
-    cropName,
-    seedPrice,
-    cropPrice,
-    cropGrowthDays,
-    cropRegrowth,
-    cropRegrowthEvery
+  handleCropSubmission({
+    cropName, seedPrice, cropPrice, cropGrowthDays, cropRegrowth, cropRegrowthEvery
   });
-
-  cropDetails.push(stats);
-
-  // Update table
-  document.getElementById("no-crops-yet").style.display = "none";
-  const newRow = document.createElement("tr");
-  newRow.innerHTML = `
-    <td>${stats.name}</td>
-    <td>${stats.seedPrice}</td>
-    <td>${stats.cropPrice}</td>
-    <td>${stats.growthDays}</td>
-    <td>${cropRegrowth ? "Yes" : "No"}</td>
-    <td>${cropRegrowth ? stats.regrowthEvery : "-"}</td>
-  `;
-  cropListTableBody.appendChild(newRow);
-
-  cropLabels.push(stats.name);
-  cropData.push(parseFloat(stats.totalProfit));
-
-  updateGraph();
   cropForm.reset();
   allowRegrowthLive.style.display = "none";
 });
 
-//single Field
+// Single field
 document.getElementById("crop-submit").addEventListener("click", function (e) {
   e.preventDefault();
-
-  console.log("im click");
 
   const bulkInput = document
     .getElementById("crop-singleTextField")
@@ -445,13 +455,8 @@ document.getElementById("crop-submit").addEventListener("click", function (e) {
       const regrowthEvery = regrowth ? parseInt(parts[4]) : 0;
       
 
-      addCropToTable({
-        cropName,
-        seedPrice: seedPrice.toString(),
-        cropPrice: cropPrice.toString(),
-        cropGrowthDays: growthDays.toString(),
-        cropRegrowth: regrowth,
-        cropRegrowthEvery: regrowthEvery.toString(),
+      handleCropSubmission({
+        cropName, seedPrice, cropPrice, cropGrowthDays: growthDays, cropRegrowth: regrowth, cropRegrowthEvery: regrowthEvery
       });
     } catch (error) {
       console.error("Error processing entry:", entry, error);
@@ -485,41 +490,6 @@ document.getElementById('paste-submit').addEventListener('click', function() {
   }
 });
 
-function addCropToTable(data) {
-  try {
-    const stats = calculateCropStats({
-      cropName: data.cropName,
-      seedPrice: data.seedPrice,
-      cropPrice: data.cropPrice,
-      cropGrowthDays: data.cropGrowthDays,
-      cropRegrowth: data.cropRegrowth,
-      cropRegrowthEvery: data.cropRegrowthEvery
-    });
-
-    cropDetails.push(stats);
-
-    document.getElementById("no-crops-yet").style.display = "none";
-    const newRow = document.createElement("tr");
-    newRow.innerHTML = `
-      <td>${stats.name}</td>
-      <td>${stats.seedPrice}</td>
-      <td>${stats.cropPrice}</td>
-      <td>${stats.growthDays}</td>
-      <td>${data.cropRegrowth ? "Yes" : "No"}</td>
-      <td>${data.cropRegrowth ? stats.regrowthEvery : "-"}</td>
-    `;
-    cropListTableBody.appendChild(newRow);
-
-    cropLabels.push(stats.name);
-    cropData.push(parseFloat(stats.totalProfit));
-
-    updateGraph();
-  } catch (error) {
-    console.error("Error adding crop to table:", error);
-    toastPopUp();
-  }
-}
-
 function initializeChart() {
   if (window.myChart) {
     window.myChart.destroy();
@@ -539,19 +509,20 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function updateGraph() {
-  if (window.myChart) {
-    window.myChart.destroy();
-  }
+  if (window.myChart) window.myChart.destroy();
 
-  const combinedData = cropLabels.map((label, index) => ({
-    label: label,
-    value: cropData[index],
+  // Build from cropDetails
+  const combinedData = cropDetails.map(detail => ({
+    label: detail.name,
+    value: parseFloat(detail.totalProfit),
+    detail
   }));
 
   combinedData.sort((a, b) => b.value - a.value);
 
-  const sortedLabels = combinedData.map((item) => item.label);
-  const sortedData = combinedData.map((item) => item.value);
+  const sortedLabels = combinedData.map(item => item.label);
+  const sortedData = combinedData.map(item => item.value);
+  const sortedDetails = combinedData.map(item => item.detail);
 
   window.myChart = new Chart(ctx, {
     type: "bar",
