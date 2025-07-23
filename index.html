@@ -13,7 +13,7 @@
 
   <title> Stardew Crops Calculator</title>
   <link rel="stylesheet" href="src/index.css">
-  <!-- Add these to your HTML head -->
+
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
@@ -49,7 +49,7 @@
 
                 <div class="form-group-row">
                 <small> [Strawberry 100 8 no 9 120,] </small>
-                <button> Paste ↓ </button>
+                <button id="paste-submit"> Paste ↓ </button>
                 </div>
                 
                 <textarea type="text" id="crop-singleTextField" name="cropName" placeholder="strawberry 100 8 no 0 120"
@@ -126,11 +126,13 @@
               <div class="graphButtonField">
                 <button class="crop-fieldButton graphField" id="advancedSettings">Advanced Settings</button> <br />
                 <div class="graphRowField">
+                  <div>
                   <button> Raw Crops </button>
                   <button> Wine </button>
                   <button> Juice </button>
                   <button> Jelly </button>
                   <button> Dehydrated </button>
+                  </div>
                 </div>
               </div>
             </div>
