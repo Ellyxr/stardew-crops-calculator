@@ -159,83 +159,80 @@ tableContentEdit.addEventListener("click", function () {
   const rows = modalTableBody.querySelectorAll("tr");
 
   if (isEditing) {
+    // Disable editing for all cells
     rows.forEach((row) =>
       row.querySelectorAll("td").forEach((cell) => {
-        cell.contentEditable = "false";
+        cell.contentEditable = "false"; // Disable editing
       })
     );
 
+    // Clear old arrays
     cropLabels.length = 0;
     cropData.length = 0;
     cropDetails.length = 0;
 
+    // For each row in the modal table
     rows.forEach((row) => {
       const cells = row.querySelectorAll("td");
+      // Get values from the edited table
       const name = cells[0].textContent.trim();
-      const seedPrice = parseFloat(cells[1].textContent.trim());
-      const cropPrice = parseFloat(cells[2].textContent.trim());
-      const growthDays = parseInt(cells[3].textContent.trim());
+      const seedPrice = cells[1].textContent.trim();
+      const cropPrice = cells[2].textContent.trim();
+      const growthDays = cells[3].textContent.trim();
       const regrowth = cells[4].textContent.trim().toLowerCase() === "yes";
-      const regrowthEvery = regrowth
-        ? parseInt(cells[5].textContent.trim())
-        : 0;
+      const regrowthEvery = regrowth ? cells[5].textContent.trim() : 0;
 
-      //recalculate harvests & profits
-      const seasonDuration = 28;
-      let harvests = 1;
-      if (regrowth && regrowthEvery > 0) {
-        harvests += Math.floor((seasonDuration - growthDays) / regrowthEvery);
-      }
-      const profitPerHarvest = cropPrice - seedPrice;
-      const normalTotalProfit = profitPerHarvest * harvests;
-      const profitPerSeed = normalTotalProfit;
-      const profitPerDay = normalTotalProfit / (regrowth ? 28 : growthDays);
-
-      //Push into graph arrays
-      cropLabels.push(name);
-      cropData.push(profitPerSeed);
-
-      cropDetails.push({
-        name,
-        seedPrice,
-        cropPrice,
-        duration: growthDays,
-        harvests,
-        regrowth: regrowth ? "Yes" : "No",
-        regrowthEvery,
-        normalTotalProfit,
-        profitPerSeed,
-        profitPerDay,
+      // Recalculate all stats using your helper function
+      const stats = calculateCropStats({
+        cropName: name,
+        seedPrice: seedPrice,
+        cropPrice: cropPrice,
+        cropGrowthDays: growthDays,
+        cropRegrowth: regrowth,
+        cropRegrowthEvery: regrowthEvery,
       });
+
+      // Add to main data arrays
+      cropDetails.push(stats); // Main source of truth
     });
 
-    const cropListTableBody = document.querySelector("#crop-list-table tbody");
-    cropListTableBody.innerHTML = ""; // clear
-
-    cropDetails.forEach((detail) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${detail.name}</td>
-        <td>${detail.seedPrice}</td>
-        <td>${detail.cropPrice}</td>
-        <td>${detail.duration}</td>
-        <td>${detail.regrowth}</td>
-        <td>${detail.regrowthEvery || "-"}</td>
+    // Update the main table in the UI
+    cropListTableBody.innerHTML = ""; // Clear table
+    cropDetails.forEach((stats) => {
+      const newRow = document.createElement("tr");
+      newRow.innerHTML = `
+        <td>${stats.name}</td>
+        <td>${stats.seedPrice}</td>
+        <td>${stats.cropPrice}</td>
+        <td>${stats.growthDays}</td>
+        <td>${stats.regrowthEvery > 0 ? "Yes" : "No"}</td>
+        <td>${stats.regrowthEvery > 0 ? stats.regrowthEvery : "-"}</td>
       `;
-      cropListTableBody.appendChild(tr);
+      cropListTableBody.appendChild(newRow);
     });
 
+    // Hide or show "no crops yet" message
+    const noCropsMsg = document.getElementById("no-crops-yet");
+    if (noCropsMsg) {
+      noCropsMsg.style.display = cropDetails.length === 0 ? "block" : "none";
+    }
+
+    // Update the graph and tooltips
     updateGraph();
+
+    // Change button text back to "Edit"
     tableContentEdit.textContent = "Edit";
     window.myChart.update();
     console.log("graph updated!");
   } else {
+    // Enable editing for all cells
     rows.forEach((row) => {
       row.querySelectorAll("td").forEach((cell) => {
-        cell.contentEditable = "true";
+        cell.contentEditable = "true"; // Enable editing
       });
     });
 
+    // Change button text to "Save Edit"
     tableContentEdit.textContent = "Save Edit";
   }
 });
@@ -444,15 +441,15 @@ document.getElementById("crop-submit").addEventListener("click", function (e) {
       return;
     }
 
-    try {
+    try { //*[#] indicates order of the parts
       const cropName = parts[0].replace(/-/g, " ");
       const seedPrice = parseFloat(parts[1]);
       const cropPrice =
-        parts.length === 6 ? parseInt(parts[5]) : parseInt(parts[4]);
-      const growthDays = parseInt(parts[2]);
+        parts.length === 6 ? parseInt(parts[2]) : parseInt(parts[5]);
+      const growthDays = parseInt(parts[3]);
       const regrowth =
-        parts[3].toLowerCase() === "yes" || parts[3].toLowerCase() === "y";
-      const regrowthEvery = regrowth ? parseInt(parts[4]) : 0;
+        parts[5].toLowerCase() === "yes" || parts[5].toLowerCase() === "y";
+      const regrowthEvery = regrowth ? parseInt(parts[5]) : 0;
       
 
       handleCropSubmission({
