@@ -1,7 +1,7 @@
 {
   "headers": [
     {
-      "source": "/logic/cropsHandler.js",
+      "source": "/cropsHandler.js",
       "headers": [
         {
           "key": "Cache-Control",
