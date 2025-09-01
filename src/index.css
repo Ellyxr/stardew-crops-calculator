@@ -816,17 +816,22 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: #eeeeee;
   }
   a:hover {
     color: #747bff;
   }
   button {
     background-color: #03a007;
-    color: #ffffff;
+    color: #eeeeee;
   }
 
   button:hover {
     background-color: #65d10c;
+  }
+
+  input, textarea {
+    background-color: #eeeeee;
+    border-color: transparent;
   }
 }
