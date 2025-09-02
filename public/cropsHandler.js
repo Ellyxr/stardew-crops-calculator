@@ -483,7 +483,7 @@ document.getElementById('paste-submit').addEventListener('click', function() {
       button.textContent = 'Paste ↓';
       button.style.backgroundColor = '';
       button.disabled = false;
-    }, 900);
+    }, 100);
   }
 });
 

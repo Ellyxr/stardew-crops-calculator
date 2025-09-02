@@ -800,9 +800,10 @@ button:focus-visible {
 
   /* */
   .Calculator-container {
-    max-height: 28rem;
+
     flex-basis: 1rem;
     max-width: 100%;
+   
   }
 
   #crop-form {
@@ -812,15 +813,26 @@ button:focus-visible {
     margin-bottom: 1em;
   }
 
-  #allowRegrowthLive {
-    width: 80%;
-    font-size: 0.8rem;
-    margin-left: auto ;
-    margin-bottom: 1em;
+  .form-group {
+    flex-direction: column;
+    
   }
 
-  #allowRegrowthLive input {
-    width: 30%;
+  .form-group input {
+    width: 100%;
+  }
+
+   #Regrowth_Style {
+    flex-direction: row;
+  }
+
+  #crop-submit {
+    margin-top: 1em;
+  }
+
+  /* */
+  #crop-singleTextField {
+    font-size: 1em;
   }
 
   #crop-list-table {
