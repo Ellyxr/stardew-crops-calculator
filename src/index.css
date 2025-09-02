@@ -835,10 +835,20 @@ button:focus-visible {
     font-size: 1em;
   }
 
+  /* * graph */
+  body.graph-container {
+    overflow-x: none;
+    overflow: none;
+  }
+  /* */
   #crop-list-table {
-    width: 40%;
+    overflow-x: scroll;
+    max-width: 1%;
+    width: 10vw !important;
     max-height: 28rem;
-    border: 1px solid red;
+    border-collapse: collapse;
+    -webkit-overflow-scrolling: touch;
+ 
   }
 
   .list-container {
