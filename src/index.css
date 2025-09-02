@@ -73,7 +73,6 @@ button:focus-visible {
 
 .changeLog {
   font-size: 0.9em;
-  width: 12%;
   margin: 0em 0em 0em 1em;
   background-color: #0b8e0f;
 }
@@ -732,6 +731,30 @@ button:focus-visible {
   border-right-color: rgba(13, 146, 44, 0.8);
 }
 
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #eeeeee;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #03a007;
+    color: #eeeeee;
+  }
+
+  button:hover {
+    background-color: #65d10c;
+  }
+
+  input, textarea {
+    background-color: #eeeeee;
+    border-color: transparent;
+  }
+}
+
 @media (max-width: 768px) {
   body {
     overflow-y: scroll;
@@ -741,6 +764,7 @@ button:focus-visible {
   }
 
   .Main-container {
+    
     max-width: fit-content;
     width: 100vw;
     height: 90%;
@@ -753,11 +777,23 @@ button:focus-visible {
     width: 80%;
     height: 90vh;
   }
+
   .header {
+    top: 0;
+    margin-bottom: 6rem;
     height: 20%;
+    width: 80vw;
     margin-bottom: 0px;
+  
   }
+
+  .changeLog {
+    padding: 1em 1em;
+    word-wrap: break-word;
+  }
+
   .content-container {
+    
     margin-top: 0px;
     flex-wrap: wrap;
   }
@@ -799,39 +835,9 @@ button:focus-visible {
     height: 90%;
   }
 
-  .header {
-    position: sticky;
-    top: 0;
-    margin-bottom: 6rem;
-    width: 100vw;
-    backdrop-filter: blur(5px);
-  }
 
   .content-container {
     width: 100%;
     flex-direction: column;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #eeeeee;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #03a007;
-    color: #eeeeee;
-  }
-
-  button:hover {
-    background-color: #65d10c;
-  }
-
-  input, textarea {
-    background-color: #eeeeee;
-    border-color: transparent;
   }
 }
