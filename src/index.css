@@ -13,6 +13,25 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+::-webkit-scrollbar {
+  width: 0.8em;
+  height: 1em; 
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #03a007;
+
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f5bd2d;
+}
+
 a {
   font-weight: 500;
   color: #646cff;

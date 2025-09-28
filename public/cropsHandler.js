@@ -40,6 +40,29 @@ buttonField.addEventListener("click", function () {
   }
 });
 
+//Press tab to focus on single or multiple field input
+document.addEventListener("keydown", function (event) {
+  const multipleFieldsForm = document.getElementById("crop-form");
+  const cropNameInput = document.getElementById("crop-name");
+  const singleFieldForm = document.getElementById("crop-formField");
+  const singleFieldInput = document.getElementById("crop-singleTextField");
+
+  if (
+    multipleFieldsForm &&
+    multipleFieldsForm.style.display !== "none" &&
+    cropNameInput !== document.activeElement && 
+    cropNameInput.value.trim === "" ||
+    singleFieldForm &&
+    singleFieldForm.style.display !== "none" &&
+    singleFieldInput !== document.activeElement &&
+    singleFieldInput.value.trim === ""
+  ) {
+    event.preventDefault();
+    cropNameInput.focus();
+    singleFieldInput.focus();
+  }
+})
+
 function modalPopUp() {
   document.getElementById("modalPopUp").style.display = "block";
   populateModalTable();
