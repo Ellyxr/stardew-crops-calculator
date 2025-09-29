@@ -27,6 +27,7 @@ Upcoming Features
 - [x] Show the highest profit organized from left to right.
 - [x] "Edit" and "Delete" will create a pop-up modal that allows the user to freely edit the contents.
 - [x] More tooltips for other qualities and types of produce.
+- [ ] Add Advanced Settings.
 - [ ] Export list and import said list for better UX.
 - [ ] Auto-complete feature.
 

@@ -1,12 +1,7 @@
 /*
 TODO:
 * Feature
-> x make graph highest profit is organized from left to right
-> add more tooltips for other qualities and type of produce
-> x edit will create a pop up modal that allows the user to freely edit the contents
-> x delete will also create a pop up model, preferably in the same modal as delete
 > allow user to export a list and import said list for better ux 
-> create an array for auto complete feature
 
 
 * Aesthetic:
@@ -22,7 +17,29 @@ TODO:
 
 let tippyInstance = null;
 
+/* 
+ ! Variables 
+ */
 
+ /* 
+ * Advanced Settings visibility 
+ */
+let advancedSettingsForm = document.getElementById("advancedSettingsForm"); 
+document.getElementById("advancedSettingsForm").style.display = "none";
+
+document.getElementById("advancedSettingsButton").addEventListener("click", function () {
+  if (advancedSettingsForm.style.display === "none" || !advancedSettingsForm.style.display) {
+    advancedSettingsForm.style.display = "block";
+    this.textContent = "Advanced Settings ▲";
+  } else {
+    advancedSettingsForm.style.display = "none";
+    this.textContent = "Advanced Settings ▼";
+  }   
+});
+
+  /* 
+ * Crop Fields Form visibility 
+ */
 const buttonField = document.getElementById("buttonField");
 document.getElementById("crop-formField").style.display = "none";
 

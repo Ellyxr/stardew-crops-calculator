@@ -244,6 +244,11 @@ button:focus-visible {
 
 /*END OF CONTAINERS*/
 
+ #paste-submit {
+    padding: 0.4em 0.8em;
+    font-size: 1em;
+  }
+
 .list-container-form table {
   width: 100%;
   border-collapse: collapse;
