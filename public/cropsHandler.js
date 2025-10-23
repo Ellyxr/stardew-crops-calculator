@@ -2,16 +2,13 @@
 TODO:
 * Feature
 > allow user to export a list and import said list for better ux 
-
+- [ ] add comparison between crops (like, crops vs crops)
+- [ ] add the changelog
+- [ ] fix footer, add kofi
+- [ ] in the changelog, at the top, add a suggestion box
 
 * Aesthetic:
-> get the time and if its daytime at the user place, change the bg to daytime
-> change the bg to gif where the stars are twinkling or a comet comes by or there are birds flying (day)
-
-* Changelog
-> add changelogs and kofi for donation
-> in the changelog, at the top, add a suggestion box
-> in the changelog, add the other todo feature
+- [ ] get the time and if its daytime at the user place, change the bg to daytime
 
 */
 
@@ -21,24 +18,61 @@ let tippyInstance = null;
  ! Variables 
  */
 
- /* 
- * Advanced Settings visibility 
+/*
+ * Advanced Settings visibility
  */
-let advancedSettingsForm = document.getElementById("advancedSettingsForm"); 
+let advancedSettingsForm = document.getElementById("advancedSettingsForm");
 document.getElementById("advancedSettingsForm").style.display = "none";
 
-document.getElementById("advancedSettingsButton").addEventListener("click", function () {
-  if (advancedSettingsForm.style.display === "none" || !advancedSettingsForm.style.display) {
-    advancedSettingsForm.style.display = "block";
-    this.textContent = "Advanced Settings ▲";
-  } else {
-    advancedSettingsForm.style.display = "none";
-    this.textContent = "Advanced Settings ▼";
-  }   
+document
+  .getElementById("advancedSettingsButton")
+  .addEventListener("click", function () {
+    if (
+      advancedSettingsForm.style.display === "none" ||
+      !advancedSettingsForm.style.display
+    ) {
+      advancedSettingsForm.style.display = "block";
+      this.textContent = "Advanced Settings ▲";
+    } else {
+      advancedSettingsForm.style.display = "none";
+      this.textContent = "Advanced Settings ▼";
+    }
+  });
+
+
+  /*
+ * Press tab to focus on single or multiple field input
+ */
+document.addEventListener("keydown", function (event) {
+  if (event.key !== "Tab") return;
+  const multipleFieldsForm = document.getElementById("crop-form");
+  const cropNameInput = document.getElementById("crop-name");
+  const singleFieldForm = document.getElementById("crop-formField");
+  const singleFieldInput = document.getElementById("crop-singleTextField");
+
+  if (
+    multipleFieldsForm &&
+    multipleFieldsForm.style.display !== "none" &&
+    document.activeElement !== cropNameInput &&
+    cropNameInput.value.trim() === ""
+  ) {
+    event.preventDefault();
+    cropNameInput.focus();
+    return;
+  }
+  if (
+    singleFieldForm &&
+    singleFieldForm.style.display !== "none" &&
+    document.activeElement !== singleFieldInput &&
+    singleFieldInput.value.trim() === ""
+  ) {
+    event.preventDefault();
+    singleFieldInput.focus();
+  }
 });
 
-  /* 
- * Crop Fields Form visibility 
+/*
+ * Crop Fields Form visibility
  */
 const buttonField = document.getElementById("buttonField");
 document.getElementById("crop-formField").style.display = "none";
@@ -57,29 +91,24 @@ buttonField.addEventListener("click", function () {
   }
 });
 
-//Press tab to focus on single or multiple field input
-document.addEventListener("keydown", function (event) {
-  const multipleFieldsForm = document.getElementById("crop-form");
-  const cropNameInput = document.getElementById("crop-name");
-  const singleFieldForm = document.getElementById("crop-formField");
-  const singleFieldInput = document.getElementById("crop-singleTextField");
+/*
+ * change log modal visibility
+*/
+const changeLogModal = document.getElementById("changeLogModal");
+const changeLogButton = document.getElementById("changeLogButton");
+document.getElementById("changeLogModal").style.display = "none";
 
-  if (
-    multipleFieldsForm &&
-    multipleFieldsForm.style.display !== "none" &&
-    cropNameInput !== document.activeElement && 
-    cropNameInput.value.trim === "" ||
-    singleFieldForm &&
-    singleFieldForm.style.display !== "none" &&
-    singleFieldInput !== document.activeElement &&
-    singleFieldInput.value.trim === ""
-  ) {
-    event.preventDefault();
-    cropNameInput.focus();
-    singleFieldInput.focus();
+changeLogButton.addEventListener("click", function() {
+  if (changeLogModal.style.display === "none") {
+  document.getElementById("changeLogModal").style.display = "block";
+  } else {
+    document.getElementById("changeLogModal").style.display = "none";
   }
-})
+});
 
+    /*
+ * Edit Modal visibility
+ */
 function modalPopUp() {
   document.getElementById("modalPopUp").style.display = "block";
   populateModalTable();
@@ -87,14 +116,17 @@ function modalPopUp() {
 
 function modalPopDown() {
   document.getElementById("modalPopUp").style.display = "none";
+  document.getElementById("changeLogModal").style.display = "none";
 }
 
 document.getElementById("modalPopUp").style.display = "none";
 document.getElementById("modalPopDown").addEventListener("click", modalPopDown);
+document.getElementById("modalClose").addEventListener("click", modalPopDown);
 
 document
   .getElementById("tableContent-cancel")
   .addEventListener("click", modalPopDown);
+
 
 function populateModalTable() {
   const originalTableBody = document.querySelector("#crop-list-table tbody");
@@ -139,55 +171,83 @@ let changesMade = false;
 //New function to get fresh data from the table
 function refreshGraphData() {
   const rows = document.querySelectorAll("#crop-list-table tbody tr");
-  cropLabels = [];
-  cropData = [];
-  cropDetails = [];
+  const newDetails = [];
 
-  //Repopulates from current table state
   rows.forEach((row) => {
-    cropLabels.push(row.cells[0].textContent);
-    cropData.push(parseFloat(row.cells[1].textContent));
+    const name = row.cells[0].textContent.trim();
+    const seedPrice = row.cells[1].textContent.trim();
+    const cropPrice = row.cells[2].textContent.trim();
+    const growthDays = row.cells[3].textContent.trim();
+    const regrowth = row.cells[4].textContent.trim().toLowerCase() === "yes";
+    const regrowthEvery = regrowth ? row.cells[5].textContent.trim() : "0";
 
-    cropDetails.push({
-      name: row.cells[0].textContent,
-      quantity: row.cells[2].textContent,
-      profitPerSeed: row.cells[3].textContent,
+    const stats = calculateCropStats({
+      cropName: name,
+      seedPrice: seedPrice,
+      cropPrice: cropPrice,
+      cropGrowthDays: growthDays,
+      cropRegrowth: regrowth,
+      cropRegrowthEvery: regrowthEvery,
     });
+
+    newDetails.push(stats);
   });
+
+  cropDetails = newDetails;
+  cropLabels = cropDetails.map((d) => d.name);
+  cropData = cropDetails.map((d) => parseFloat(d.totalProfit) || 0);
 }
 
-// *Updated delete handler
 function deleteHandler() {
   const selectedRows = document.querySelectorAll(
     "#modal-crop-table-body .selected"
   );
 
-  if (selectedRows.length > 0) {
-    selectedRows.forEach((modalRow) => {
-      const cropName = modalRow.cells[0].textContent;
-      const cropValue = parseFloat(modalRow.cells[1].textContent);
-
-      modalRow.remove();
-
-      const originalRows = document.querySelectorAll(
-        "#crop-list-table tbody tr"
-      );
-      originalRows.forEach((originalRow) => {
-        if (
-          originalRow.cells[0].textContent === cropName &&
-          parseFloat(originalRow.cells[1].textContent) === cropValue
-        ) {
-          originalRow.remove();
-        }
-      });
-    });
-
-    refreshGraphData();
-
-    updateGraph();
-  } else {
+  if (selectedRows.length === 0) {
     alert("Please select at least one crop to delete!");
+    return;
   }
+
+  selectedRows.forEach((modalRow) => {
+    const name = modalRow.cells[0].textContent.trim();
+    const seedPriceStr = modalRow.cells[1].textContent.trim();
+    const cropPriceStr = modalRow.cells[2].textContent.trim();
+
+    // remove the row from the modal
+    modalRow.remove();
+
+    // remove the first matching row from the main table
+    const originalRows = Array.from(
+      document.querySelectorAll("#crop-list-table tbody tr")
+    );
+    const origIndex = originalRows.findIndex((r) => {
+      const rn = r.cells[0].textContent.trim();
+      const rs = r.cells[1].textContent.trim();
+      const rp = r.cells[2].textContent.trim();
+      return rn === name && rs === seedPriceStr && rp === cropPriceStr;
+    });
+    if (origIndex !== -1) {
+      originalRows[origIndex].remove();
+    }
+
+    // remove matching item from cropDetails (first match)
+    const cdIndex = cropDetails.findIndex((d) => {
+      return (
+        String(d.name).trim() === name &&
+        String(d.seedPrice).trim() === seedPriceStr &&
+        String(d.cropPrice).trim() === cropPriceStr
+      );
+    });
+    if (cdIndex !== -1) {
+      cropDetails.splice(cdIndex, 1);
+    }
+  });
+
+  // rebuild derived arrays and UI from the remaining table/cropDetails
+  refreshGraphData();
+  updateTable();
+  updateNoCropsUI();
+  updateGraph();
 }
 
 //*Add event listener for the edit button
@@ -251,11 +311,7 @@ tableContentEdit.addEventListener("click", function () {
       cropListTableBody.appendChild(newRow);
     });
 
-    // Hide or show "no crops yet" message
-    const noCropsMsg = document.getElementById("no-crops-yet");
-    if (noCropsMsg) {
-      noCropsMsg.style.display = cropDetails.length === 0 ? "block" : "none";
-    }
+    updateNoCropsUI();
 
     // Update the graph and tooltips
     updateGraph();
@@ -291,13 +347,37 @@ function saveChanges() {
   }
 }
 
-function toastPopUp() {
-  let toastPopUp = document.getElementById("Toast");
-  toastPopUp.className = "show";
-  setTimeout(function () {
-    toastPopUp.className = toastPopUp.className.replace("show", "");
-  }, 3000);
+/* 
+* TOAST HANDLERS
+*/
+/*
+* Visibility 
+*/
+document.getElementById("Toast_EmptySubmit").style.display = "none";
+document.getElementById("Toast_GraphUpdated").style.display = "none";
+
+/*
+* TOAST CONTAINER POSITIONING 
+*/
+const TOAST_CONTAINER_ID = "toast-container";
+function ensureToastContainer() {
+  let c = document.getElementById(TOAST_CONTAINER_ID);
+  if (!c) {
+    c = document.createElement("div");
+    c.id = TOAST_CONTAINER_ID;
+    c.style.position = "fixed";
+    c.style.top = "1.8rem";
+    c.style.left = "50%";
+    c.style.transform = "translateX(-50%)";
+    c.style.display = "flex";
+    c.style.flexDirection = "column";
+    c.style.gap = "0.5rem";
+    c.style.zIndex = "9999";
+    document.body.appendChild(c);
+  }
+  return c;
 }
+
 
 // Multiple Fields
 document.addEventListener("DOMContentLoaded", function () {
@@ -331,14 +411,14 @@ function calculateCropStats({
   cropPrice,
   cropGrowthDays,
   cropRegrowth,
-  cropRegrowthEvery
+  cropRegrowthEvery,
 }) {
   const Seed_Price = parseFloat(seedPrice);
   const growthDays = parseInt(cropGrowthDays);
   const regrowthEvery = parseInt(cropRegrowthEvery) || 0;
   const Crop_Price = parseInt(cropPrice);
   const cropQualityValues = {
-    normal: Crop_Price, 
+    normal: Crop_Price,
     silver: Crop_Price * 1.25,
     gold: Crop_Price * 1.5,
   };
@@ -408,7 +488,7 @@ function addCrop(stats) {
 // Update table from cropDetails
 function updateTable() {
   cropListTableBody.innerHTML = "";
-  cropDetails.forEach(stats => {
+  cropDetails.forEach((stats) => {
     const newRow = document.createElement("tr");
     newRow.innerHTML = `
       <td>${stats.name}</td>
@@ -423,9 +503,9 @@ function updateTable() {
 
   const noCropsMsg = document.getElementById("no-crops-yet");
   if (noCropsMsg) {
-    noCropsMsg.style.display = cropDetails.length === 0 ? "block" : 
-"none";
+    noCropsMsg.style.display = cropDetails.length === 0 ? "block" : "none";
   }
+  updateNoCropsUI();
 }
 
 // Unified handler for both forms
@@ -433,6 +513,24 @@ function handleCropSubmission(data) {
   const stats = calculateCropStats(data);
   addCrop(stats);
 }
+
+// ...existing code...
+function refreshGraph() {
+  const refreshBtn =
+    document.getElementById("Chart_RefreshGraph") ||
+    document.getElementById("Refresh"); // support either id
+
+  refreshBtn.addEventListener("click", function () {
+    refreshGraphData();
+    updateTable();
+    updateNoCropsUI();
+    updateGraph();
+    showToast("Graph Updated", { id: "Toast_GraphUpdated", type: "success", duration: 4000 });
+  });
+}
+// ensure listener is registered after DOM is ready
+document.addEventListener("DOMContentLoaded", refreshGraph);
+// ...existing code...
 
 // Multiple field form
 cropForm.addEventListener("submit", function (event) {
@@ -445,17 +543,23 @@ cropForm.addEventListener("submit", function (event) {
   let cropRegrowthEvery = document.getElementById("crop-regrowth-every").value;
 
   if (!cropName || !seedPrice || !cropGrowthDays || !cropPrice) {
-    toastPopUp();
+    showToast("Please fill required fields", { id: "Toast_EmptySubmit", type: "error", duration: 4000 });
+
     return;
   }
 
   handleCropSubmission({
-    cropName, seedPrice, cropPrice, cropGrowthDays, cropRegrowth, cropRegrowthEvery
+    cropName,
+    seedPrice,
+    cropPrice,
+    cropGrowthDays,
+    cropRegrowth,
+    cropRegrowthEvery,
   });
   cropForm.reset();
   allowRegrowthLive.style.display = "none";
 });
-
+ 
 // Single field
 document.getElementById("crop-submit").addEventListener("click", function (e) {
   e.preventDefault();
@@ -464,7 +568,7 @@ document.getElementById("crop-submit").addEventListener("click", function (e) {
     .getElementById("crop-singleTextField")
     .value.trim();
   if (!bulkInput) {
-    toastPopUp();
+    showToast("Please fill required fields", { id: "Toast_EmptySubmit", type: "error", duration: 4000 });
     return;
   }
 
@@ -481,7 +585,8 @@ document.getElementById("crop-submit").addEventListener("click", function (e) {
       return;
     }
 
-    try { //*[#] indicates order of the parts
+    try {
+      //*[#] indicates order of the parts
       const cropName = parts[0].replace(/-/g, " ");
       const seedPrice = parseFloat(parts[1]);
       const cropPrice =
@@ -490,10 +595,14 @@ document.getElementById("crop-submit").addEventListener("click", function (e) {
       const regrowth =
         parts[5].toLowerCase() === "yes" || parts[5].toLowerCase() === "y";
       const regrowthEvery = regrowth ? parseInt(parts[5]) : 0;
-      
 
       handleCropSubmission({
-        cropName, seedPrice, cropPrice, cropGrowthDays: growthDays, cropRegrowth: regrowth, cropRegrowthEvery: regrowthEvery
+        cropName,
+        seedPrice,
+        cropPrice,
+        cropGrowthDays: growthDays,
+        cropRegrowth: regrowth,
+        cropRegrowthEvery: regrowthEvery,
       });
     } catch (error) {
       console.error("Error processing entry:", entry, error);
@@ -503,25 +612,24 @@ document.getElementById("crop-submit").addEventListener("click", function (e) {
   document.getElementById("crop-singleTextField").value = "";
 });
 
-document.getElementById('paste-submit').addEventListener('click', function() {
-  
-  const small = this.parentElement.querySelector('small');
-  const textarea = document.getElementById('crop-singleTextField');
+document.getElementById("paste-submit").addEventListener("click", function () {
+  const small = this.parentElement.querySelector("small");
+  const textarea = document.getElementById("crop-singleTextField");
   const button = this;
   button.disabled = true;
-  
+
   if (small && textarea) {
-    let content = small.textContent.trim().replace(/^\[|\]$/g, '');
-    content += '\n'; //creates new line
+    let content = small.textContent.trim().replace(/^\[|\]$/g, "");
+    content += "\n"; //creates new line
     textarea.value += content; //adds content to textarea
     textarea.focus(); //focuses on textarea
-    
-    button.textContent = '✓';
-    button.style.backgroundColor = '#4CAF50';
-    
+
+    button.textContent = "✓";
+    button.style.backgroundColor = "#4CAF50";
+
     setTimeout(() => {
-      button.textContent = 'Paste ↓';
-      button.style.backgroundColor = '';
+      button.textContent = "Paste ▼";
+      button.style.backgroundColor = "";
       button.disabled = false;
     }, 100);
   }
@@ -537,6 +645,7 @@ function initializeChart() {
 
 document.addEventListener("DOMContentLoaded", function () {
   initializeChart();
+  updateNoCropsUI();
   const singleFieldForm = document.getElementById("crop-formField");
   if (singleFieldForm) {
     singleFieldForm.addEventListener("submit", function (e) {
@@ -549,17 +658,17 @@ function updateGraph() {
   if (window.myChart) window.myChart.destroy();
 
   // Build from cropDetails
-  const combinedData = cropDetails.map(detail => ({
+  const combinedData = cropDetails.map((detail) => ({
     label: detail.name,
     value: parseFloat(detail.totalProfit),
-    detail
+    detail,
   }));
 
   combinedData.sort((a, b) => b.value - a.value);
 
-  const sortedLabels = combinedData.map(item => item.label);
-  const sortedData = combinedData.map(item => item.value);
-  const sortedDetails = combinedData.map(item => item.detail);
+  const sortedLabels = combinedData.map((item) => item.label);
+  const sortedData = combinedData.map((item) => item.value);
+  const sortedDetails = combinedData.map((item) => item.detail);
 
   window.myChart = new Chart(ctx, {
     type: "bar",
@@ -614,7 +723,7 @@ function updateGraph() {
               </section>
 
               <section class="tippySection">
-              <span class="tippyHeading"> Crop Quality & value </span>
+              <span class="tippyHeading"> Crop Quality & Value </span>
                 <div> <span>Normal: </span> ${
                   crop.qualityTiers.normal.value
                 }g</div>
@@ -727,21 +836,24 @@ function updateGraph() {
           display: false,
         },
         tooltip: {
-          enabled: false, 
+          enabled: false,
         },
       },
     },
   });
 
+  if (window.myChart && window.myChart.canvas && typeof tippyInstance !== "undefined" && tippyInstance) {
   window.myChart.canvas.addEventListener("mousemove", (event) => {
-    tippyInstance.setProps({ getReferenceClientRect: () => event.target.getBoundingClientRect()});
-    instance.show();
+    tippyInstance.setProps({
+      getReferenceClientRect: () => event.target.getBoundingClientRect(),
+    });
+    tippyInstance.show();
   });
 
   window.myChart.canvas.addEventListener("mouseleave", () => {
     tippyInstance.hide();
-  })
-
+  });
+}
 }
 
 //*wine, juice, jelly, dehydrated
@@ -768,3 +880,14 @@ document.getElementById("list-search").addEventListener("input", function () {
     }
   });
 });
+
+function updateNoCropsUI() {
+  const empty = !Array.isArray(cropDetails) || cropDetails.length === 0;
+  const noCropsMsg = document.getElementById("no-crops-yet");
+  const refreshBtn = document.getElementById("Chart_RefreshGraph");
+  const chartNote = document.getElementById("Chart_Note");
+
+  if (noCropsMsg) noCropsMsg.style.display = empty ? "block" : "none";
+  if (refreshBtn) refreshBtn.style.display = empty ? "none" : "inline-block";
+  if (chartNote) chartNote.style.display = empty ? "none" : "inline-block";
+}

@@ -1,0 +1,67 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.CL_Container {
+  display: flex;
+  flex-direction: column;
+}
+
+.CL_Top 
+{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  align-items: center;
+}
+ .CL_Title 
+ {
+   padding: 0.1em 0em;
+   color:rgba(140, 88, 53);
+   font-weight: bold;
+ }
+
+.CL_Category 
+{
+  background-color:  rgba(140, 88, 53, 0.6); 
+  border-radius: 4px;
+  border: 1px solid #542910;
+  padding: 0.1em 0.3em;
+  font-size: small;
+  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  
+}
+
+.CL_Bottom 
+{
+  display: grid;
+  width: 100%;
+}
+
+.CL_Date
+{
+  color:rgba(140, 88, 53, 0.8);
+  padding: 0rem 1rem;
+  font-size: small;
+}
+
+.CL_Body
+{
+  padding: 0rem 1rem;
+  color:rgba(140, 88, 53);
+  font-size: 0.9em;
+}
