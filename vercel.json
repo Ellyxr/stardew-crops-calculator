@@ -1,7 +1,7 @@
 {
   "headers": [
     {
-      "source": "/cropsHandler.js",
+      "source": "public/cropsHandler.js",
       "headers": [
         {
           "key": "Cache-Control",
