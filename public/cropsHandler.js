@@ -3,7 +3,6 @@ TODO:
 * Feature
 > allow user to export a list and import said list for better ux 
 - [ ] add comparison between crops (like, crops vs crops)
-- [ ] add the changelog
 - [ ] fix footer, add kofi
 - [ ] in the changelog, at the top, add a suggestion box
 
@@ -635,6 +634,14 @@ document.getElementById("paste-submit").addEventListener("click", function () {
   }
 });
 
+/*
+* ARTISAN GOODS | MULTIPLIERS 
+*/
+
+
+/*
+* INITIALIZE CHART
+*/
 function initializeChart() {
   if (window.myChart) {
     window.myChart.destroy();
@@ -856,16 +863,6 @@ function updateGraph() {
 }
 }
 
-//*wine, juice, jelly, dehydrated
-document.addEventListener("DOMContentLoaded", function () {
-  const Refresh = document.getElementById("Refresh");
-  if (Refresh) {
-    console.log("refreshing..");
-    Refresh.addEventListener("click", updateGraph);
-  } else {
-    console.warn("Refresh button not found in DOM.");
-  }
-});
 
 document.getElementById("list-search").addEventListener("input", function () {
   const searchQuery = this.value.toLowerCase();

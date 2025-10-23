@@ -735,6 +735,10 @@ button:hover {
   flex-direction: column;
 }
 
+/*
+* ARTISAN GOODS
+*/
+
 .graphRowField {
   display: flex;
   justify-content: center;
@@ -756,9 +760,6 @@ button:hover {
   padding: 8px 12px;
 }
 
-.graphRowField button:active {
-  background-color: white;
-}
 
 .crop-singleField .form-group {
   flex-direction: column;
