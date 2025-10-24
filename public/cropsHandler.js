@@ -452,6 +452,84 @@ function calculateCropStats({
   } else {
     breakEvenHarvests = Seed_Price / (adjustedValuePerCrop - Seed_Price);
   }
+
+  /*
+  * ARTISAN MULTIPLIERS
+  *TODO: add "database" for fruits, mushrooms, vegetables, fishes */
+ 
+  const Wine_Normal = 3 * Crop_Price;
+  const Wine_Silver = 3 * Crop_Price * 1.25;
+  const Wine_Gold = 3 * Crop_Price * 1.5;
+  const Wine_Iridium = 3 * Crop_Price * 2;
+
+  const Dried_Fruit = 7.5 * Crop_Price + 25;
+  const Dried_Mushrooms = (7.5 * Crop_Price) +25;
+
+  const Juice_Normal = 2.25 * Crop_Price;
+  const Juice_Artisan = 1.4 * Crop_Price;
+
+  const Jelly = 2 * Crop_Price + 50;
+
+  // processed quality values for artisan goods (per-quality)
+  const wineQualityValues = {
+    normal: Wine_Normal,
+    silver: Wine_Silver,
+    gold: Wine_Gold,
+    iridium: Wine_Iridium,
+  };
+
+  const juiceQualityValues = {
+    normal: Juice_Normal,
+    silver: Juice_Normal * 1.25,
+    gold: Juice_Normal * 1.5,
+    iridium: Juice_Normal * 2,
+  };
+
+  const jellyQualityValues = {
+    normal: Jelly,
+    silver: Jelly * 1.25,
+    gold: Jelly * 1.5,
+    iridium: Jelly * 2,
+  };
+
+  const dehydratedQualityValues = {
+    normal: Dried_Fruit,
+    silver: Dried_Fruit * 1.25,
+    gold: Dried_Fruit * 1.5,
+    iridium: Dried_Fruit * 2,
+  };
+
+  function expectedFromQuality(values, rates) {
+    return (
+      (values.normal || 0) * (rates.normal || 0) +
+      (values.silver || 0) * (rates.silver || 0) +
+      (values.gold || 0) * (rates.gold || 0) +
+      (values.iridium || 0) * (rates.iridium || 0)
+    );
+  }
+
+  const expectedWine = expectedFromQuality(wineQualityValues, dropRates);
+  const expectedJuice = expectedFromQuality(juiceQualityValues, dropRates);
+  const expectedJelly = expectedFromQuality(jellyQualityValues, dropRates);
+  const expectedDehydrated = expectedFromQuality(dehydratedQualityValues, dropRates);
+
+  const adjustedWine = expectedWine - malus;
+  const adjustedJuice = expectedJuice - malus;
+  const adjustedJelly = expectedJelly - malus;
+  const adjustedDehydrated = expectedDehydrated - malus;
+
+  const totalRevenueWine = adjustedWine * harvests;
+  const totalRevenueJuice = adjustedJuice * harvests;
+  const totalRevenueJelly = adjustedJelly * harvests;
+  const totalRevenueDehydrated = adjustedDehydrated * harvests;
+
+  const totalCostForGoods = cropRegrowth ? Seed_Price : Seed_Price * harvests;
+
+  const totalProfitWine = totalRevenueWine - totalCostForGoods;
+  const totalProfitJuice = totalRevenueJuice - totalCostForGoods;
+  const totalProfitJelly = totalRevenueJelly - totalCostForGoods;
+  const totalProfitDehydrated = totalRevenueDehydrated - totalCostForGoods;
+
   return {
     name: cropName,
     seedPrice: Seed_Price,
@@ -462,6 +540,36 @@ function calculateCropStats({
       gold: { value: cropQualityValues.gold, rate: dropRates.gold },
       expectedValue: expectedValuePerCrop.toFixed(2),
       adjustedValue: adjustedValuePerCrop.toFixed(2),
+    },
+    artisan: {
+      wine: {
+        qualityValues: wineQualityValues,
+        expectedValue: expectedWine.toFixed(2),
+        adjustedValue: adjustedWine.toFixed(2),
+        totalRevenue: totalRevenueWine.toFixed(2),
+        totalProfit: totalProfitWine.toFixed(2),
+      },
+      juice: {
+        qualityValues: juiceQualityValues,
+        expectedValue: expectedJuice.toFixed(2),
+        adjustedValue: adjustedJuice.toFixed(2),
+        totalRevenue: totalRevenueJuice.toFixed(2),
+        totalProfit: totalProfitJuice.toFixed(2),
+      },
+      jelly: {
+        qualityValues: jellyQualityValues,
+        expectedValue: expectedJelly.toFixed(2),
+        adjustedValue: adjustedJelly.toFixed(2),
+        totalRevenue: totalRevenueJelly.toFixed(2),
+        totalProfit: totalProfitJelly.toFixed(2),
+      },
+      dehydrated: {
+        qualityValues: dehydratedQualityValues,
+        expectedValue: expectedDehydrated.toFixed(2),
+        adjustedValue: adjustedDehydrated.toFixed(2),
+        totalRevenue: totalRevenueDehydrated.toFixed(2),
+        totalProfit: totalProfitDehydrated.toFixed(2),
+      },
     },
     totalRevenue: totalRevenue.toFixed(2),
     totalCost: totalCost.toFixed(2),
