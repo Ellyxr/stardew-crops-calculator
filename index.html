@@ -127,36 +127,101 @@
               </div>
 
 
-              <div class="graphButtonField">
+              <div class="graphButtonField" id="graphButtonField">
 
-                <div class="graphRowField">
+                <div class="graphRowField" id="graphRowField">
                   <div id="processing-control">
-                    <button class="processing-btn" data-type="raw">Raw Crops</button>
-                    <button class="processing-btn" data-type="wine">Wine</button>
-                    <button class="processing-btn" data-type="juice">Juice</button>
-                    <button class="processing-btn" data-type="jelly">Jelly & Pickles</button>
-                    <button class="processing-btn" data-type="dehydrated">Dehydrated</button>
+                    <button class="processing-btn" data-type="raw"> <img src="src/assets/Giant_Melon.png"
+                        class="graphRowField_Image" alt="Giant Melon"> Raw Crops</button>
+                    <button class="processing-btn" data-type="wine"> <img src="src/assets/Wine.png"
+                        class="graphRowField_Image" alt="Giant Melon icon"> Wine</button>
+                    <button class="processing-btn" data-type="juice"> <img src="src/assets/Juice.png"
+                        class="graphRowField_Image" alt="Juice icon"> Juice</button>
+                    <button class="processing-btn" data-type="jelly"> <img src="src/assets/jelly.png"
+                        class="graphRowField_Image" alt="Preserves icon"> Preserves </button>
+                    <button class="processing-btn" data-type="dehydrated"> <img src="src/assets/Dehydrator.png"
+                        class="graphRowField_Image" alt="Dehydrator icon"> Dehydrated</button>
                   </div>
                 </div>
 
                 <button class="crop-fieldButton graphField" id="advancedSettingsButton">Advanced Settings ▼</button>
 
                 <section class="advancedSettingsForm" id="advancedSettingsForm">
-                  <div>
-                    <button>
-                      h
-                    </button>
+                  <div class="AdvancedSettings_Buttons" id="AdvancedSettings_Buttons">
+                    <button id="AdvancedSettings_FarmButton"> Farm Settings </button>
+                    <button id="AdvancedSettings_TaxButton"> Tax Settings </button>
                   </div>
-                  <div>
-                    <button>
-                      h
-                    </button>
+
+                  <!-- FARM -->
+                  <div class="AdvancedSettings_Farm" id="AdvancedSettings_Farm">
+                    <div class="AdvancedSettings_Farm_Left">
+                      <div class="AS_FarmContent_Left">
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_CurrentDay">Current Day</label>
+                          <input type="number" id="AS_CurrentDay" name="AS_CurrentDay" placeholder="1">
+                        </div>
+
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_Duration"> Duration </label>
+                          <input type="number" id="AS_Duration" name="AS_Duration" placeholder="28">
+                        </div>
+
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_Crops"> Crops </label>
+                          <input type="number" id="AS_Crops" name="AS_Crops" placeholder="1">
+                        </div>
+
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_Fertilizer"> Fertilizer </label>
+                          <select name="AS_Fertilizer" id="AS_FertilizerType" multiple>
+                            <option value="None"> None </option>
+                            <option value="Basic_Fertilizer"> Basic Fertilizer </option>
+                            <option value="Quality_Fertilizer"> Quality Fertilizer </option>
+                            <option value="Deluxe_Fertilizer"> Deluxe Fertilizer </option>
+                            <option value="Speed-Gro"> Speed-Gro </option>
+                            <option value="Deluxe Speed-Gro"> Deluxe Speed-Gro </option>
+                            <option value="Hyper_Speed-Gro"> Hyper Speed-Gro </option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="AS_FarmContent_Right">
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_FarmingLevel"> Farmer Level </label>
+                          <input type="number" id="AS_FarmingLevel" name="AS_FarmingLevel" placeholder="1">
+                        </div>
+
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_FarmerSkill"> Farmer Skill </label>
+                          <div id="AS_FarmerSkill_Container">
+                          <input type="checkbox" id="AS_Tiller" name="AS_Tiller" value="Tiller">
+                          <label for="AS_Tiller"> Tiller </label> <br>
+
+
+                          <input type="checkbox" id="AS_Gatherer" name="AS_Gatherer" value="Gatherer">
+                          <label for="AS_Gatherer"> Gatherer </label>
+
+                          <input type="checkbox" id="AS_Botanist" name="AS_Botanist" value="Botanist">
+                          <label for="AS_Botanist"> Botanist </label>
+                          </div>
+
+                          
+                        </div>
+                        <button id="AS_Farm_Button"> Submit </button>
+                      </div>
+
+                    </div>
+                    <div class="AdvancedSettings_Farm_Right">
+
+                    </div>
+
                   </div>
-                  <div>
-                    <button>
-                      h
-                    </button>
+
+                  <!-- TAX -->
+                  <div class="AdvancedSettings_Tax" id="AdvancedSettings_Tax">
+                    <span> In development! </span>
                   </div>
+
                 </section>
 
                 <br />
@@ -175,12 +240,15 @@
               </span>
             </section>
             <div class="list-container-form">
-              <button type="submit">Import list </button>
-              <button type="submit">Export list</button>
+              <button type="submit" id="import-file-input">Import list </button>
+              <input type="file" id="import-file-input">
+              <label for="import-file-input" id="import-label">Import Crops</label>
+              <input type="file" id="import-file-input" accept=".json"> <!-- Hidden input -->
+              <button type="submit" id="export-button">Export list</button>
               <br><br>
               <button class="list-button crop-fieldButton" id="list-button">Edit </button>
 
-              <div class="changeLogModal" id="changeLogModal">
+              <modal class="changeLogModal" id="changeLogModal">
                 <div class="changeLogModalContent">
 
                   <div class="titleContent">
@@ -197,7 +265,7 @@
                   </div>
 
                 </div>
-              </div>
+              </modal>
 
               <div class="modalPopUp" id="modalPopUp">
                 <div class="modalPopUpContent">
@@ -287,17 +355,39 @@
       </div>
 
       <footer class="Credits">
-        <span> Made casually by <img>Ellyxr github </span>
+        <a href="https://github.com/Ellyxr/stardew-crops-calculator" target="_blank">
+          Made casually by Ellyxr (GitHub) 
+        </a>
+
         <img src="src\assets\icon3.png" alt="icon" width="20" height="20">
-        <span>
-          <href=""> Link to stardew valley here | </href>
-        </span>
-        <span>
-          <href=""> stardew valley wiki | </href>
-        </span>
-        <span>
-          <href=""> collection mods tax </href>
-        </span>
+
+        <a href="https://www.stardewvalley.net" target="_blank">
+           Stardew Valley 
+        </a>
+
+        <a href="https://x.com/ConcernedApe" target="_blank">
+          @ ConcernedApe 
+        </a>
+
+        <img src="src\assets\icon3.png" alt="icon" width="20" height="20">
+
+        <a href="https://stardewvalleywiki.com/Stardew_Valley_Wiki" target="_blank">
+           Stardew Valley Wiki 
+        </a>
+
+        <img src="src\assets\icon3.png" alt="icon" width="20" height="20">
+
+        <a href="https://thorinair.github.io/Stardew-Profits/#produce_0-equipment_0-sellRaw_false-sellExcess_false-aging_0-planted_1-maxSeedMoney_0-days_28-fertilizer_0-level_0-season_0-buySeed_false-replant_false-nextyear_false-buyFert_false-average_0-fertilizerSource_0-seeds_(pierre_true-joja_true-special_true)-skills_(till_false-agri_false-arti_false-gatherer_false-botanist_false)-foodIndex_0-foodLevel_0-extra_true-disableLinks_false-byHarvest_false-crossSeason_false-foragingLevel_0"
+          target="_blank">
+           Inspired by Stardew Profits @ Thorinaire 
+        </a>
+
+        <img src="src\assets\icon3.png" alt="icon" width="20" height="20">
+
+        <a href="https://stardewvalleywiki.com/Stardew_Valley_Wiki" target="_blank">
+           Nexus Crops and Tax Collection
+        </a>
+
       </footer>
     </div>
 
@@ -306,8 +396,24 @@
   <div id="Toast_GraphUpdated"> Graph updated </div>
   <div id="Toast_EmptySubmit"> Make sure to fill fields first! </div>
 
-  <script src="src/logic/toast-helper.js"></script>
-  <script src="/cropsHandler.js"></script>
+  <!--- *LOADING SCREEN PLACEHOLDER-->
+  <div id="loading-screen"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #1a1a1a; /* Match your bg */ display: flex; justify-content: center; align-items: center; z-index: 9999;">
+    <div class="loader"> <!-- You can customize this content -->
+      <!-- Example: Simple text -->
+      <!-- <p>Loading...</p> -->
+
+      <!-- Example: A simple spinner using CSS -->
+      <div
+        style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite;">
+      </div>
+      <p style="color: white; margin-left: 10px;">Loading...</p>
+    </div>
+  </div>
+
+  <!-- <script src="public/toast-helper.js"></script> -->
+  <!-- <script src="public/cropsHandler.js" type="module"></script> -->
+  <script src="public/moduleHandler.js" type="module"></script>
 
 </body>
 

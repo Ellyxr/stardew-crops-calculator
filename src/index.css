@@ -32,12 +32,15 @@
 }
 
 a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: #ececec;
+  text-decoration: none;
 }
+
 a:hover {
-  color: #535bf2;
+  color: #f9f9f9;
+  text-shadow: #1a1a1a;
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 * {
@@ -81,6 +84,18 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* *LOADING SCREEN */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ! END OF LOADING SCREEN */
+
 .header {
   display: flex;
   width: 90%;
@@ -112,6 +127,7 @@ button:focus-visible {
   place-content: center;
   align-items: center;
   justify-content: center;
+    z-index: 1;
 }
 .Main-container-content {
   width: 90%;
@@ -179,7 +195,7 @@ button:focus-visible {
   box-sizing: border-box;
 }
 
-/*  * padding between each from group*/ 
+/*  * padding between each from group*/
 .Calculator-container-form .form-group {
   display: flex;
   padding: 0.4em 0.6em;
@@ -187,7 +203,6 @@ button:focus-visible {
 
 .Calculator-container-form .form-group label {
   margin-right: 1rem;
-  flex: 0 0 auto;
 }
 
 .Calculator-container-form .form-group input {
@@ -255,6 +270,8 @@ button:focus-visible {
   width: 90%;
   margin-top: 1em;
   color: #f9f9f9;
+  text-decoration: none !important;
+  z-index: -1 !important;
 }
 
 /* * END OF CONTAINERS*/
@@ -476,17 +493,19 @@ button:focus-visible {
 .changeLogModal {
   display: flex;
   position: fixed;
-  z-index: 1;
+  z-index: 999;
   left: 0;
   top: 0;
   width: 100vw;
   height: 100%;
   background-color: rgb(0, 0, 0);
   background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
 }
 
 .modalPopUpContent,
 .changeLogModalContent {
+  z-index: 999;
   background-color: rgba(244, 244, 244, 0.992);
   backdrop-filter: blur(10px);
   margin: 8% auto;
@@ -671,21 +690,22 @@ button:focus-visible {
 
 /* for clicking cells in modal */
 .selected {
-  background-color: #7fb29d;
+  background-color: #29b52d;
   font-weight: bold;
-  color: #293b3b;
+  color: #f3f3f3;
 }
 
 .selected:hover {
-  background-color: #6fa28d !important;
+  background-color: #31cf36 !important;
+  color: #f3f3f3;
 }
 
 .crop-fieldButton {
-  margin-bottom: 0.4em;
+  margin-bottom: 0.6em;
   color: #f9f9f9;
   border: none;
   border-radius: 4px;
-  padding: 8px 16px;
+  padding: 0.8em 2em;
   font-size: 14px;
   cursor: pointer;
   text-align: center;
@@ -695,6 +715,7 @@ button:focus-visible {
   background-size: 200% 200%;
   animation: gradientPulse 3s ease infinite;
   transition: transform 0.2s;
+  width: 100%;
 }
 
 @keyframes gradientPulse {
@@ -722,6 +743,91 @@ button:hover {
 
 .crop-fieldButton:active {
   transform: translateY(1px);
+}
+
+.advancedSettingsForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.AdvancedSettings_Buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+}
+
+.AdvancedSettings_Buttons button {
+  width: 50%;
+  margin-bottom: 0.4em;
+}
+
+.AdvancedSettings_Buttons button.inactive {
+  background-color: rgba(3, 160, 7, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  opacity: 0.85;
+  filter: grayscale(0.05);
+}
+
+.AdvancedSettings_Buttons button.active {
+  background-color: #29b52d;
+  color: #fff;
+  border: 1px solid #075f07;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  opacity: 1;
+}
+
+.AdvancedSettings_Farm_Left {
+  flex: 1 50%;
+  width: 100%;
+  padding: 1em 1em;
+  background-color: rgba(1, 120, 5, 0.12);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row;
+}
+
+.AdvancedSettings_Farm_Left > .AS_FarmContent_Left, .AS_FarmContent_Right {
+  width: 40%;
+  display: flex;
+  flex-direction: column; 
+  margin: 0 6em 0 0;
+  box-sizing: border-box;
+}
+
+.AS_FarmContent_Right {
+  width: 50%;
+}
+
+#AS_FarmerSkill_Container {
+  display: block;
+  flex-direction: row;
+  width: 100%;
+  margin: 2em 0em 0em 0em;
+  box-sizing: border-box;
+}
+
+.AS_FarmContent_Container {
+  display: flex;           
+  flex-direction: row;
+  align-items: center;     
+  gap: 2em;
+  width: 100%;
+  margin: 0.4em 0em 0 0;
+}
+
+.AS_FarmContent_Container label {
+  white-space: nowrap;
+  margin: 0;
+  flex: 0 0 auto;
+  width: 8ch;          
+}
+
+.AS_FarmContent_Container input {
+  flex: 1 1 auto;
+  min-width: 4em;
+  width: auto;              
+  box-sizing: border-box;
 }
 
 .crop-singleField {
@@ -760,6 +866,34 @@ button:hover {
   padding: 8px 12px;
 }
 
+.graphRowField_Image {
+  width: 1em;
+  height: auto;
+  margin-right: 0.4em;
+  align-items: center;
+  align-self: center;
+  vertical-align: middle;
+}
+
+.processing-btn {
+  transition: background-color 0.18s, transform 0.12s, opacity 0.12s;
+}
+
+.processing-btn.active {
+  background-color: #24ab24;
+  color: #fff;
+  border: 1px solid #419341;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  opacity: 1;
+}
+
+.processing-btn.processing-btn_inactive {
+  background-color: rgba(3, 160, 7, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  opacity: 0.85;
+  filter: grayscale(0.05);
+}
 
 .crop-singleField .form-group {
   flex-direction: column;
@@ -864,9 +998,7 @@ button:hover {
     color: #213547;
     background-color: #eeeeee;
   }
-  a:hover {
-    color: #747bff;
-  }
+
   button {
     background-color: #03a007;
     color: #eeeeee;

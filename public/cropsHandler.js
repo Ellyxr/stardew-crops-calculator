@@ -455,73 +455,156 @@ function calculateCropStats({
 
   /*
   * ARTISAN MULTIPLIERS
-  *TODO: add "database" for fruits, mushrooms, vegetables, fishes */
- 
-  const Wine_Normal = 3 * Crop_Price;
-  const Wine_Silver = 3 * Crop_Price * 1.25;
-  const Wine_Gold = 3 * Crop_Price * 1.5;
-  const Wine_Iridium = 3 * Crop_Price * 2;
+/*
+ * ARTISAN MULTIPLIERS (dynamic)
+ * Replaces the old static wine/juice/jelly/dehydrated section.
+ * This uses a tiny local cropsDB + helpers to decide which artisan products apply.
+ *
+ * If you prefer to keep a separate file, move the `cropsDB` array out and import it.
+ */
 
-  const Dried_Fruit = 7.5 * Crop_Price + 25;
-  const Dried_Mushrooms = (7.5 * Crop_Price) +25;
+// --- minimal local crops DB (add more crops here or import from another file) ---
+const cropsDB = [
+  { id: "strawberry", name: "Strawberry", category: "fruit", basePrice: 120 },
+  { id: "blueberry", name: "Blueberry", category: "fruit", basePrice: 50 },
+  { id: "cranberry", name: "Cranberry", category: "fruit", basePrice: 75 },
 
-  const Juice_Normal = 2.25 * Crop_Price;
-  const Juice_Artisan = 1.4 * Crop_Price;
+  { id: "parsnip", name: "Parsnip", category: "vegetable", basePrice: 35 },
+  { id: "pumpkin", name: "Pumpkin", category: "vegetable", basePrice: 320 },
+  { id: "tomato", name: "Tomato", category: "vegetable", basePrice: 60 },
 
-  const Jelly = 2 * Crop_Price + 50;
+  { id: "morel", name: "Morel", category: "mushroom", basePrice: 150 },
+  { id: "red_mushroom", name: "Red Mushroom", category: "mushroom", basePrice: 75 },
+];
 
-  // processed quality values for artisan goods (per-quality)
-  const wineQualityValues = {
-    normal: Wine_Normal,
-    silver: Wine_Silver,
-    gold: Wine_Gold,
-    iridium: Wine_Iridium,
-  };
+// --- helpers ---
+function findCropInDBByName(name) {
+  if (!name) return null;
+  const n = name.trim().toLowerCase();
+  return (
+    cropsDB.find(
+      (c) =>
+        (c.id && c.id.toLowerCase() === n) ||
+        (c.name && c.name.toLowerCase() === n)
+    ) || null
+  );
+}
 
-  const juiceQualityValues = {
-    normal: Juice_Normal,
-    silver: Juice_Normal * 1.25,
-    gold: Juice_Normal * 1.5,
-    iridium: Juice_Normal * 2,
-  };
+function guessCategory(name) {
+  if (!name) return "unknown";
+  const n = name.toLowerCase();
+  if (/\b(berry|apple|pear|grape|melon|peach|cherry|banana)\b/.test(n)) return "fruit";
+  if (/\b(mushroom|morel|fungus)\b/.test(n)) return "mushroom";
+  if (/\b(flower|sunflower)\b/.test(n)) return "flower";
+  return "vegetable"; // default fallback; change to "unknown" if you prefer
+}
 
-  const jellyQualityValues = {
-    normal: Jelly,
-    silver: Jelly * 1.25,
-    gold: Jelly * 1.5,
-    iridium: Jelly * 2,
-  };
+/*
+ * getArtisanValues(basePrice, category)
+ * Returns an object whose keys are artisan products that apply to the category
+ * and whose values are the base price for the artisan product (before quality multipliers).
+ *
+ * Example return: { wine: 360, dehydrated: 925, jelly: 290 }
+ */
+function getArtisanValues(basePrice, category) {
+  const price = Number(basePrice) || 0;
+  const out = {};
 
-  const dehydratedQualityValues = {
-    normal: Dried_Fruit,
-    silver: Dried_Fruit * 1.25,
-    gold: Dried_Fruit * 1.5,
-    iridium: Dried_Fruit * 2,
-  };
-
-  function expectedFromQuality(values, rates) {
-    return (
-      (values.normal || 0) * (rates.normal || 0) +
-      (values.silver || 0) * (rates.silver || 0) +
-      (values.gold || 0) * (rates.gold || 0) +
-      (values.iridium || 0) * (rates.iridium || 0)
-    );
+  if (category === "fruit") {
+    out.wine = 3 * price;
+    out.dehydrated = 7.5 * price + 25; // dried fruit
+    out.jelly = 2 * price + 50; // preserves/jelly
   }
 
-  const expectedWine = expectedFromQuality(wineQualityValues, dropRates);
-  const expectedJuice = expectedFromQuality(juiceQualityValues, dropRates);
-  const expectedJelly = expectedFromQuality(jellyQualityValues, dropRates);
-  const expectedDehydrated = expectedFromQuality(dehydratedQualityValues, dropRates);
+  if (category === "vegetable") {
+    out.juice = 2.25 * price; // keg -> juice
+    // optionally allow preserves for certain vegetables:
+    out.jelly = 2 * price + 50;
+  }
 
-  const adjustedWine = expectedWine - malus;
-  const adjustedJuice = expectedJuice - malus;
-  const adjustedJelly = expectedJelly - malus;
-  const adjustedDehydrated = expectedDehydrated - malus;
+  if (category === "mushroom") {
+    out.dehydrated = 7.5 * price + 25;
+    // mushrooms usually don't make wine/juice
+  }
 
-  const totalRevenueWine = adjustedWine * harvests;
-  const totalRevenueJuice = adjustedJuice * harvests;
-  const totalRevenueJelly = adjustedJelly * harvests;
-  const totalRevenueDehydrated = adjustedDehydrated * harvests;
+  // if you want to support flower -> honey or oil, add here
+  return out;
+}
+
+// --- helper used to compute expected value from quality tiers and drop rates ---
+function expectedFromQuality(values, rates) {
+  return (
+    (values.normal || 0) * (rates.normal || 0) +
+    (values.silver || 0) * (rates.silver || 0) +
+    (values.gold || 0) * (rates.gold || 0) +
+    (values.iridium || 0) * (rates.iridium || 0)
+  );
+}
+
+// --- build dynamic artisan results (populates variables used later in the file) ---
+// find crop info by name, fallback to heuristic
+const cropEntry = findCropInDBByName(cropName);
+const category = cropEntry ? cropEntry.category : guessCategory(cropName);
+
+// compute base artisan products for this crop
+const artisanBase = getArtisanValues(Crop_Price || (cropEntry && cropEntry.basePrice) || 0, category);
+
+// Ensure existence of the usual product keys (so later code can reference vars safely)
+const Wine_Normal = artisanBase.wine || 0;
+const Dried_Fruit = artisanBase.dehydrated || 0;
+const Juice_Normal = artisanBase.juice || 0;
+const Jelly = artisanBase.jelly || 0;
+const Dried_Mushrooms = artisanBase.dehydrated || 0; // same as dehydrated for mushrooms
+
+// per-quality processed values (the original multipliers preserved)
+const wineQualityValues = {
+  normal: Wine_Normal,
+  silver: Wine_Normal * 1.25,
+  gold: Wine_Normal * 1.5,
+  iridium: Wine_Normal * 2,
+};
+
+const dehydratedQualityValues = {
+  normal: Dried_Fruit,
+  silver: Dried_Fruit * 1.25,
+  gold: Dried_Fruit * 1.5,
+  iridium: Dried_Fruit * 2,
+};
+
+const juiceQualityValues = {
+  normal: Juice_Normal,
+  silver: Juice_Normal * 1.25,
+  gold: Juice_Normal * 1.5,
+  iridium: Juice_Normal * 2,
+};
+
+const jellyQualityValues = {
+  normal: Jelly,
+  silver: Jelly * 1.25,
+  gold: Jelly * 1.5,
+  iridium: Jelly * 2,
+};
+
+// compute expected value for whichever products apply (if base is 0, expected becomes 0)
+const expectedWine = expectedFromQuality(wineQualityValues, dropRates);
+const expectedJuice = expectedFromQuality(juiceQualityValues, dropRates);
+const expectedJelly = expectedFromQuality(jellyQualityValues, dropRates);
+const expectedDehydrated = expectedFromQuality(dehydratedQualityValues, dropRates);
+
+// adjusted (apply malus)
+const adjustedWine = expectedWine - malus;
+const adjustedJuice = expectedJuice - malus;
+const adjustedJelly = expectedJelly - malus;
+const adjustedDehydrated = expectedDehydrated - malus;
+
+// total revenue per product (these variables are used later in the file)
+const totalRevenueWine = adjustedWine * harvests;
+const totalRevenueJuice = adjustedJuice * harvests;
+const totalRevenueJelly = adjustedJelly * harvests;
+const totalRevenueDehydrated = adjustedDehydrated * harvests;
+
+// Note: later code calculates totalCostForGoods and totalProfitX per product and returns them.
+// Only artisan products that apply (non-zero base) will produce non-zero totals above.
 
   const totalCostForGoods = cropRegrowth ? Seed_Price : Seed_Price * harvests;
 
@@ -585,13 +668,154 @@ function calculateCropStats({
   };
 }
 
+
 // Always use this to add a crop
 function addCrop(stats) {
   cropDetails.push(stats);
   updateTable();
   updateGraph();
 }
+function findCalcFn() {
+  if (typeof window.calculateCropStats === "function") return window.calculateCropStats;
+  if (typeof window.calculateCrop === "function") return window.calculateCrop;
+  if (typeof window.cropsHandler === "function") return window.cropsHandler;
+  if (typeof window.cropsHandler === "object" && typeof window.cropsHandler.calculate === "function") return window.cropsHandler.calculate;
+  return null;
+}
 
+// Helper: get currently selected crop name from your UI
+function getSelectedCropName() {
+  // try common selectors - change to your actual selector if different
+  const input = document.querySelector("#crop-name-input") || document.querySelector(".crop-name-input") || document.querySelector("input[name='crop']");
+  if (input && input.value) return input.value.trim();
+  // fallback: look for an element showing the selected crop name
+  const sel = document.querySelector(".selected-crop-name") || document.querySelector("#selectedCrop");
+  if (sel && sel.textContent) return sel.textContent.trim();
+  return null;
+}
+
+// Update tooltip fallback (simple). Replace this with your real tooltip updater.
+function updateTooltipWithProduct(productKey, productData) {
+  // productData expected to include totalProfit, totalRevenue, expectedValue etc.
+  const tipEl = document.querySelector(".crop-tooltip") || document.querySelector("#crop-tooltip");
+  if (!tipEl) {
+    console.log("[tooltip] no tooltip element found for update. product:", productKey, productData);
+    return;
+  }
+  const html = `
+    <div><strong>${productKey.toUpperCase()}</strong></div>
+    <div>Expected per processed: ${Number(productData.expectedValue || productData.expected || 0).toFixed(2)}</div>
+    <div>Total revenue: ${Number(productData.totalRevenue || 0).toFixed(2)}</div>
+    <div>Total profit: ${Number(productData.totalProfit || productData.profit || 0).toFixed(2)}</div>
+  `;
+  tipEl.innerHTML = html;
+}
+
+// Update graph fallback - replace with your real graph update function
+function updateGraphForProduct(productKey, productData) {
+  const graphEl = document.querySelector("#graph") || document.querySelector(".graph");
+  if (!graphEl) {
+    console.log("[graph] no graph element found. product:", productKey, productData);
+    return;
+  }
+  // simple textual preview so you can confirm it's wired
+  graphEl.innerText = `${productKey}: profit ${Number(productData.totalProfit || productData.profit || 0).toFixed(2)}`;
+}
+
+// Main handler when user clicks a processing button
+async function handleProcessingSelect(type) {
+  console.log("[processing] requested:", type);
+
+  const cropName = getSelectedCropName();
+  if (!cropName) {
+    console.warn("[processing] no selected crop found. Make sure you have an input or selection element that this script can read.");
+    return;
+  }
+
+  const calcFn = findCalcFn();
+  let results = null;
+
+  if (calcFn) {
+    try {
+      // try calling common signatures
+      // prefer synchronous-first, but allow promises
+      const res = calcFn.length > 0 ? calcFn(cropName) : calcFn(); // best-effort call
+      results = (res && typeof res.then === "function") ? await res : res;
+    } catch (err) {
+      console.error("[processing] error calling calc function:", err);
+    }
+  }
+
+  // If no global calc function, try a fallback function if you implemented it:
+  if (!results && typeof window.calculateForCropName === "function") {
+    try {
+      results = window.calculateForCropName(cropName);
+    } catch (err) {
+      console.error("[processing] fallback calculateForCropName failed:", err);
+    }
+  }
+
+  // Debug: show what we got
+  console.log("[processing] calc results:", results);
+
+  // Expectation: results.artisan is object where keys are product types (wine, juice, jelly, dehydrated)
+  const artisan = (results && results.artisan) || results || {};
+  // if results is not an object, bail with debug
+  if (!artisan || typeof artisan !== "object") {
+    console.warn("[processing] artisan results not found or invalid. Inspect 'results' above.");
+    return;
+  }
+
+  // If user selected 'raw' show raw crop totals (fallback fields)
+  if (type === "raw") {
+    // prefer results.totalProfit or results.rawProfit etc.
+    const rawProfit = (results && (results.totalProfit || results.rawProfit || results.profit)) || 0;
+    updateGraphForProduct("raw", { totalProfit: rawProfit });
+    updateTooltipWithProduct("raw", { expectedValue: results.cropPrice || results.crop || 0, totalRevenue: results.totalRevenue || 0, totalProfit: rawProfit });
+    return;
+  }
+
+  // For processing types, find matching key in artisan object
+  const prod = artisan[type] || artisan[type.toLowerCase()] || null;
+
+  if (!prod) {
+    console.log(`[processing] product '${type}' not available for this crop. artisan keys:`, Object.keys(artisan));
+    // show a friendly message in tooltip/graph
+    updateTooltipWithProduct(type, { expectedValue: 0, totalRevenue: 0, totalProfit: 0 });
+    updateGraphForProduct(type, { totalProfit: 0 });
+    return;
+  }
+
+  // prod is expected to have fields like .totalProfit, .totalRevenue, .expectedValue
+  updateTooltipWithProduct(type, prod);
+  updateGraphForProduct(type, prod);
+}
+
+// wire UI buttons
+function wireProcessingButtons() {
+  const container = document.getElementById("processing-control");
+  if (!container) {
+    console.warn("[processing] #processing-control not found in DOM.");
+    return;
+  }
+  container.addEventListener("click", (e) => {
+    const btn = e.target.closest && e.target.closest(".processing-btn");
+    if (!btn) return;
+    const type = btn.getAttribute("data-type");
+    if (!type) return;
+    // visual active state
+    container.querySelectorAll(".processing-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    handleProcessingSelect(type);
+  });
+}
+
+// initialize after DOM ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", wireProcessingButtons);
+} else {
+  wireProcessingButtons();
+}
 // Update table from cropDetails
 function updateTable() {
   cropListTableBody.innerHTML = "";
@@ -970,6 +1194,139 @@ function updateGraph() {
   });
 }
 }
+
+// Function to export cropDetails to a JSON file
+function exportCrops() {
+  if (cropDetails.length === 0) {
+    showToast("No crops to export!", { type: "info", duration: 3000 });
+    return; // Don't try to export an empty list
+  }
+
+  try {
+    // Convert the cropDetails array to a JSON string
+    const jsonString = JSON.stringify(cropDetails, null, 2); // null for replacer, 2 for indentation (readable format)
+
+    // Create a Blob object representing the JSON data
+    const blob = new Blob([jsonString], { type: "application/json" });
+
+    // Generate a filename (e.g., "cropData_20231027.json")
+    const now = new Date();
+    const timestamp = now.toISOString().slice(0, 19).replace(/:/g, '-'); // Format: YYYY-MM-DDTHH-mm-ss
+    const filename = `cropData_${timestamp}.json`;
+
+    // Create a temporary link element
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob); // Create a URL for the blob
+    link.download = filename; // Set the desired filename
+
+    // Programmatically click the link to trigger the download
+    document.body.appendChild(link); // Add link to the body
+    link.click(); // Click the link
+    document.body.removeChild(link); // Remove the link from the body
+
+    console.log("Crops exported successfully!");
+    showToast("Crops exported successfully!", { type: "success", duration: 3000 });
+
+    // Optional: Update the UI (table, graph) if needed after export (usually not necessary)
+    // updateTable();
+    // updateGraph();
+
+  } catch (error) {
+    console.error("Error exporting crops:", error);
+    showToast("Error exporting crops. Check console.", { type: "error", duration: 5000 });
+  }
+}
+
+// Example: Attach the export function to a button with ID 'export-button'
+// Add this button to your HTML if you don't have one
+document.addEventListener("DOMContentLoaded", function() {
+  const exportButton = document.getElementById("export-button"); // Replace 'export-button' with your actual button ID
+  if (exportButton) {
+    exportButton.addEventListener("click", exportCrops);
+  } else {
+    console.warn("Export button with ID 'export-button' not found. Add the button to your HTML.");
+  }
+});
+
+// Function to import cropDetails from a JSON file
+function importCrops(event) {
+  const file = event.target.files[0]; // Get the selected file from the input element
+
+  if (!file) {
+    console.error("No file selected for import.");
+    return;
+  }
+
+  // Optional: Validate file type
+  if (file.type !== "application/json") {
+    showToast("Please select a valid JSON file.", { type: "error", duration: 4000 });
+    console.error("Invalid file type selected for import:", file.type);
+    // Reset the file input so the user can select again
+    event.target.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    try {
+      // Get the content of the file (raw text)
+      const content = e.target.result;
+
+      // Parse the text as JSON
+      const importedData = JSON.parse(content);
+
+      // Validate the imported data structure (optional but recommended)
+      if (!Array.isArray(importedData)) {
+        throw new Error("Imported data is not an array.");
+      }
+      // Add more specific validation if needed (e.g., check for required keys in each object)
+
+      // Update the main cropDetails array with the imported data
+      cropDetails = importedData;
+
+      // Update the UI (table and graph) to reflect the new data
+      updateTable();
+      updateNoCropsUI();
+      updateGraph(); // This should now use the new cropDetails
+
+      console.log("Crops imported successfully!");
+      showToast("Crops imported successfully!", { type: "success", duration: 3000 });
+
+      // Clear the file input after successful import
+      event.target.value = "";
+
+    } catch (error) {
+      console.error("Error parsing imported JSON:", error);
+      showToast("Error parsing imported file. Check console.", { type: "error", duration: 5000 });
+      // Clear the file input even if there's an error
+      event.target.value = "";
+    }
+  };
+
+  reader.onerror = function(e) {
+    console.error("Error reading file:", e);
+    showToast("Error reading file. Check console.", { type: "error", duration: 5000 });
+    event.target.value = ""; // Clear the input
+  };
+
+  // Start reading the file as text
+  reader.readAsText(file);
+}
+
+// Example: Attach the import function to a file input element with ID 'import-file-input'
+// Add this input to your HTML if you don't have one
+document.addEventListener("DOMContentLoaded", function() {
+  const importFileInput = document.getElementById("import-file-input"); // Replace 'import-file-input' with your actual input ID
+  if (importFileInput) {
+    // Use 'change' event for file inputs, not 'click'
+    importFileInput.addEventListener("change", importCrops);
+
+    console.log("Import file input listener attached.");
+  } else {
+    console.warn("Import file input with ID 'import-file-input' not found. Add the input to your HTML.");
+  }
+});
 
 
 document.getElementById("list-search").addEventListener("input", function () {
