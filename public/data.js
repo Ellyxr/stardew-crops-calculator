@@ -57,6 +57,12 @@ export function addCrop(cropInputData) {
   const fertilizerType = fertSelect
     ? (fertSelect.multiple ? (fertSelect.selectedOptions[0]?.value || "None") : (fertSelect.value || "None"))
     : "None";
+  const farmingLevel = Number.parseInt(document.getElementById("AS_FarmingLevel")?.value, 10) || 1;
+  const skills = {
+    tiller: !!document.getElementById('AS_Tiller')?.checked,
+    agriculturist: !!document.getElementById('AS_Agriculturist')?.checked,
+    artisan: !!document.getElementById('AS_Artisan')?.checked,
+  };
 
   if (
     !Number.isFinite(seedPrice) ||
@@ -79,6 +85,8 @@ export function addCrop(cropInputData) {
     seasonDuration: currentDuration,
     cropsPerTile,
     fertilizerType,
+    farmingLevel,
+    skills,
   });
 
   if (stats.error) {
@@ -108,6 +116,12 @@ export function refreshCropDetailsFromTable() {
   const fertilizerType = fertSelect
     ? (fertSelect.multiple ? (fertSelect.selectedOptions[0]?.value || "None") : (fertSelect.value || "None"))
     : "None";
+  const farmingLevel = Number.parseInt(document.getElementById("AS_FarmingLevel")?.value, 10) || 1;
+  const skills = {
+    tiller: !!document.getElementById('AS_Tiller')?.checked,
+    agriculturist: !!document.getElementById('AS_Agriculturist')?.checked,
+    artisan: !!document.getElementById('AS_Artisan')?.checked,
+  };
 
   const rows = document.querySelectorAll("#crop-list-table tbody tr");
   const newDetails = [];
@@ -134,6 +148,8 @@ export function refreshCropDetailsFromTable() {
       seasonDuration: currentDuration,
       cropsPerTile,
       fertilizerType,
+      farmingLevel,
+      skills,
     });
     newDetails.push(stats);
   });
@@ -170,7 +186,13 @@ export function editCrop(oldName, newInputData) {
         return; // Don't update if calculation failed
     }
 
-    const newStats = calculateCropStats({...newInputData, seasonDuration: currentDuration}); //Advanced Settings FARM
+    const farmingLevel = Number.parseInt(document.getElementById("AS_FarmingLevel")?.value, 10) || 1;
+    const skills = {
+      tiller: !!document.getElementById('AS_Tiller')?.checked,
+      agriculturist: !!document.getElementById('AS_Agriculturist')?.checked,
+      artisan: !!document.getElementById('AS_Artisan')?.checked,
+    };
+    const newStats = calculateCropStats({...newInputData, seasonDuration: currentDuration, farmingLevel, skills}); //Advanced Settings FARM
     if (newStats.error) {
       showToast(`Error editing crop: ${newStats.error}`, {
         type: "error",
@@ -195,6 +217,12 @@ export function recalculateAllCrops(newDuration) {
   const fertilizerType = fertSelect
     ? (fertSelect.multiple ? (fertSelect.selectedOptions[0]?.value || "None") : (fertSelect.value || "None"))
     : "None";
+  const farmingLevel = Number.parseInt(document.getElementById("AS_FarmingLevel")?.value, 10) || 1;
+  const skills = {
+    tiller: !!document.getElementById('AS_Tiller')?.checked,
+    agriculturist: !!document.getElementById('AS_Agriculturist')?.checked,
+    artisan: !!document.getElementById('AS_Artisan')?.checked,
+  };
 
   const validCropDetails = cropDetails.filter(crop => !crop.error);
 
@@ -226,6 +254,8 @@ export function recalculateAllCrops(newDuration) {
       seasonDuration: durationToUse,
       cropsPerTile,
       fertilizerType,
+      farmingLevel,
+      skills,
     });
 
     if (!newStats.error) recalculated.push(newStats);

@@ -941,12 +941,12 @@ button:hover {
 }
 
 .tippy-box[data-theme~="custom"] {
-  background-color: rgba(197, 214, 221, 0.9);
-  border: 2px solid rgba(13, 146, 44, 0.8);
+  background-color: rgba(197, 214, 221, 0.95);
+  border: 2px solid rgba(13, 146, 44, 0.9);
   border-radius: 6px;
   color: rgb(57, 57, 57);
   font-size: 14px;
-  max-width: 300px;
+  max-width: 460px; /* wider so processed info fits horizontally */
 }
 
 .tippy-box[data-theme~="custom"] .tippy-content {
@@ -957,6 +957,12 @@ button:hover {
   font-size: 0.8rem;
   display: flex;
   flex-direction: column;
+}
+
+/* allow interactive scrolling inside tooltip body when content is long */
+.tippy-box[data-theme~="custom"] .tippy-content .tippyBody {
+  max-height: 60vh;
+  overflow: auto;
 }
 
 .tippy-box[data-theme~="custom"] .tippy-content .tippyBody span {

@@ -81,6 +81,26 @@ function attachEventListeners() {
   //* --- ADVANCED SETTINGS ---
   const farmSubmitBUtton = document.getElementById("AS_Farm_Button");
   farmSubmitBUtton?.addEventListener("click", handleFarmSettingsSubmit);
+  // Mutual-exclusion and convenience listeners for farmer skills
+  const agricCheckbox = document.getElementById("AS_Agriculturist");
+  const artisanCheckbox = document.getElementById("AS_Artisan");
+  const tillerCheckbox = document.getElementById("AS_Tiller");
+
+  if (agricCheckbox && artisanCheckbox) {
+    agricCheckbox.addEventListener("change", () => {
+      if (agricCheckbox.checked && artisanCheckbox.checked) {
+        // enforce mutual exclusion: uncheck artisan if agric selected
+        artisanCheckbox.checked = false;
+      }
+    });
+
+    artisanCheckbox.addEventListener("change", () => {
+      if (artisanCheckbox.checked && agricCheckbox.checked) {
+        // enforce mutual exclusion: uncheck agric if artisan selected
+        agricCheckbox.checked = false;
+      }
+    });
+  }
 
   // * --- Modal & List Handling ---
   const listButton = document.getElementById("list-button");
@@ -209,6 +229,8 @@ function handleFarmSettingsSubmit() {
   const tillerCheckbox = document.getElementById("AS_Tiller");
   const gathererCheckbox = document.getElementById("AS_Gatherer");
   const botanistCheckbox = document.getElementById("AS_Botanist");
+  const agricCheckbox = document.getElementById("AS_Agriculturist");
+  const artisanCheckbox = document.getElementById("AS_Artisan");
 
   const currentDay = currentDayInput ? currentDayInput.value : null;
   const duration = durationInput ? durationInput.value : null;
@@ -218,7 +240,35 @@ function handleFarmSettingsSubmit() {
   console.log("Settings - Day:", currentDay, "Duration:", duration, "Crops:", crops, "Farming Level:", farmingLevel);
 
   // Recalculate all crops based on new duration
-  recalculateAllCrops(duration);
+  // Enforce skill rules before recalculation:
+  // - Agriculturist and Artisan are mutually exclusive (handled on change as well)
+  // - If Agriculturist or Artisan is selected, ensure Tiller is applied and Farming Level >= 10
+  // - If only Tiller is selected, ensure Farming Level >= 5
+  try {
+    let farmingLevelVal = Number.parseInt(farmingLevelInput?.value, 10) || 0;
+    const agricChecked = agricCheckbox ? agricCheckbox.checked : false;
+    const artisanChecked = artisanCheckbox ? artisanCheckbox.checked : false;
+    const tillerChecked = tillerCheckbox ? tillerCheckbox.checked : false;
+
+    if (agricChecked || artisanChecked) {
+      // Auto-apply tiller
+      if (tillerCheckbox) tillerCheckbox.checked = true;
+      farmingLevelVal = Math.max(farmingLevelVal, 10);
+    } else if (tillerChecked) {
+      farmingLevelVal = Math.max(farmingLevelVal, 5);
+    }
+
+    // Cap farming level at 10
+    farmingLevelVal = Math.min(farmingLevelVal, 10);
+    if (farmingLevelInput) farmingLevelInput.value = farmingLevelVal;
+
+    // Use numeric duration if possible
+    const durationNumber = Number.isFinite(Number(duration)) ? Number.parseInt(duration, 10) : null;
+    recalculateAllCrops(durationNumber || undefined);
+  } catch (err) {
+    console.error("Error enforcing farm settings rules:", err);
+    recalculateAllCrops(duration);
+  }
 
   //update UI
   updateTable();
@@ -650,11 +700,24 @@ export function updateGraph() {
   } else {
     // Build and sort data for the chart using the data from the module
     console.log("Processing cropDetails for chart..."); // Debug log
+    const processingType = window.currentProcessing || "raw";
     const combinedData = cropDetails.map((detail) => {
-      const profit = parseFloat(detail.totalProfit);
+      let profit = 0;
+      if (processingType === "raw") {
+        profit = parseFloat(detail.totalProfit) || 0;
+      } else {
+        // processed products are stored under detail.artisan[productType]
+        const prod = detail.artisan && detail.artisan[processingType];
+        if (prod && prod.totalProfit !== undefined) {
+          profit = parseFloat(prod.totalProfit) || 0;
+        } else {
+          // fallback to 0 when product not applicable
+          profit = 0;
+        }
+      }
       console.log(
-        `Processing crop: ${detail.name}, totalProfit: ${detail.totalProfit}, parsed as: ${profit}`
-      ); // Debug log
+        `Processing crop: ${detail.name}, processing: ${processingType}, profit: ${profit}`
+      );
       return {
         label: detail.name,
         value: profit,
@@ -756,8 +819,14 @@ export function updateGraph() {
                 return;
               }
 
+              // determine display values based on processing selection
+              const _proc = window.currentProcessing || 'raw';
+              const _procStats = _proc === 'raw' ? null : (crop.artisan && crop.artisan[_proc] ? crop.artisan[_proc] : null);
+              const displayTotalProfit = _proc === 'raw' ? crop.totalProfit : (_procStats ? _procStats.totalProfit : '0.00');
+              const displayProfitPerDay = _proc === 'raw' ? crop.profitPerDay : ((_procStats && crop.calculatedDuration) ? (parseFloat(_procStats.totalProfit) / Math.max(1, crop.calculatedDuration)).toFixed(2) : (parseFloat(_procStats?.totalProfit || 0) / Math.max(1, crop.calculatedDuration || 28)).toFixed(2));
+
               const tooltipContent = `
-                <div style="max-height: 80vh; overflow-y: auto;">
+                <div class="tippyInner">
                   <div style="font-weight: bold; font-size: 140%; color: rgb(12, 126, 16); margin-bottom: 5px;">
                     ${cropName}
                   </div>
@@ -765,13 +834,38 @@ export function updateGraph() {
                     <section class="tippySection">
                       <span class="tippyHeading"> Harvest Summary </span>
                       <div> <span> Total Profit: </span> ${
-                        crop.totalProfit
+                        displayTotalProfit
                       }g</div>
                       <div> <span>ROI Percent: </span> ${crop.roiPercent}</div>
                       <div> <span>ProfitPerDay: </span> ${
-                        crop.profitPerDay
+                        displayProfitPerDay
                       }g</div>
                     </section>
+                    ${(() => {
+                      const proc = window.currentProcessing || 'raw';
+                      if (proc !== 'raw') {
+                        const p = crop.artisan && crop.artisan[proc];
+                        if (p) {
+                          return `
+                    <section class="tippySection">
+                      <span class="tippyHeading"> Processed (${proc.toUpperCase()}) </span>
+                      <div> <span> Expected AVG: </span> ${p.expectedValue}g</div>
+                      <div> <span> Adjusted AVG: </span> ${p.adjustedValue}g</div>
+                      <div> <span> Total Revenue: </span> ${p.totalRevenue}g</div>
+                      <div> <span> Total Profit: </span> ${p.totalProfit}g</div>
+                    </section>
+                          `;
+                        } else {
+                          return `
+                    <section class="tippySection">
+                      <span class="tippyHeading"> Processed (${proc.toUpperCase()}) </span>
+                      <div> <span> Not applicable for this crop. </span></div>
+                    </section>
+                          `;
+                        }
+                      }
+                      return "";
+                    })()}
                     <section class="tippySection">
                       <span class="tippyHeading"> Crop Quality & Value </span>
                       <div> <span>Normal: </span> ${
@@ -824,6 +918,8 @@ export function updateGraph() {
                 tippyInstance = tippy(windowMyChart.canvas, {
                   content: tooltipContent,
                   allowHTML: true,
+                  interactive: true, // allow users to move cursor into tooltip to read/scroll
+                  appendTo: document.body,
                   hideOnClick: true,
                   followCursor: true,
                   theme: "custom",
@@ -832,6 +928,7 @@ export function updateGraph() {
                   animation: "fade",
                   duration: [200, 50],
                   delay: 0,
+                  touch: ['hold', 400],
                   popperOptions: {
                     modifiers: [
                       {
@@ -852,6 +949,10 @@ export function updateGraph() {
                           boundary: visualViewport,
                         },
                       },
+                      {
+                        name: 'offset',
+                        options: { offset: [0, 8] }
+                      }
                     ],
                   },
                 });
