@@ -474,7 +474,7 @@ function handlePasteClick() {
     button.textContent = "✓";
     button.style.backgroundColor = "#4CAF50";
     setTimeout(() => {
-      button.textContent = "Paste ▼";
+      button.textContent = "▼";
       button.style.backgroundColor = "";
       button.disabled = false;
     }, 100);
@@ -771,213 +771,31 @@ export function updateGraph() {
             mode: "nearest",
             axis: "x",
           },
-          onHover: (event, chartElement) => {
-            if (event.native && chartElement.length) {
+          onHover: (event, chartElements) => {
+            // chartElements is an array of active elements
+            if (event && event.native && chartElements && chartElements.length) {
+              const activeIndex = chartElements[0].index;
               // Highlight hovered bar
               const dataset = windowMyChart.data.datasets[0];
-              const activeIndex = chartElement[0].index;
               dataset.backgroundColor = sortedLabels.map((_, index) =>
-                index === activeIndex
-                  ? "rgb(48, 124, 42)"
-                  : "rgba(46, 54, 64, 0.6)"
+                index === activeIndex ? "rgb(48, 124, 42)" : "rgba(46, 54, 64, 0.6)"
               );
               windowMyChart.update();
 
-              // Prepare tooltip content using the sortedDetails
-              const cropName = sortedLabels[activeIndex];
-              const cropValue = sortedData[activeIndex];
-              const crop = sortedDetails[activeIndex]; // Use the sortedDetails array
-
-              if (!crop) {
-                console.error("Crop detail not found for index:", activeIndex);
-                const tooltipContent = '<div>Error: Crop details not found for ${cropName}</div>';
-                if (tippyInstance) {
-                  tippyInstance.setContent(tooltipContent);
-                  tippyInstance.show();
-                }
-                return; // Exit if crop detail is missing
-              }
-
-              if (crop.error) {
-                console.error("Error in crop data for", cropName, ":", crop.error);
-                console.error("Error in crop data for index:", activeIndex, "Crop:", crop);
-                const tooltipContent = `<div>Error in data for ${cropName}: ${crop.error}</div>`;
-                if (tippyInstance) {
-                  tippyInstance.setContent(tooltipContent);
-                  tippyInstance.show();
-                }
-                return;
-              }
-
-              if (!crop.qualityTiers || !crop.qualityTiers.normal) {
-                console.error("Crop detail missing required 'qualityTiers.normal' structure for index:", activeIndex, "Crop:", crop);
-                const tooltipContent = `<div>Error: Incomplete data for ${cropName}</div>`;
-                if (tippyInstance) {
-                  tippyInstance.setContent(tooltipContent);
-                  tippyInstance.show();
-                }
-                return;
-              }
-
-              // determine display values based on processing selection
-              const _proc = window.currentProcessing || 'raw';
-              const _procStats = _proc === 'raw' ? null : (crop.artisan && crop.artisan[_proc] ? crop.artisan[_proc] : null);
-              const displayTotalProfit = _proc === 'raw' ? crop.totalProfit : (_procStats ? _procStats.totalProfit : '0.00');
-              const displayProfitPerDay = _proc === 'raw' ? crop.profitPerDay : ((_procStats && crop.calculatedDuration) ? (parseFloat(_procStats.totalProfit) / Math.max(1, crop.calculatedDuration)).toFixed(2) : (parseFloat(_procStats?.totalProfit || 0) / Math.max(1, crop.calculatedDuration || 28)).toFixed(2));
-
-              const tooltipContent = `
-                <div class="tippyInner">
-                  <div style="font-weight: bold; font-size: 140%; color: rgb(12, 126, 16); margin-bottom: 5px;">
-                    ${cropName}
-                  </div>
-                  <div style="margin-bottom: 5px;" class="tippyBody">
-                    <section class="tippySection">
-                      <span class="tippyHeading"> Harvest Summary </span>
-                      <div> <span> Total Profit: </span> ${
-                        displayTotalProfit
-                      }g</div>
-                      <div> <span>ROI Percent: </span> ${crop.roiPercent}</div>
-                      <div> <span>ProfitPerDay: </span> ${
-                        displayProfitPerDay
-                      }g</div>
-                    </section>
-                    ${(() => {
-                      const proc = window.currentProcessing || 'raw';
-                      if (proc !== 'raw') {
-                        const p = crop.artisan && crop.artisan[proc];
-                        if (p) {
-                          return `
-                    <section class="tippySection">
-                      <span class="tippyHeading"> Processed (${proc.toUpperCase()}) </span>
-                      <div> <span> Expected AVG: </span> ${p.expectedValue}g</div>
-                      <div> <span> Adjusted AVG: </span> ${p.adjustedValue}g</div>
-                      <div> <span> Total Revenue: </span> ${p.totalRevenue}g</div>
-                      <div> <span> Total Profit: </span> ${p.totalProfit}g</div>
-                    </section>
-                          `;
-                        } else {
-                          return `
-                    <section class="tippySection">
-                      <span class="tippyHeading"> Processed (${proc.toUpperCase()}) </span>
-                      <div> <span> Not applicable for this crop. </span></div>
-                    </section>
-                          `;
-                        }
-                      }
-                      return "";
-                    })()}
-                    <section class="tippySection">
-                      <span class="tippyHeading"> Crop Quality & Value </span>
-                      <div> <span>Normal: </span> ${
-                        crop.qualityTiers.normal.value
-                      }g</div>
-                      <div> <span>Silver: </span> ${
-                        crop.qualityTiers.silver.value
-                      }g</div>
-                      <div> <span>Gold: </span> ${
-                        crop.qualityTiers.gold.value
-                      }g</div>
-                      <div> <span>Expected AVG: </span> ${
-                        crop.qualityTiers.expectedValue
-                      }g</div>
-                      <div> <span>Adjusted Value: </span> ${
-                        crop.qualityTiers.adjustedValue
-                      }g</div>
-                    </section>
-                    <section class="tippySection">
-                      <span class="tippyHeading"> Seed & Sell Prices </span>
-                      <div> <span>Seed Cost: </span> ${crop.seedPrice}g</div>
-                      <div> <span>Base Crop Price:</span> ${
-                        crop.cropPrice
-                      }g</div>
-                      <div> <span>Total Revenue:</span> ${
-                        crop.totalRevenue
-                      }g</div>
-                      <div> <span>Total Cost:</span> ${crop.totalCost}g</div>
-                    </section>
-                    <section class="tippySection">
-                      <span class="tippyHeading"> Growth & Harvest Info </span>
-                      <div> <span> Growth Days:</span> ${
-                        crop.growthDays
-                      } days</div>
-                      <div> <span>Harvests Per Season:</span> ${
-                        crop.harvests
-                      }</div>
-                      <div> <span>Break-Even Point:</span> ${
-                        crop.breakEvenHarvests
-                      } harvests</div>
-                      <div> <span>Regrows Every:</span> ${crop.regrowth}</div>
-                    </section>
-                  </div>
-                  ${crop.description || crop.additionalInfo || ""}
-                </div>
-              `;
-
-              // Initialize or update Tippy tooltip
-              if (!tippyInstance) {
-                tippyInstance = tippy(windowMyChart.canvas, {
-                  content: tooltipContent,
-                  allowHTML: true,
-                  interactive: true, // allow users to move cursor into tooltip to read/scroll
-                  appendTo: document.body,
-                  hideOnClick: true,
-                  followCursor: true,
-                  theme: "custom",
-                  placement: "top",
-                  offset: [0, 10],
-                  animation: "fade",
-                  duration: [200, 50],
-                  delay: 0,
-                  touch: ['hold', 400],
-                  popperOptions: {
-                    modifiers: [
-                      {
-                        name: "flip",
-                        options: {
-                          fallbackPlacements: [
-                            "top",
-                            "bottom",
-                            "right",
-                            "left",
-                          ],
-                        },
-                      },
-                      {
-                        name: "preventOverflow",
-                        options: {
-                          padding: 8,
-                          boundary: visualViewport,
-                        },
-                      },
-                      {
-                        name: 'offset',
-                        options: { offset: [0, 8] }
-                      }
-                    ],
-                  },
-                });
-              } else {
-                tippyInstance.setContent(tooltipContent);
-              }
-              tippyInstance.show();
+              const crop = sortedDetails[activeIndex];
+              if (crop) showDetailsPane(crop);
             } else {
               // Mouse left chart area
-              if (tippyInstance) tippyInstance.hide();
+              hideDetailsPane();
               // Reset bar colors
               const dataset = windowMyChart.data.datasets[0];
-              dataset.backgroundColor = sortedLabels.map(
-                () => "rgb(48, 124, 42)"
-              );
+              dataset.backgroundColor = sortedLabels.map(() => "rgb(48, 124, 42)");
               windowMyChart.update();
             }
           },
           scales: {
-            y: {
-              beginAtZero: true,
-              min: 0.0,
-              ticks: { stepSize: 0 },
-            },
             x: { grid: { display: false } },
+            y: { beginAtZero: true, ticks: { precision: 0 } },
           },
           plugins: {
             legend: { display: false },
@@ -1048,6 +866,78 @@ function toggleInputForm(button) {
   }
 }
 
+// Render detail HTML used by both the details pane and (optionally) the tooltip
+function renderDetailHTML(crop) {
+  if (!crop) return "<div>No data</div>";
+  const proc = window.currentProcessing || "raw";
+  const artisanSection = (() => {
+    if (proc === "raw") return "";
+    const p = crop.artisan && crop.artisan[proc];
+    if (!p) {
+      const titleCase = proc.charAt(0).toUpperCase() + proc.slice(1).toLowerCase();
+      return `<section class="tippySection"><span class="tippyHeading"> ${titleCase} </span><div>Not applicable for this crop.</div></section>`;
+    }
+    const titleCase = proc.charAt(0).toUpperCase() + proc.slice(1).toLowerCase();
+    return `<section class="tippySection"><span class="tippyHeading"> ${titleCase}</span><div><span> Expected AVG: </span> ${p.expectedValue}g</div><div><span> Adjusted AVG: </span> ${p.adjustedValue}g</div><div><span> Total Revenue: </span> ${p.totalRevenue}g</div><div><span> Total Profit: </span> ${p.totalProfit}g</div></section>`;
+  })();
+
+  return `
+    <div class="details-content">
+      <div style="font-weight: bold; font-size: 140%; color: rgb(12, 126, 16); margin-bottom: 8px;">${crop.name}</div>
+      <section class="tippySection">
+        <span class="tippyHeading">Harvest Summary</span>
+        <div><span>Total Profit:</span> ${crop.totalProfit}g</div>
+        <div><span>ROI Percent:</span> ${crop.roiPercent}</div>
+        <div><span>Profit Per Day:</span> ${crop.profitPerDay}g</div>
+      </section>
+      ${artisanSection}
+      <section class="tippySection">
+        <span class="tippyHeading">Crop Quality & Value</span>
+        <div><span>Normal:</span> ${crop.qualityTiers?.normal?.value ?? "-"}g</div>
+        <div><span>Silver:</span> ${crop.qualityTiers?.silver?.value ?? "-"}g</div>
+        <div><span>Gold:</span> ${crop.qualityTiers?.gold?.value ?? "-"}g</div>
+        <div><span>Expected AVG:</span> ${crop.qualityTiers?.expectedValue ?? "-"}g</div>
+        <div><span>Adjusted Value:</span> ${crop.qualityTiers?.adjustedValue ?? "-"}g</div>
+      </section>
+      <section class="tippySection">
+        <span class="tippyHeading">Seed & Sell Prices</span>
+        <div><span>Seed Cost:</span> ${crop.seedPrice}g</div>
+        <div><span>Base Crop Price:</span> ${crop.cropPrice}g</div>
+        <div><span>Total Revenue:</span> ${crop.totalRevenue}g</div>
+        <div><span>Total Cost:</span> ${crop.totalCost}g</div>
+      </section>
+      <section class="tippySection">
+        <span class="tippyHeading">Growth & Harvest Info</span>
+        <div><span>Growth Days:</span> ${crop.growthDays} days</div>
+        <div><span>Harvests Per Season:</span> ${crop.harvests}</div>
+        <div><span>Break-Even Point:</span> ${crop.breakEvenHarvests ?? "-"} harvests</div>
+        <div><span>Regrows Every:</span> ${crop.regrowth || "-"}</div>
+      </section>
+      ${(crop.description || crop.additionalInfo) ? `<section class="tippySection">${crop.description || crop.additionalInfo}</section>` : ""}
+    </div>
+  `;
+}
+
+function showDetailsPane(crop) {
+  try {
+    const pane = document.getElementById("details-pane");
+    const content = document.getElementById("details-pane-content");
+    const title = document.getElementById("details-pane-title");
+    if (!pane || !content) return;
+    if (title) title.textContent = "Crop Details";
+    content.innerHTML = renderDetailHTML(crop);
+    pane.classList.add("open");
+    if (tippyInstance) tippyInstance.hide();
+  } catch (err) {
+    console.error("showDetailsPane error:", err);
+  }
+}
+
+function hideDetailsPane() {
+  const pane = document.getElementById("details-pane");
+  if (!pane) return;
+  pane.classList.remove("open");
+}
 // * --- Initialization Helper ---
 function initializeChart() {
   if (windowMyChart) {

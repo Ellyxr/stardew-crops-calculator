@@ -104,20 +104,27 @@ button:focus-visible {
   justify-content: center;
 }
 
-.changeLog {
-  font-size: 0.9em;
-  margin: 0em 0em 0em 1em;
-  background-color: #0b8e0f;
-}
-
 .title {
   background-image: url("assets/title.png");
   background-size: contain;
   background-position: start;
   background-repeat: no-repeat;
-  width: 100%;
+  width: 80%;
   height: 50%;
   margin: 0em 0em;
+}
+
+.title-right {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6em;
+  font-size: 0.9em;
+  padding: 1em 0em 1em 0em;
+  width: 30%;
+}
+
+.title-button {
+  background-color: none;
 }
 
 .Main-container {
@@ -127,7 +134,7 @@ button:focus-visible {
   place-content: center;
   align-items: center;
   justify-content: center;
-    z-index: 1;
+  z-index: 1;
 }
 .Main-container-content {
   width: 90%;
@@ -152,7 +159,8 @@ button:focus-visible {
 
 .Calculator-container-header,
 .list-container-header,
-.graph-container-header {
+.graph-container-header,
+.details-pane-header {
   background-color: #03a007;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
     rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
@@ -161,11 +169,13 @@ button:focus-visible {
   color: white;
   font-weight: bold;
   padding: 0.4rem 0rem;
+  border-radius: 10px 10px 0px 0px;
 }
 
 .Calculator-container,
 .list-container,
 .graph-container {
+  border: 1px solid #159533;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
     rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
@@ -181,8 +191,8 @@ button:focus-visible {
 }
 
 .Calculator-container-form {
-  padding: 1rem;
-  width: 80%;
+  padding: 2rem 0.8rem 1rem 0.8rem;
+  width: 90%;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -199,6 +209,28 @@ button:focus-visible {
 .Calculator-container-form .form-group {
   display: flex;
   padding: 0.4em 0.6em;
+}
+
+#allowRegrowthLive {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  margin-bottom: 0.6em;
+}
+
+#allowRegrowthLive label {
+  margin: 0;
+  white-space: nowrap;
+}
+
+#allowRegrowthLive input {
+  width: 50%;
+  min-width: 4rem;
+  padding: 0.3rem;
+  box-sizing: border-box;
+  margin: 0em 0em 0em 2em;
 }
 
 .Calculator-container-form .form-group label {
@@ -276,15 +308,10 @@ button:focus-visible {
 
 /* * END OF CONTAINERS*/
 
-#paste-submit {
-  padding: 0.4em 0.8em;
-  font-size: 1em;
-}
-
 .Chart_RefreshGraphCntr {
   display: flex;
   justify-content: space-between;
-  padding: 2em 2em 0.4em 2em;
+  padding: 1em 2em 0.4em 2em;
 }
 
 #Chart_Note {
@@ -299,7 +326,10 @@ button:focus-visible {
 
 #Chart_RefreshGraph {
   align-self: flex-end;
-  font-size: 1em;
+  font-size: 0.8em;
+  width: 40%;
+  height: 3em;
+  margin: 1em 0em 1em 1em;
 }
 
 .list-container-form table {
@@ -502,6 +532,15 @@ button:focus-visible {
   background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
 }
+
+/* Details container styling: make it a right-side column in the main content layout */
+.content-container {
+  display: grid;
+  grid-template-columns: 360px 1fr 340px; /* calculator | main (graph + list) | details */
+  gap: 1rem;
+  align-items: start;
+}
+/* details column is styled later to match other containers */
 
 .modalPopUpContent,
 .changeLogModalContent {
@@ -748,6 +787,7 @@ button:hover {
 .advancedSettingsForm {
   display: flex;
   flex-direction: column;
+  
 }
 
 .AdvancedSettings_Buttons {
@@ -777,26 +817,51 @@ button:hover {
   opacity: 1;
 }
 
+/* Advanced Settings container: handle background/padding so the Submit button sits inside the same background */
+.AdvancedSettings_Farm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: rgba(1, 120, 5, 0.08);
+  border-radius: 6px;
+}
+
 .AdvancedSettings_Farm_Left {
   flex: 1 50%;
   width: 100%;
   padding: 1em 1em;
   background-color: rgba(1, 120, 5, 0.12);
   border-radius: 4px;
-  display: flex;
-  flex-direction: row;
+  /* Use a single-column layout for all sizes */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  /* ensure the farm settings do not create an internal scroll */
+  overflow: visible;
+  max-height: none;
 }
 
-.AdvancedSettings_Farm_Left > .AS_FarmContent_Left, .AS_FarmContent_Right {
-  width: 40%;
+.AdvancedSettings_Farm_Left > .AS_FarmContent_Left,
+.AdvancedSettings_Farm_Left > .AS_FarmContent_Right {
+  width: 100%;
   display: flex;
-  flex-direction: column; 
-  margin: 0 6em 0 0;
+  flex-direction: column;
+  margin: 0;
   box-sizing: border-box;
 }
 
 .AS_FarmContent_Right {
+  width: 100%;
+}
+
+/* Submit button below the two columns, inside Advanced Settings background */
+.AdvancedSettings_Farm > #AS_Farm_Button {
+  display: block;
+  margin: 0.5rem auto 0;
   width: 50%;
+  max-width: 320px;
+  justify-self: center;
 }
 
 #AS_FarmerSkill_Container {
@@ -808,26 +873,52 @@ button:hover {
 }
 
 .AS_FarmContent_Container {
-  display: flex;           
+  display: flex;
   flex-direction: row;
-  align-items: center;     
+  align-items: center;
   gap: 2em;
   width: 100%;
   margin: 0.4em 0em 0 0;
+  /* ensure inputs don't create inner scrollbars */
+  overflow: visible;
 }
 
 .AS_FarmContent_Container label {
   white-space: nowrap;
   margin: 0;
   flex: 0 0 auto;
-  width: 8ch;          
+  width: 8ch;
 }
 
 .AS_FarmContent_Container input {
   flex: 1 1 auto;
   min-width: 4em;
-  width: auto;              
+  width: auto;
   box-sizing: border-box;
+}
+
+/* Style selects inside advanced settings to look like compact dropdowns */
+.AS_FarmContent_Container select {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background-color: rgba(255,255,255,0.95);
+  color: #1a1a1a;
+  box-sizing: border-box;
+  -webkit-appearance: menulist;
+  appearance: menulist;
+}
+
+/* ensure label/input alignment remains tight and readable */
+.AS_FarmContent_Container label {
+  width: 9ch; /* slightly wider so labels don't wrap */
+  margin-right: 0.6rem;
+}
+
+/* Tweak checkbox group in farm settings for spacing/readability */
+#AS_FarmerSkill_Container input[type="checkbox"] {
+  margin-right: 0.35rem;
 }
 
 .crop-singleField {
@@ -931,13 +1022,17 @@ button:hover {
 }
 
 .form-group-row small {
-  width: 70%;
+  width: 100%;
   align-self: flex-start;
+  font-size: 0.9em;
 }
 
 .form-group-row button {
-  width: 30%;
+  width: 40%;
   align-self: flex-end;
+  margin: 0em 0em 0.2em 0em;
+  padding: 0.4em 0.3em;
+  font-size: 1em;
 }
 
 .tippy-box[data-theme~="custom"] {
@@ -965,20 +1060,84 @@ button:hover {
   overflow: auto;
 }
 
-.tippy-box[data-theme~="custom"] .tippy-content .tippyBody span {
+/* Details pane styles (in-layout right column) */
+.details-pane {
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+  background-color: rgba(208, 235, 253, 0.8);
+  color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  /* match other containers' spacing */
+  min-height: 12rem;
+  max-height: 100%;
+  /* max-height: calc(100vh - 20em); */
+  overflow: hidden;
+  box-sizing: border-box;
+  align-self: start; /* align with top of adjacent columns */
+}
+
+.details-pane-title {
+  font-weight: 700;
+  color: white;
+}
+.details-pane-close {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+.details-pane-content {
+  padding: 1rem;
+  overflow: auto;
+  flex: 1;
+  font-size: 14px;
+}
+.details-pane-content span {
   font-weight: 600;
   margin: 0.2em 0em 0.1em 0em;
   color: rgb(2, 26, 8);
 }
+.details-pane .tippySection {
+  margin-bottom: 0.6rem;
+}
 
-.tippy-box[data-theme~="custom"] .tippy-content .tippyBody .tippyHeading {
+.tippyHeading {
   display: inline-block;
-  font-weight: 700;
   margin: 0.2em 0em 0.1em 0em;
-  color: rgb(201, 213, 204);
+  color: rgb(201, 213, 204) !important;
   background-color: #137c25;
   width: 100%;
   padding: 2px;
+  font-weight: bold !important;
+}
+
+.details-loading {
+  color: #666;
+  font-size: 1em;
+  text-align: center;
+  margin-top: 2em;
+}
+
+@media (max-width: 980px) {
+  .details-pane {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  /* Stack the advanced settings columns on smaller screens */
+  /* Advanced settings are single-column by default; nothing to change here */
+  .AdvancedSettings_Farm > #AS_Farm_Button {
+    width: 100%;
+    justify-self: stretch;
+  }
+}
+
+.tippy-box[data-theme~="custom"] .tippy-content .tippyBody span {
+  font-weight: 600;
+  margin: 0.2em 0em 0.1em 0em;
+  color: rgb(2, 26, 8);
 }
 
 .tippy-box[data-theme~="custom"] .tippy-content .tippyBody .tippySection {
@@ -1083,7 +1242,7 @@ button:hover {
   }
 
   .form-group-row small {
-    font-size: 0.9em;
+    font-size: 0.8em;
     margin-top: 0.4em;
   }
 
@@ -1098,11 +1257,6 @@ button:hover {
 
   #crop-submit {
     margin-top: 1em;
-  }
-
-  /* */
-  #crop-singleTextField {
-    font-size: 1em;
   }
 
   /* * graph */
@@ -1198,5 +1352,32 @@ button:hover {
     position: sticky;
     bottom: 0;
     background: white;
+  }
+}
+
+/* For very wide viewports, collapse Advanced Settings to a single vertically scrollable column
+   This is for displays >= 1700px width: the panel will become one column and scroll vertically
+   while keeping the Submit button visible (sticky) at the bottom of the Advanced Settings area. */
+@media (min-width: 1700px) {
+  .AdvancedSettings_Farm_Left {
+    grid-template-columns: 1fr; /* single column */
+    gap: 0.75rem;
+  }
+
+  .AdvancedSettings_Farm {
+    max-height: 80vh; /* constrain height so the area can scroll vertically */
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* keep the submit button visible inside the scrollable area */
+  .AdvancedSettings_Farm > #AS_Farm_Button {
+    position: sticky;
+    bottom: 0;
+    margin: 0.5rem auto 0;
+    width: 90%;
+    max-width: 480px;
+    z-index: 5;
+    background-color: rgba(3,160,7,0.08);
   }
 }

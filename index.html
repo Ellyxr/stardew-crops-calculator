@@ -26,9 +26,11 @@
     <div class="Main-container-content">
       <div class="header">
         <figure class="title"><span>&nbsp;</span></figure>
-        <p> 🌙</p>
-        <button class="changeLog" id="changeLogButton"> Changelog </button>
-
+        <div class="title-right">
+        <button class="title-button" id="toggleMode"> 🌙</button>
+        <button class="title-button" id="tutorialButton"> How it works </button>
+        <button class="title-button" id="changeLogButton"> Changelog </button>
+</div>
       </div>
       <div class="content-container">
 
@@ -48,12 +50,12 @@
                 <small>Crop name, Seed price, Crop Price, Growth Days, Regrows?, Every # days</small> <br />
 
                 <div class="form-group-row">
-                  <small> [Strawberry 100 120 8 no 9,] </small>
-                  <button id="paste-submit"> Paste ▼ </button>
+                  <small> [Strawberry 100 120 8 yes 4,] </small>
+                  <button id="paste-submit">  ▼ </button>
                 </div>
 
                 <textarea type="text" id="crop-singleTextField" name="cropName"
-                  placeholder="Press Tab, Strawberry 100 120 8 no 9" rows="4"></textarea>
+                  placeholder="Strawberry 100 120 8 no 9" rows="4"></textarea>
               </div>
 
               <button class="crop-submit" id="crop-submit"> Add to list</button>
@@ -92,8 +94,9 @@
               <div class="form-group" id="allowRegrowthLive" style="display: none;">
                 <label for="crop-regrowth-days"> Every ___ Days </label>
                 <input type="number" id="crop-regrowth-every" name="cropRegrowthEvery" placeholder="3">
+                
               </div>
-
+              
               <button type="submit" id="crop-submit" class="crop-submit "> Add to list</button>
 
             </form>
@@ -116,7 +119,7 @@
             <div class="Chart_RefreshGraphCntr">
               <span id="Chart_Note"> ❗Profits between 0-1 will not show up in the canvas!
               </span>
-              <button id="Chart_RefreshGraph"> Refresh Graph</button>
+              <button id="Chart_RefreshGraph"> ↻ Refresh Graph</button>
             </div>
 
             <div class="graph-container-graph">
@@ -155,6 +158,7 @@
                   <!-- FARM -->
                   <div class="AdvancedSettings_Farm" id="AdvancedSettings_Farm">
                     <div class="AdvancedSettings_Farm_Left">
+                      <!-- Left column: Current Day, Duration, Crops, Farmer Level -->
                       <div class="AS_FarmContent_Left">
                         <div class="AS_FarmContent_Container">
                           <label for="AS_CurrentDay">Current Day</label>
@@ -172,44 +176,43 @@
                         </div>
 
                         <div class="AS_FarmContent_Container">
+                          <label for="AS_FarmingLevel"> Farmer Level </label>
+                          <input type="number" id="AS_FarmingLevel" name="AS_FarmingLevel" placeholder="1">
+                        </div>
+                      </div>
+
+                      <!-- Right column: Fertilizer dropdown and Farmer Skill checkboxes -->
+                      <div class="AS_FarmContent_Right">
+                        <div class="AS_FarmContent_Container">
                           <label for="AS_Fertilizer"> Fertilizer </label>
-                          <select name="AS_Fertilizer" id="AS_FertilizerType" multiple>
+                          <select name="AS_Fertilizer" id="AS_FertilizerType">
                             <option value="None"> None </option>
                             <option value="Basic_Fertilizer"> Basic Fertilizer </option>
                             <option value="Quality_Fertilizer"> Quality Fertilizer </option>
                             <option value="Deluxe_Fertilizer"> Deluxe Fertilizer </option>
-                            <option value="Speed-Gro"> Speed-Gro </option>
-                            <option value="Deluxe Speed-Gro"> Deluxe Speed-Gro </option>
-                            <option value="Hyper_Speed-Gro"> Hyper Speed-Gro </option>
                           </select>
-                        </div>
-                      </div>
-
-                      <div class="AS_FarmContent_Right">
-                        <div class="AS_FarmContent_Container">
-                          <label for="AS_FarmingLevel"> Farmer Level </label>
-                          <input type="number" id="AS_FarmingLevel" name="AS_FarmingLevel" placeholder="1">
                         </div>
 
                         <div class="AS_FarmContent_Container">
                           <label for="AS_FarmerSkill"> Farmer Skill </label>
                           <div id="AS_FarmerSkill_Container">
-                          <input type="checkbox" id="AS_Tiller" name="AS_Tiller" value="Tiller">
-                          <label for="AS_Tiller"> Tiller </label> <br>
+                            <input type="checkbox" id="AS_Tiller" name="AS_Tiller" value="Tiller">
+                            <label for="AS_Tiller"> Tiller </label> <br>
 
-                          <input type="checkbox" id="AS_Agriculturist" name="AS_Agriculturist" value="Agriculturist">
-                          <label for="AS_Agriculturist"> Agriculturist </label> <br>
+                            <input type="checkbox" id="AS_Agriculturist" name="AS_Agriculturist" value="Agriculturist">
+                            <label for="AS_Agriculturist"> Agriculturist </label> <br>
 
-                          <input type="checkbox" id="AS_Artisan" name="AS_Artisan" value="Artisan">
-                          <label for="AS_Artisan"> Artisan </label>
+                            <input type="checkbox" id="AS_Artisan" name="AS_Artisan" value="Artisan">
+                            <label for="AS_Artisan"> Artisan </label>
                           </div>
-
-                          
                         </div>
-                        <button id="AS_Farm_Button"> Submit </button>
                       </div>
 
                     </div>
+
+                    <!-- Submit button: sits below both columns and inside the Advanced Settings background -->
+                    <button id="AS_Farm_Button"> Submit </button>
+
                     <div class="AdvancedSettings_Farm_Right">
 
                     </div>
@@ -351,6 +354,18 @@
           </div>
 
         </div>
+
+        <aside id="details-pane" class="details-pane" aria-hidden="true">
+          <div class="details-pane-header">
+            <div id="details-pane-title" class="details-pane-title">Details</div>
+
+          </div>
+          <div id="details-pane-content" class="details-pane-content">
+            <!-- Content filled dynamically by ui.js -->
+            <div class="details-loading">Hover a crop bar to see details here.</div>
+          </div>
+        </aside>
+
       </div>
 
       <footer class="Credits">
@@ -391,6 +406,8 @@
     </div>
 
   </div>
+
+  <!-- details moved into the content container to act as a right-hand column -->
 
   <div id="Toast_GraphUpdated"> Graph updated </div>
   <div id="Toast_EmptySubmit"> Make sure to fill fields first! </div>
