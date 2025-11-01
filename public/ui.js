@@ -8,8 +8,10 @@ import {
   getCropDetails,
   getCropData,
   getCropLabels,
+  setCropDetails,
 } from "./data.js";
 import { showToast, isNumeric } from "./util.js";
+import { calculateCropStats } from "./calculation.js";
 import { recalculateAllCrops } from "./data.js";
 
 // * --- DOM Elements (Store frequently used elements) ---
@@ -22,18 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
   // * LOADING SCREEN PLACEHOLDER ---------------------
   const loadingScreen = document.getElementById("loading-screen");
 
-  // Check if the element exists (good practice)
   if (loadingScreen) {
-    // Option 1: Fade out and then remove from the DOM
     loadingScreen.style.transition = "opacity 0.5s ease-out"; // Add a smooth fade-out
     loadingScreen.style.opacity = "0";
-    // Wait for the fade-out transition to complete before removing
     setTimeout(() => {
-      loadingScreen.remove(); // Remove the element from the DOM
-    }, 500); // Match the duration of the CSS transition (0.5s)
+      loadingScreen.remove();
+    }, 500);
 
-    // Option 2: Instantly hide (less smooth)
-    // loadingScreen.style.display = "none";
   } else {
     console.warn("Loading screen element with ID 'loading-screen' not found.");
   }
@@ -204,7 +201,8 @@ function attachEventListeners() {
   });
 
   // ensure initial classes (farm active by default)
-  if (AdvancedSettings_FarmButton) setAdvancedActive(AdvancedSettings_FarmButton);
+  if (AdvancedSettings_FarmButton)
+    setAdvancedActive(AdvancedSettings_FarmButton);
 }
 
 //* ADVANCED SETTINGS
@@ -215,14 +213,19 @@ function handleFarmSettingsSubmit() {
   const currentDayInput = document.getElementById("AS_CurrentDay");
   const durationInput = document.getElementById("AS_Duration");
   if (!durationInput || !currentDayInput) {
-    console.error("Duration input field ${!durationInput} or Current Day field ${!currentDayInput} missing.");
-    showToast("Configuration error: Duration field missing.", {type: "error", duration: 4000});
+    console.error(
+      "Duration input field ${!durationInput} or Current Day field ${!currentDayInput} missing."
+    );
+    showToast("Configuration error: Duration field missing.", {
+      type: "error",
+      duration: 4000,
+    });
     return;
   }
 
   const durationString = durationInput.value.trim();
   const AS_duration = parseInt(durationString);
-  
+
   const cropsInput = document.getElementById("AS_Crops");
   const farmingLevelInput = document.getElementById("AS_FarmingLevel");
   const fertilizerSelect = document.getElementById("AS_FertilizerType");
@@ -237,7 +240,16 @@ function handleFarmSettingsSubmit() {
   const crops = cropsInput ? cropsInput.value : null;
   const farmingLevel = farmingLevelInput ? farmingLevelInput.value : null;
 
-  console.log("Settings - Day:", currentDay, "Duration:", duration, "Crops:", crops, "Farming Level:", farmingLevel);
+  console.log(
+    "Settings - Day:",
+    currentDay,
+    "Duration:",
+    duration,
+    "Crops:",
+    crops,
+    "Farming Level:",
+    farmingLevel
+  );
 
   // Recalculate all crops based on new duration
   // Enforce skill rules before recalculation:
@@ -263,7 +275,9 @@ function handleFarmSettingsSubmit() {
     if (farmingLevelInput) farmingLevelInput.value = farmingLevelVal;
 
     // Use numeric duration if possible
-    const durationNumber = Number.isFinite(Number(duration)) ? Number.parseInt(duration, 10) : null;
+    const durationNumber = Number.isFinite(Number(duration))
+      ? Number.parseInt(duration, 10)
+      : null;
     recalculateAllCrops(durationNumber || undefined);
   } catch (err) {
     console.error("Error enforcing farm settings rules:", err);
@@ -275,7 +289,7 @@ function handleFarmSettingsSubmit() {
   updateNoCropsUI();
   updateGraph();
 
-  showToast("Farm settings updated and crops recalculated. Recalculated for ${duration} days.", {  
+  showToast("Farm settings updated and crops recalculated.", {
     type: "success",
     duration: 4000,
   });
@@ -287,18 +301,25 @@ function handleFarmSettingsSubmit() {
 function handleMultipleFieldFormSubmit(event) {
   event.preventDefault();
   const cropNameEl = document.getElementById("crop-name");
-  const seedPriceStr = document.getElementById("seed-price")?.value?.trim() ?? "";
-  const cropPriceStr = document.getElementById("crop-price")?.value?.trim() ?? "";
-  const cropGrowthDaysStr = document.getElementById("crop-growth-days")?.value?.trim() ?? "";
-  const cropRegrowth = document.getElementById("crop-regrowth")?.checked ?? false;
-  const cropRegrowthEveryStr = document.getElementById("crop-regrowth-every")?.value?.trim() ?? "";
+  const seedPriceStr =
+    document.getElementById("seed-price")?.value?.trim() ?? "";
+  const cropPriceStr =
+    document.getElementById("crop-price")?.value?.trim() ?? "";
+  const cropGrowthDaysStr =
+    document.getElementById("crop-growth-days")?.value?.trim() ?? "";
+  const cropRegrowth =
+    document.getElementById("crop-regrowth")?.checked ?? false;
+  const cropRegrowthEveryStr =
+    document.getElementById("crop-regrowth-every")?.value?.trim() ?? "";
 
   const cropName = cropNameEl ? cropNameEl.value.trim() : "";
 
   const seedPrice = Number.parseFloat(seedPriceStr);
   const cropPrice = Number.parseFloat(cropPriceStr);
   const cropGrowthDays = Number.parseInt(cropGrowthDaysStr, 10);
-  const cropRegrowthEvery = cropRegrowth ? Number.parseInt(cropRegrowthEveryStr, 10) : 0;
+  const cropRegrowthEvery = cropRegrowth
+    ? Number.parseInt(cropRegrowthEveryStr, 10)
+    : 0;
 
   if (
     !cropName ||
@@ -365,7 +386,8 @@ function initProcessingButtons() {
 
 function handleSingleFieldFormSubmit(e) {
   e.preventDefault();
-  const bulkInput = document.getElementById("crop-singleTextField")?.value?.trim() ?? "";
+  const bulkInput =
+    document.getElementById("crop-singleTextField")?.value?.trim() ?? "";
   if (!bulkInput) {
     showToast("Please fill required fields", {
       id: "Toast_EmptySubmit",
@@ -401,10 +423,16 @@ function handleSingleFieldFormSubmit(e) {
       if (parts.length >= 6) {
         const flagIndex = parts.length - 2;
         const valueIndex = parts.length - 1;
-        if (parts[flagIndex].toLowerCase() === "yes" || parts[flagIndex].toLowerCase() === "y") {
+        if (
+          parts[flagIndex].toLowerCase() === "yes" ||
+          parts[flagIndex].toLowerCase() === "y"
+        ) {
           regrowth = true;
           regrowthEveryStr = parts[valueIndex];
-        } else if (parts[flagIndex].toLowerCase() === "no" || parts[flagIndex].toLowerCase() === "n") {
+        } else if (
+          parts[flagIndex].toLowerCase() === "no" ||
+          parts[flagIndex].toLowerCase() === "n"
+        ) {
           regrowth = false;
           regrowthEveryStr = "0";
         } else if (isNumeric(parts[flagIndex])) {
@@ -416,7 +444,9 @@ function handleSingleFieldFormSubmit(e) {
       const seedPrice = Number.parseFloat(seedPriceStr);
       const cropPrice = Number.parseFloat(cropPriceStr);
       const growthDays = Number.parseInt(growthDaysStr, 10);
-      const regrowthEvery = regrowth ? Number.parseInt(regrowthEveryStr, 10) : 0;
+      const regrowthEvery = regrowth
+        ? Number.parseInt(regrowthEveryStr, 10)
+        : 0;
 
       if (
         !Number.isFinite(seedPrice) ||
@@ -445,10 +475,16 @@ function handleSingleFieldFormSubmit(e) {
   });
 
   if (addedCount > 0) {
-    showToast(`Added ${addedCount} crop(s).`, { type: "success", duration: 3000 });
+    showToast(`Added ${addedCount} crop(s).`, {
+      type: "success",
+      duration: 3000,
+    });
   }
   if (errorCount > 0) {
-    showToast(`Failed to add ${errorCount} entry(ies). Check console.`, { type: "error", duration: 5000 });
+    showToast(`Failed to add ${errorCount} entry(ies). Check console.`, {
+      type: "error",
+      duration: 5000,
+    });
   }
 
   const textarea = document.getElementById("crop-singleTextField");
@@ -522,6 +558,10 @@ function populateModalTable() {
     const newRow = row.cloneNode(true);
     newRow.addEventListener("click", function () {
       newRow.classList.toggle("selected");
+
+      try {
+        updateToggleButtonsState();
+      } catch (e) {}
     });
     modalTableBody.appendChild(newRow);
   });
@@ -559,9 +599,18 @@ async function handleEditClick() {
       const seedPrice = cells[1].textContent.trim();
       const cropPrice = cells[2].textContent.trim();
       const growthDays = cells[3].textContent.trim();
-      const regrowthText = cells[4].textContent.trim().toLowerCase();
+      // new columns: 4=yieldType,5=category,6=regrows,7=every
+      const yieldTypeCell = cells[4] ? cells[4].textContent.trim() : "";
+      const categoryCell = cells[5] ? cells[5].textContent.trim() : "";
+      const regrowthText = cells[6]
+        ? cells[6].textContent.trim().toLowerCase()
+        : "no";
       const regrowth = regrowthText === "yes";
-      const regrowthEvery = regrowth ? cells[5].textContent.trim() : "0";
+      const regrowthEvery = regrowth
+        ? cells[7]
+          ? cells[7].textContent.trim()
+          : "0"
+        : "0";
 
       if (
         !isNumeric(seedPrice) ||
@@ -584,6 +633,20 @@ async function handleEditClick() {
       }
 
       // * Recalculate stats using the updated data
+      // Normalize yield and category codes if user used shorthand (a/b/c and f/v/m)
+      let normalizedYield = (yieldTypeCell || "").toLowerCase();
+      if (["a", "b", "c"].includes(normalizedYield))
+        normalizedYield =
+          normalizedYield === "a"
+            ? "single"
+            : normalizedYield === "b"
+            ? "random_multi"
+            : "fixed_multi";
+      let normalizedCategory = (categoryCell || "").toLowerCase();
+      if (normalizedCategory === "f") normalizedCategory = "fruit";
+      if (normalizedCategory === "v") normalizedCategory = "vegetable";
+      if (normalizedCategory === "m") normalizedCategory = "mushroom";
+
       const newInputData = {
         cropName: name,
         seedPrice,
@@ -591,6 +654,8 @@ async function handleEditClick() {
         cropGrowthDays: growthDays,
         cropRegrowth: regrowth,
         cropRegrowthEvery: regrowthEvery,
+        cropYieldType: normalizedYield || undefined,
+        cropCategory: normalizedCategory || undefined,
       };
 
       // * If the crop existed before, edit it
@@ -640,7 +705,6 @@ function handleDeleteClick() {
   // Delete from data module
   deleteCrops(namesToDelete);
 
-  // Update UI (table and graph are updated by deleteCrops via refreshCropDetailsFromTable)
   updateTable();
   updateNoCropsUI();
   updateGraph();
@@ -664,6 +728,8 @@ export function updateTable() {
       <td>${stats.seedPrice}</td>
       <td>${stats.cropPrice}</td>
       <td>${stats.growthDays}</td>
+      <td>${stats.cropYieldType || "-"}</td>
+      <td>${stats.cropCategory || "-"}</td>
       <td>${stats.regrowthEvery > 0 ? "Yes" : "No"}</td>
       <td>${stats.regrowthEvery > 0 ? stats.regrowthEvery : "-"}</td>
     `;
@@ -672,18 +738,387 @@ export function updateTable() {
   updateNoCropsUI();
 }
 
+function updateToggleButtonsState() {
+  const modalTableBody = document.getElementById("modal-crop-table-body");
+  if (!modalTableBody) return;
+  const selectedCount = modalTableBody.querySelectorAll("tr.selected").length;
+  const yieldBtn = document.getElementById("tableContent-toggle-yield");
+  const catBtn = document.getElementById("tableContent-toggle-category");
+  if (!yieldBtn || !catBtn) return;
+  if (selectedCount > 0) {
+    yieldBtn.disabled = false;
+    catBtn.disabled = false;
+    yieldBtn.classList.add("active");
+    catBtn.classList.add("active");
+  } else {
+    yieldBtn.disabled = true;
+    catBtn.disabled = true;
+    yieldBtn.classList.remove("active");
+    catBtn.classList.remove("active");
+  }
+}
+
+// Small popup chooser: builds a small floating menu near the button
+function showChoicePopup(anchorButton, options = [], onChoose) {
+  const existing = document.getElementById("modal-chooser-popup");
+  if (existing) existing.remove();
+  const popup = document.createElement("div");
+  popup.id = "modal-chooser-popup";
+  popup.style.position = "fixed";
+  popup.style.zIndex = 9999;
+  popup.style.background = "#fff";
+  popup.style.border = "1px solid #ccc";
+  popup.style.padding = "6px";
+  popup.style.borderRadius = "6px";
+  popup.style.boxShadow = "0 4px 10px rgba(0,0,0,0.12)";
+  options.forEach((opt) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = opt.label || opt;
+    b.style.display = "block";
+    b.style.margin = "3px 0";
+    b.style.minWidth = "120px";
+    b.addEventListener("click", function () {
+      try {
+        onChoose(opt.value !== undefined ? opt.value : opt);
+      } finally {
+        popup.remove();
+      }
+    });
+    popup.appendChild(b);
+  });
+  document.body.appendChild(popup);
+  const r = anchorButton.getBoundingClientRect();
+  const left = Math.max(8, r.left);
+  const top = r.bottom + 6;
+  popup.style.left = `${left}px`;
+  popup.style.top = `${top}px`;
+  function onDocClick(e) {
+    if (!popup.contains(e.target) && e.target !== anchorButton) popup.remove();
+  }
+  setTimeout(() => document.addEventListener("click", onDocClick), 10);
+}
+
+// Apply chosen yield value to selected modal rows and sync to main table rows
+function applyYieldToSelectedRows(value) {
+  const modalTableBody = document.getElementById("modal-crop-table-body");
+  const mainBody = document.querySelector("#crop-list-table tbody");
+  if (!modalTableBody || !mainBody) return;
+  const selected = Array.from(modalTableBody.querySelectorAll("tr.selected"));
+  selected.forEach((mRow) => {
+    if (!mRow.cells[4]) {
+      const td = document.createElement("td");
+      mRow.insertBefore(td, mRow.children[4] || null);
+    }
+    mRow.cells[4].textContent = value;
+    const name = mRow.cells[0]?.textContent.trim();
+    const seed = mRow.cells[1]?.textContent.trim();
+    const price = mRow.cells[2]?.textContent.trim();
+    const originalRows = Array.from(mainBody.querySelectorAll("tr"));
+    const match = originalRows.find((r) => {
+      return (
+        r.cells[0]?.textContent.trim() === name &&
+        r.cells[1]?.textContent.trim() === seed &&
+        r.cells[2]?.textContent.trim() === price
+      );
+    });
+    if (match) {
+      if (!match.cells[4]) {
+        const td = document.createElement("td");
+        match.insertBefore(td, match.children[4] || null);
+      }
+      match.cells[4].textContent = value;
+    }
+  });
+  changesMade = true;
+  updateToggleButtonsState();
+  handleEditClick();
+  updateTable();
+}
+
+// * Export cropDetails to a JSON file
+function exportCrops() {
+  const completeCropDetails = getCropDetails();
+  //gets all of crop details
+  if (completeCropDetails.length === 0) {
+    showToast("No crops to export!", { type: "info", duration: 3000 });
+    return; 
+  }
+  try {
+    const simpleCropDetails = completeCropDetails.map((crop) => ({
+      "Crop Name": crop.name,
+      "Seed Price": crop.seedPrice,
+      "Crop Price": crop.cropPrice,
+      "Growth Days": crop.growthDays,
+      "Yield Type": crop.cropYieldType || "N/A",
+      Category: crop.cropCategory || "N/A",
+      Regrows: crop.regrowthEvery > 0 ? "Yes" : "No",
+      "Regrows Every": crop.regrowthEvery > 0 ? crop.regrowthEvery : "N/A",
+    }));
+
+    const jsonString = JSON.stringify(simpleCropDetails, null, 2);
+
+    const blob = new Blob([jsonString], { type: "application/json" });
+
+    const now = new Date();
+    const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-"); // Format: YYYY-MM-DDTHH-mm-ss
+    const filename = `Crop Details_${timestamp}.json`;
+
+    // Create a temporary link element
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob); // Creates URL for the blob
+    link.download = filename; // Sets desired filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    console.log("Crops exported successfully!");
+    showToast("Crops exported successfully!", {
+      type: "success",
+      duration: 3000,
+    });
+  } catch (error) {
+    console.error("Error exporting crops:", error);
+    showToast("Error exporting crops. Check console.", {
+      type: "error",
+      duration: 5000,
+    });
+  }
+}
+
+function importCrops(event) {
+  const file = event.target.files[0];
+
+  if (!file) {
+    console.error("No file selected for import.");
+    return;
+  }
+
+  if (file.type !== "application/json") {
+    showToast("Please select a valid JSON file.", {
+      type: "error",
+      duration: 4000,
+    });
+    console.error("Invalid file type selected for import:", file.type);
+    event.target.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    try {
+      const content = e.target.result;
+
+      // Parse the text as JSON
+      let importedData = JSON.parse(content);
+
+      if (!Array.isArray(importedData)) {
+        throw new Error("Imported data is not an array.");
+      }
+
+      // * NEW: Check and transform simplified format if necessary
+      if (importedData.length > 0 && importedData[0].hasOwnProperty("Crop Name")) {
+        console.log("Detected simplified import format, transforming...");
+        const transformedData = [];
+
+        for (const item of importedData) {
+
+          // Use the exact key names from your export function
+          const cropName = item["Crop Name"];
+          const seedPrice = item["Seed Price"];
+          const cropPrice = item["Crop Price"];
+          const growthDays = item["Growth Days"];
+          const yieldType = item["Yield Type"] || "N/A"; 
+          const category = item["Category"] || "N/A"; 
+          const regrowsText = item["Regrows"] || "No"; 
+          const regrowthEveryText = item["Regrows Every"] || "N/A";
+
+
+          const cropRegrowth = regrowsText === "Yes";
+          const cropRegrowthEvery = cropRegrowth && regrowthEveryText !== "N/A" ? parseInt(regrowthEveryText, 10) || 0 : 0;
+
+          if (!isNumeric(seedPrice) || !isNumeric(cropPrice) || !isNumeric(growthDays) || (cropRegrowth && !isNumeric(cropRegrowthEvery))) {
+              console.error("Invalid numeric data in imported item, skipping:", item);
+              showToast(`Skipping crop '${cropName}' due to invalid data. Check console.`, { type: "error", duration: 4000 });
+              continue; 
+          }
+
+          const fullCropStats = calculateCropStats({
+            cropName: cropName,
+            seedPrice: seedPrice,
+            cropPrice: cropPrice,
+            cropGrowthDays: growthDays,
+            cropRegrowth: cropRegrowth,
+            cropRegrowthEvery: cropRegrowthEvery,
+            // Pass imported meta-data if needed by the stats object structure (though calculateCropStats might not use them directly for calc)
+            cropYieldType: yieldType,
+            cropCategory: category,
+          });
+
+          // Add the fully calculated object to the new array
+          transformedData.push(fullCropStats);
+        }
+        importedData = transformedData; // Replace the imported array with the transformed one
+        console.log("Transformation complete, number of crops:", transformedData.length);
+      } else {
+          console.log("Detected full format import, using data as-is.");
+          // Optional: Add validation here to ensure the objects have the expected structure
+          // This is harder without a strict schema, but you could check for a few key properties.
+      }
+      // * END NEW: Transformation block
+
+      // * Update the main cropDetails array managed by data.js using the setter
+      // This should trigger updates in data.js for cropData and cropLabels
+      setCropDetails(importedData);
+
+      // Update the UI (table and graph) to reflect the new data
+      // These functions should now get the updated data via getCropDetails() from data.js
+      updateTable();
+      updateNoCropsUI();
+      updateGraph();
+
+      console.log("Crops imported and transformed successfully!");
+      showToast("Crops imported successfully!", {
+        type: "success",
+        duration: 3000,
+      });
+
+      // Clear the file input after successful import
+      event.target.value = "";
+
+    } catch (error) {
+      console.error("Error parsing or processing imported JSON:", error);
+      showToast("Error parsing or processing imported file. Check console.", {
+        type: "error",
+        duration: 5000,
+      });
+      // Clear the file input even if there's an error
+      event.target.value = "";
+    }
+  };
+
+  reader.onerror = function (e) {
+    console.error("Error reading file:", e);
+    showToast("Error reading file. Check console.", {
+      type: "error",
+      duration: 5000,
+    });
+    event.target.value = ""; // Clear the input
+  };
+
+  // Start reading the file as text
+  reader.readAsText(file);
+}
+
+// Apply chosen category value to selected modal rows and sync to main table rows
+function applyCategoryToSelectedRows(value) {
+  const modalTableBody = document.getElementById("modal-crop-table-body");
+  const mainBody = document.querySelector("#crop-list-table tbody");
+  if (!modalTableBody || !mainBody) return;
+  const selected = Array.from(modalTableBody.querySelectorAll("tr.selected"));
+  selected.forEach((mRow) => {
+    if (!mRow.cells[5]) {
+      const td = document.createElement("td");
+      mRow.insertBefore(td, mRow.children[5] || null);
+    }
+    mRow.cells[5].textContent = value;
+    const name = mRow.cells[0]?.textContent.trim();
+    const seed = mRow.cells[1]?.textContent.trim();
+    const price = mRow.cells[2]?.textContent.trim();
+    const originalRows = Array.from(mainBody.querySelectorAll("tr"));
+    const match = originalRows.find((r) => {
+      return (
+        r.cells[0]?.textContent.trim() === name &&
+        r.cells[1]?.textContent.trim() === seed &&
+        r.cells[2]?.textContent.trim() === price
+      );
+    });
+    if (match) {
+      if (!match.cells[5]) {
+        const td = document.createElement("td");
+        match.insertBefore(td, match.children[5] || null);
+      }
+      match.cells[5].textContent = value;
+    }
+  });
+  changesMade = true;
+  updateToggleButtonsState();
+}
+
+// wire the modal toggle buttons after DOM ready
+document.addEventListener("DOMContentLoaded", function () {
+  const yieldBtn = document.getElementById("tableContent-toggle-yield");
+  const catBtn = document.getElementById("tableContent-toggle-category");
+  if (yieldBtn) {
+    //yield type button
+    yieldBtn.addEventListener("click", function () {
+      if (this.disabled) return;
+      showChoicePopup(
+        this,
+        [
+          { value: "Single", label: "Single" },
+          { value: "Random Multi", label: "Random Multi" },
+          { value: "Fixed Multi", label: "Fixed Multi" },
+        ],
+        applyYieldToSelectedRows
+      );
+    });
+  }
+  if (catBtn) {
+    //category button
+    catBtn.addEventListener("click", function () {
+      if (this.disabled) return;
+      showChoicePopup(
+        this,
+        [
+          { value: "Fruit", label: "Fruit" },
+          { value: "Vegetable", label: "Vegetable" },
+          { value: "Mushroom", label: "Mushroom" },
+          { value: "Flower", label: "Flower" },
+          { value: "Unknown", label: "Unknown" },
+        ],
+        applyCategoryToSelectedRows
+      );
+    });
+  }
+
+  // * Import and Export Crops Event Listeners
+  const importButton = document.getElementById("import-button");
+  const exportButton = document.getElementById("export-button");
+  const importFileInput = document.getElementById("import-file");
+
+  if (exportButton) {
+    exportButton.addEventListener("click", exportCrops);
+  } else {
+    console.warn(
+      "Export button with ID 'export-button' not found. Add the button to your HTML."
+    );
+  }
+
+  if (importButton || importFileInput) {
+    importFileInput.addEventListener("change", importCrops);
+    importButton.addEventListener("click", function (event) {
+      console.log("Import button clicked, triggering file input click.");
+      importFileInput.click(); 
+    });
+  } else {
+    console.warn(
+      "Import button or file input element not found. Check your HTML."
+    );
+  }
+});
+
 export function updateGraph() {
-  console.log("updateGraph called"); // Debug log
+  console.log("updateGraph called");
 
-  // Get the current data from the data module
   const cropDetails = getCropDetails();
-  console.log("Retrieved cropDetails:", cropDetails); // Debug log
+  console.log("Retrieved cropDetails:", cropDetails);
 
-  // Check if the chart instance exists and destroy it if it does
   if (windowMyChart) {
-    console.log("Destroying existing chart instance"); // Debug log
+    console.log("Destroying existing chart instance");
     windowMyChart.destroy();
-    windowMyChart = null; // Ensure the variable is cleared
+    windowMyChart = null;
   }
 
   // Check if there's data to display
@@ -691,15 +1126,12 @@ export function updateGraph() {
     console.log(
       "No crop details to display on graph. Clearing canvas if possible."
     );
-    // Optionally clear canvas or show a message if no data
     if (ctx && ctx.canvas) {
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     }
-    // Do NOT return here if you want an empty chart or a placeholder
-    // Just proceed to create a chart with empty data or minimal data
   } else {
     // Build and sort data for the chart using the data from the module
-    console.log("Processing cropDetails for chart..."); // Debug log
+    console.log("Processing cropDetails for chart...");
     const processingType = window.currentProcessing || "raw";
     const combinedData = cropDetails.map((detail) => {
       let profit = 0;
@@ -721,33 +1153,31 @@ export function updateGraph() {
       return {
         label: detail.name,
         value: profit,
-        detail, // Include the full detail object for tooltips
+        detail,
       };
     });
 
-    console.log("Combined data before sorting:", combinedData); // Debug log
+    console.log("Combined data before sorting:", combinedData);
 
-    combinedData.sort((a, b) => b.value - a.value); // Sort descending by profit
-    console.log("Combined data after sorting:", combinedData); // Debug log
+    combinedData.sort((a, b) => b.value - a.value);
+    console.log("Combined data after sorting:", combinedData);
 
     const sortedLabels = combinedData.map((item) => item.label);
     const sortedData = combinedData.map((item) => item.value);
     const sortedDetails = combinedData.map((item) => item.detail);
 
-    console.log("Sorted Labels:", sortedLabels); // Debug log
-    console.log("Sorted Data:", sortedData); // Debug log
-    console.log("Sorted Details (first few):", sortedDetails.slice(0, 3)); // Debug log (first 3)
+    console.log("Sorted Labels:", sortedLabels);
+    console.log("Sorted Data:", sortedData);
+    console.log("Sorted Details (first few):", sortedDetails.slice(0, 3));
 
-    // Check if ctx is available
     if (!ctx) {
       console.error(
         "Canvas context (ctx) is not available. Cannot create chart."
       );
-      return; // Stop if context is missing
+      return;
     }
 
-    console.log("Creating new chart with data..."); // Debug log
-    // Create the new chart using the data from the module
+    console.log("Creating new chart with data...");
     try {
       windowMyChart = new Chart(ctx, {
         type: "bar",
@@ -773,12 +1203,19 @@ export function updateGraph() {
           },
           onHover: (event, chartElements) => {
             // chartElements is an array of active elements
-            if (event && event.native && chartElements && chartElements.length) {
+            if (
+              event &&
+              event.native &&
+              chartElements &&
+              chartElements.length
+            ) {
               const activeIndex = chartElements[0].index;
               // Highlight hovered bar
               const dataset = windowMyChart.data.datasets[0];
               dataset.backgroundColor = sortedLabels.map((_, index) =>
-                index === activeIndex ? "rgb(48, 124, 42)" : "rgba(46, 54, 64, 0.6)"
+                index === activeIndex
+                  ? "rgb(48, 124, 42)"
+                  : "rgba(46, 54, 64, 0.6)"
               );
               windowMyChart.update();
 
@@ -787,9 +1224,11 @@ export function updateGraph() {
             } else {
               // Mouse left chart area
               hideDetailsPane();
-              // Reset bar colors
+
               const dataset = windowMyChart.data.datasets[0];
-              dataset.backgroundColor = sortedLabels.map(() => "rgb(48, 124, 42)");
+              dataset.backgroundColor = sortedLabels.map(
+                () => "rgb(48, 124, 42)"
+              );
               windowMyChart.update();
             }
           },
@@ -803,9 +1242,9 @@ export function updateGraph() {
           },
         },
       });
-      console.log("Chart created successfully!"); // Debug log
+      console.log("Chart created successfully!");
     } catch (error) {
-      console.error("Error creating chart:", error); // Catch potential Chart.js errors
+      console.error("Error creating chart:", error);
     }
 
     // Attach tippy events to canvas (if needed, similar to original)
@@ -874,30 +1313,51 @@ function renderDetailHTML(crop) {
     if (proc === "raw") return "";
     const p = crop.artisan && crop.artisan[proc];
     if (!p) {
-      const titleCase = proc.charAt(0).toUpperCase() + proc.slice(1).toLowerCase();
+      const titleCase =
+        proc.charAt(0).toUpperCase() + proc.slice(1).toLowerCase();
       return `<section class="tippySection"><span class="tippyHeading"> ${titleCase} </span><div>Not applicable for this crop.</div></section>`;
     }
-    const titleCase = proc.charAt(0).toUpperCase() + proc.slice(1).toLowerCase();
-    return `<section class="tippySection"><span class="tippyHeading"> ${titleCase}</span><div><span> Expected AVG: </span> ${p.expectedValue}g</div><div><span> Adjusted AVG: </span> ${p.adjustedValue}g</div><div><span> Total Revenue: </span> ${p.totalRevenue}g</div><div><span> Total Profit: </span> ${p.totalProfit}g</div></section>`;
+    const titleCase =
+      proc.charAt(0).toUpperCase() + proc.slice(1).toLowerCase();
+    let html = `<section class="tippySection"><span class="tippyHeading"> ${titleCase}</span><div><span> Expected AVG: </span> ${p.expectedValue}g</div><div><span> Adjusted AVG: </span> ${p.adjustedValue}g</div><div><span> Total Revenue: </span> ${p.totalRevenue}g</div><div><span> Total Profit: </span> ${p.totalProfit}g</div>`;
+    if (p.dehydratedCount !== undefined) {
+      html += `<div><span>Dehydrated Items:</span> ${p.dehydratedCount}</div>`;
+    }
+    html += `</section>`;
+    return html;
   })();
 
   return `
     <div class="details-content">
-      <div style="font-weight: bold; font-size: 140%; color: rgb(12, 126, 16); margin-bottom: 8px;">${crop.name}</div>
+      <div style="font-weight: bold; font-size: 140%; color: rgb(12, 126, 16); margin-bottom: 8px;">${
+        crop.name
+      }</div>
+      <div style="margin-bottom:8px; color: #666;">Category: ${
+        crop.cropCategory || crop.category || "-"
+      }</div>
       <section class="tippySection">
         <span class="tippyHeading">Harvest Summary</span>
         <div><span>Total Profit:</span> ${crop.totalProfit}g</div>
         <div><span>ROI Percent:</span> ${crop.roiPercent}</div>
         <div><span>Profit Per Day:</span> ${crop.profitPerDay}g</div>
+        <div><span>Crops Sold:</span> ${crop.cropsSold ?? "-"} </div>
       </section>
       ${artisanSection}
       <section class="tippySection">
         <span class="tippyHeading">Crop Quality & Value</span>
-        <div><span>Normal:</span> ${crop.qualityTiers?.normal?.value ?? "-"}g</div>
-        <div><span>Silver:</span> ${crop.qualityTiers?.silver?.value ?? "-"}g</div>
+        <div><span>Normal:</span> ${
+          crop.qualityTiers?.normal?.value ?? "-"
+        }g</div>
+        <div><span>Silver:</span> ${
+          crop.qualityTiers?.silver?.value ?? "-"
+        }g</div>
         <div><span>Gold:</span> ${crop.qualityTiers?.gold?.value ?? "-"}g</div>
-        <div><span>Expected AVG:</span> ${crop.qualityTiers?.expectedValue ?? "-"}g</div>
-        <div><span>Adjusted Value:</span> ${crop.qualityTiers?.adjustedValue ?? "-"}g</div>
+        <div><span>Expected AVG:</span> ${
+          crop.qualityTiers?.expectedValue ?? "-"
+        }g</div>
+        <div><span>Adjusted Value:</span> ${
+          crop.qualityTiers?.adjustedValue ?? "-"
+        }g</div>
       </section>
       <section class="tippySection">
         <span class="tippyHeading">Seed & Sell Prices</span>
@@ -910,10 +1370,18 @@ function renderDetailHTML(crop) {
         <span class="tippyHeading">Growth & Harvest Info</span>
         <div><span>Growth Days:</span> ${crop.growthDays} days</div>
         <div><span>Harvests Per Season:</span> ${crop.harvests}</div>
-        <div><span>Break-Even Point:</span> ${crop.breakEvenHarvests ?? "-"} harvests</div>
+        <div><span>Break-Even Point:</span> ${
+          crop.breakEvenHarvests ?? "-"
+        } harvests</div>
         <div><span>Regrows Every:</span> ${crop.regrowth || "-"}</div>
       </section>
-      ${(crop.description || crop.additionalInfo) ? `<section class="tippySection">${crop.description || crop.additionalInfo}</section>` : ""}
+      ${
+        crop.description || crop.additionalInfo
+          ? `<section class="tippySection">${
+              crop.description || crop.additionalInfo
+            }</section>`
+          : ""
+      }
     </div>
   `;
 }

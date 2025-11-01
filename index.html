@@ -27,10 +27,10 @@
       <div class="header">
         <figure class="title"><span>&nbsp;</span></figure>
         <div class="title-right">
-        <button class="title-button" id="toggleMode"> 🌙</button>
-        <button class="title-button" id="tutorialButton"> How it works </button>
-        <button class="title-button" id="changeLogButton"> Changelog </button>
-</div>
+          <button class="title-button" id="toggleMode"> 🌙</button>
+          <button class="title-button" id="tutorialButton"> How it works </button>
+          <button class="title-button" id="changeLogButton"> Changelog </button>
+        </div>
       </div>
       <div class="content-container">
 
@@ -46,16 +46,21 @@
             <form id="crop-formField" class="crop-singleField">
 
               <div class="form-group" id="form-group-SingleField">
-                <label for="crop-singleTextField">Crop Details</label>
-                <small>Crop name, Seed price, Crop Price, Growth Days, Regrows?, Every # days</small> <br />
+                <label for="crop-singleTextField">Crop Guide</label>
+                <small>[Name SeedPrice CropPrice GrowthDays YieldType(a|b|c)
+                  CropCategory(f|v|m) Regrows?(yes/no) EveryWhatDays]</small> <small>(a=single, b=random_multi, c=fixed_multi; f=fruit, v=vegetable,
+                  m=mushroom)</small>
 
                 <div class="form-group-row">
-                  <small> [Strawberry 100 120 8 yes 4,] </small>
-                  <button id="paste-submit">  ▼ </button>
+
+                  <small> Strawberry 100 120 8 a f yes 4, </small>
+                  <br />
+
+                  <button id="paste-submit"> ▼ </button>
                 </div>
 
                 <textarea type="text" id="crop-singleTextField" name="cropName"
-                  placeholder="Strawberry 100 120 8 no 9" rows="4"></textarea>
+                  placeholder="Strawberry 100 120 8 a f yes 4," rows="4"></textarea>
               </div>
 
               <button class="crop-submit" id="crop-submit"> Add to list</button>
@@ -94,9 +99,26 @@
               <div class="form-group" id="allowRegrowthLive" style="display: none;">
                 <label for="crop-regrowth-days"> Every ___ Days </label>
                 <input type="number" id="crop-regrowth-every" name="cropRegrowthEvery" placeholder="3">
-                
+
               </div>
-              
+              <div class="form-group">
+                <label for="crop-yield-type">Yield Type</label>
+                <select id="crop-yield-type" name="cropYieldType">
+                  <option value="single">Single yield</option>
+                  <option value="random_multi">Multiple (random)</option>
+                  <option value="fixed_multi">Multiple (fixed per harvest)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="crop-category">Crop Category</label>
+                <select id="crop-category" name="cropCategory">
+                  <option value="fruit">Fruit</option>
+                  <option value="vegetable">Vegetable</option>
+                  <option value="mushroom">Mushroom</option>
+                </select>
+              </div>
+
               <button type="submit" id="crop-submit" class="crop-submit "> Add to list</button>
 
             </form>
@@ -194,6 +216,14 @@
                         </div>
 
                         <div class="AS_FarmContent_Container">
+                          <label for="AS_Fertilizer"> Pay for Fertilizer </label>
+                          <select name="AS_Fertilizer_Pay" id="AS_Fertilizer_Pay">
+                            <option value="No"> No </option>
+                            <option value="Yes"> Yes </option>
+                          </select>
+                        </div>
+
+                        <div class="AS_FarmContent_Container">
                           <label for="AS_FarmerSkill"> Farmer Skill </label>
                           <div id="AS_FarmerSkill_Container">
                             <input type="checkbox" id="AS_Tiller" name="AS_Tiller" value="Tiller">
@@ -209,8 +239,6 @@
                       </div>
 
                     </div>
-
-                    <!-- Submit button: sits below both columns and inside the Advanced Settings background -->
                     <button id="AS_Farm_Button"> Submit </button>
 
                     <div class="AdvancedSettings_Farm_Right">
@@ -242,13 +270,10 @@
               </span>
             </section>
             <div class="list-container-form">
-              <button type="submit" id="import-file-input">Import list </button>
-              <input type="file" id="import-file-input">
-              <label for="import-file-input" id="import-label">Import Crops</label>
-              <input type="file" id="import-file-input" accept=".json"> <!-- Hidden input -->
-              <button type="submit" id="export-button">Export list</button>
+              <input type="file" id="import-file" accept=".json">
+              <button type="submit" id="export-button">Export list (JSON)</button>
               <br><br>
-              <button class="list-button crop-fieldButton" id="list-button">Edit </button>
+
 
               <modal class="changeLogModal" id="changeLogModal">
                 <div class="changeLogModalContent">
@@ -273,25 +298,24 @@
                 <div class="modalPopUpContent">
                   <section class="titleContent">
                     <div class="titleContent-header">
-
-
                       <div class="titleContent-start">
                         <span> Configure Crops </span>
                       </div>
 
                       <div class="titleContent-end">
-                        <button id="modalDelete"> ⛔ </button>
-                        <button id="modalClose"> ❌ </button>
+                        <button id="modalClose"> X </button>
                       </div>
                     </div>
 
-                    <table id="crop-list-table">
+                    <table id="modal-crop-table-head">
                       <thead>
                         <tr>
                           <th>Crop Name</th>
                           <th>Seed Price</th>
                           <th>Crop Price</th>
                           <th>Growth Days</th>
+                          <th>Yield Type</th>
+                          <th>Category</th>
                           <th>Regrows</th>
                           <th>Every # Days</th>
                         </tr>
@@ -309,19 +333,25 @@
                     <div class="tableContent-button">
 
                       <div class="tableContent-flex-left">
-                        <span> Clicking Delete or ⛔ will immediately reflect on the list! </span>
+                        <span> Deleting or updating Yield or Category will update the list automatically. No need to
+                          Edit or Save Edit. </span>
 
                       </div>
 
                       <div class="tableContent-flex-format">
                         <div class="tableContent-flex-right">
+                          <button id="tableContent-toggle-yield" class="toggle-btn" disabled
+                            title="Set Yield Type">Yield ▼</button>
+                          <button id="tableContent-toggle-category" class="toggle-btn" disabled
+                            title="Set Category">Category ▼</button>
+
                           <button id="tableContent-edit"> Edit</button>
 
                           <button id="tableContent-delete"> Delete </button>
                         </div>
 
                         <div class="tableContent-flex-bottom">
-                          <button id="tableContent-cancel"> Nevermind </button>
+                          <button id="tableContent-cancel"> Close </button>
                         </div>
                       </div>
                     </div>
@@ -331,8 +361,10 @@
                 </div>
               </div>
 
-              <input type="text" id="list-search" name="listSearch" placeholder="Search Crops..">
-
+              <div class="list-container-search">
+                <input type="text" class="list-search " id="list-search" name="listSearch" placeholder="Search Crops..">
+                <button class="crop-fieldButton list-button " id="list-button">Edit </button>
+              </div>
               </form>
 
               <table id="crop-list-table">
@@ -342,6 +374,8 @@
                     <th>Seed Price</th>
                     <th>Crop Price</th>
                     <th>Growth Days</th>
+                    <th>Yield Type</th>
+                    <th>Category</th>
                     <th>Regrows</th>
                     <th>Every # Days</th>
                   </tr>

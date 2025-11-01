@@ -11,7 +11,7 @@ TODO:
 
 */
 
-import { calculateCropStats as moduleCalculateCropStats } from './calculation.js';
+import { calculateCropStats as moduleCalculateCropStats } from "./calculation.js";
 
 let tippyInstance = null;
 
@@ -40,8 +40,7 @@ document
     }
   });
 
-
-  /*
+/*
  * Press tab to focus on single or multiple field input
  */
 document.addEventListener("keydown", function (event) {
@@ -94,20 +93,20 @@ buttonField.addEventListener("click", function () {
 
 /*
  * change log modal visibility
-*/
+ */
 const changeLogModal = document.getElementById("changeLogModal");
 const changeLogButton = document.getElementById("changeLogButton");
 document.getElementById("changeLogModal").style.display = "none";
 
-changeLogButton.addEventListener("click", function() {
+changeLogButton.addEventListener("click", function () {
   if (changeLogModal.style.display === "none") {
-  document.getElementById("changeLogModal").style.display = "block";
+    document.getElementById("changeLogModal").style.display = "block";
   } else {
     document.getElementById("changeLogModal").style.display = "none";
   }
 });
 
-    /*
+/*
  * Edit Modal visibility
  */
 function modalPopUp() {
@@ -128,7 +127,6 @@ document
   .getElementById("tableContent-cancel")
   .addEventListener("click", modalPopDown);
 
-
 function populateModalTable() {
   const originalTableBody = document.querySelector("#crop-list-table tbody");
   const modalTableBody = document.getElementById("modal-crop-table-body");
@@ -141,11 +139,185 @@ function populateModalTable() {
 
     newRow.addEventListener("click", function () {
       newRow.classList.toggle("selected");
+      // update toggle buttons enabled/disabled state in modal
+      try {
+        updateToggleButtonsState();
+      } catch (e) {
+        // no-op if helper functions not yet defined
+      }
     });
 
     modalTableBody.appendChild(newRow);
   });
 }
+
+// Update the state (disabled/active) of the modal toggle buttons
+function updateToggleButtonsState() {
+  const modalTableBody = document.getElementById("modal-crop-table-body");
+  if (!modalTableBody) return;
+  const selectedCount = modalTableBody.querySelectorAll("tr.selected").length;
+  const yieldBtn = document.getElementById("tableContent-toggle-yield");
+  const catBtn = document.getElementById("tableContent-toggle-category");
+  if (!yieldBtn || !catBtn) return;
+  if (selectedCount > 0) {
+    yieldBtn.disabled = false;
+    catBtn.disabled = false;
+    yieldBtn.classList.add("active");
+    catBtn.classList.add("active");
+  } else {
+    yieldBtn.disabled = true;
+    catBtn.disabled = true;
+    yieldBtn.classList.remove("active");
+    catBtn.classList.remove("active");
+  }
+}
+
+// Small popup chooser: builds a small floating menu near the button
+function showChoicePopup(anchorButton, options = [], onChoose) {
+  const existing = document.getElementById("modal-chooser-popup");
+  if (existing) existing.remove();
+  const popup = document.createElement("div");
+  popup.id = "modal-chooser-popup";
+  popup.style.position = "fixed";
+  popup.style.zIndex = 9999;
+  popup.style.background = "#fff";
+  popup.style.border = "1px solid #ccc";
+  popup.style.padding = "6px";
+  popup.style.borderRadius = "6px";
+  popup.style.boxShadow = "0 4px 10px rgba(0,0,0,0.12)";
+  options.forEach((opt) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = opt.label || opt;
+    b.style.display = "block";
+    b.style.margin = "3px 0";
+    b.style.minWidth = "120px";
+    b.addEventListener("click", function () {
+      try {
+        onChoose(opt.value !== undefined ? opt.value : opt);
+      } finally {
+        popup.remove();
+      }
+    });
+    popup.appendChild(b);
+  });
+  document.body.appendChild(popup);
+  const r = anchorButton.getBoundingClientRect();
+  const left = Math.max(8, r.left);
+  const top = r.bottom + 6;
+  popup.style.left = `${left}px`;
+  popup.style.top = `${top}px`;
+  function onDocClick(e) {
+    if (!popup.contains(e.target) && e.target !== anchorButton) popup.remove();
+  }
+  setTimeout(() => document.addEventListener("click", onDocClick), 10);
+}
+
+// Apply chosen yield value to selected modal rows and sync to main table rows
+function applyYieldToSelectedRows(value) {
+  const modalTableBody = document.getElementById("modal-crop-table-body");
+  const mainBody = document.querySelector("#crop-list-table tbody");
+  if (!modalTableBody || !mainBody) return;
+  const selected = Array.from(modalTableBody.querySelectorAll("tr.selected"));
+  selected.forEach((mRow) => {
+    if (!mRow.cells[4]) {
+      const td = document.createElement("td");
+      mRow.insertBefore(td, mRow.children[4] || null);
+    }
+    mRow.cells[4].textContent = value;
+    const name = mRow.cells[0]?.textContent.trim();
+    const seed = mRow.cells[1]?.textContent.trim();
+    const price = mRow.cells[2]?.textContent.trim();
+    const originalRows = Array.from(mainBody.querySelectorAll("tr"));
+    const match = originalRows.find((r) => {
+      return (
+        r.cells[0]?.textContent.trim() === name &&
+        r.cells[1]?.textContent.trim() === seed &&
+        r.cells[2]?.textContent.trim() === price
+      );
+    });
+    if (match) {
+      if (!match.cells[4]) {
+        const td = document.createElement("td");
+        match.insertBefore(td, match.children[4] || null);
+      }
+      match.cells[4].textContent = value;
+    }
+  });
+  changesMade = true;
+  updateToggleButtonsState();
+}
+
+// Apply chosen category value to selected modal rows and sync to main table rows
+function applyCategoryToSelectedRows(value) {
+  const modalTableBody = document.getElementById("modal-crop-table-body");
+  const mainBody = document.querySelector("#crop-list-table tbody");
+  if (!modalTableBody || !mainBody) return;
+  const selected = Array.from(modalTableBody.querySelectorAll("tr.selected"));
+  selected.forEach((mRow) => {
+    if (!mRow.cells[5]) {
+      const td = document.createElement("td");
+      mRow.insertBefore(td, mRow.children[5] || null);
+    }
+    mRow.cells[5].textContent = value;
+    const name = mRow.cells[0]?.textContent.trim();
+    const seed = mRow.cells[1]?.textContent.trim();
+    const price = mRow.cells[2]?.textContent.trim();
+    const originalRows = Array.from(mainBody.querySelectorAll("tr"));
+    const match = originalRows.find((r) => {
+      return (
+        r.cells[0]?.textContent.trim() === name &&
+        r.cells[1]?.textContent.trim() === seed &&
+        r.cells[2]?.textContent.trim() === price
+      );
+    });
+    if (match) {
+      if (!match.cells[5]) {
+        const td = document.createElement("td");
+        match.insertBefore(td, match.children[5] || null);
+      }
+      match.cells[5].textContent = value;
+    }
+  });
+  changesMade = true;
+  updateToggleButtonsState();
+}
+
+// wire the modal toggle buttons after DOM ready
+document.addEventListener("DOMContentLoaded", function () {
+  const yieldBtn = document.getElementById("tableContent-toggle-yield");
+  const catBtn = document.getElementById("tableContent-toggle-category");
+  if (yieldBtn) {
+    yieldBtn.addEventListener("click", function () {
+      if (this.disabled) return;
+      showChoicePopup(
+        this,
+        [
+          { value: "single", label: "Single" },
+          { value: "random_multi", label: "Random Multi" },
+          { value: "fixed_multi", label: "Fixed Multi" },
+        ],
+        applyYieldToSelectedRows
+      );
+    });
+  }
+  if (catBtn) {
+    catBtn.addEventListener("click", function () {
+      if (this.disabled) return;
+      showChoicePopup(
+        this,
+        [
+          { value: "fruit", label: "Fruit" },
+          { value: "vegetable", label: "Vegetable" },
+          { value: "mushroom", label: "Mushroom" },
+          { value: "flower", label: "Flower" },
+          { value: "unknown", label: "Unknown" },
+        ],
+        applyCategoryToSelectedRows
+      );
+    });
+  }
+});
 
 function showCropsModal() {
   modalPopUp();
@@ -280,8 +452,37 @@ tableContentEdit.addEventListener("click", function () {
       const seedPrice = cells[1].textContent.trim();
       const cropPrice = cells[2].textContent.trim();
       const growthDays = cells[3].textContent.trim();
-      const regrowth = cells[4].textContent.trim().toLowerCase() === "yes";
-      const regrowthEvery = regrowth ? cells[5].textContent.trim() : 0;
+
+      // accommodate rows with optional Yield & Category columns (indexes may shift)
+      let yieldType =
+        cells[4] && cells[4].textContent
+          ? cells[4].textContent.trim()
+          : undefined;
+      let category =
+        cells[5] && cells[5].textContent
+          ? cells[5].textContent.trim()
+          : undefined;
+
+      // determine regrowth position heuristically
+      let regrowth = false;
+      let regrowthEvery = 0;
+      if (cells.length >= 8) {
+        regrowth = cells[6].textContent.trim().toLowerCase() === "yes";
+        regrowthEvery = regrowth
+          ? cells[7]
+            ? cells[7].textContent.trim()
+            : 0
+          : 0;
+      } else {
+        regrowth = cells[4]
+          ? cells[4].textContent.trim().toLowerCase() === "yes"
+          : false;
+        regrowthEvery = regrowth
+          ? cells[5]
+            ? cells[5].textContent.trim()
+            : 0
+          : 0;
+      }
 
       // Recalculate all stats using your helper function
       const stats = calculateCropStats({
@@ -291,6 +492,8 @@ tableContentEdit.addEventListener("click", function () {
         cropGrowthDays: growthDays,
         cropRegrowth: regrowth,
         cropRegrowthEvery: regrowthEvery,
+        cropYieldType: yieldType,
+        cropCategory: category,
       });
 
       // Add to main data arrays
@@ -306,6 +509,8 @@ tableContentEdit.addEventListener("click", function () {
         <td>${stats.seedPrice}</td>
         <td>${stats.cropPrice}</td>
         <td>${stats.growthDays}</td>
+        <td>${stats.cropYieldType || "-"}</td>
+        <td>${stats.cropCategory || "-"}</td>
         <td>${stats.regrowthEvery > 0 ? "Yes" : "No"}</td>
         <td>${stats.regrowthEvery > 0 ? stats.regrowthEvery : "-"}</td>
       `;
@@ -348,18 +553,18 @@ function saveChanges() {
   }
 }
 
-/* 
-* TOAST HANDLERS
-*/
 /*
-* Visibility 
-*/
+ * TOAST HANDLERS
+ */
+/*
+ * Visibility
+ */
 document.getElementById("Toast_EmptySubmit").style.display = "none";
 document.getElementById("Toast_GraphUpdated").style.display = "none";
 
 /*
-* TOAST CONTAINER POSITIONING 
-*/
+ * TOAST CONTAINER POSITIONING
+ */
 const TOAST_CONTAINER_ID = "toast-container";
 function ensureToastContainer() {
   let c = document.getElementById(TOAST_CONTAINER_ID);
@@ -378,7 +583,6 @@ function ensureToastContainer() {
   }
   return c;
 }
-
 
 // Multiple Fields
 document.addEventListener("DOMContentLoaded", function () {
@@ -411,11 +615,14 @@ function calculateCropStats(params) {
   try {
     return moduleCalculateCropStats(params);
   } catch (err) {
-    console.error('Error delegating calculateCropStats to module:', err, params);
-    return { name: params.cropName || '?', error: 'Calculation failed' };
+    console.error(
+      "Error delegating calculateCropStats to module:",
+      err,
+      params
+    );
+    return { name: params.cropName || "?", error: "Calculation failed" };
   }
 }
-
 
 // Always use this to add a crop
 function addCrop(stats) {
@@ -424,20 +631,30 @@ function addCrop(stats) {
   updateGraph();
 }
 function findCalcFn() {
-  if (typeof window.calculateCropStats === "function") return window.calculateCropStats;
+  if (typeof window.calculateCropStats === "function")
+    return window.calculateCropStats;
   if (typeof window.calculateCrop === "function") return window.calculateCrop;
   if (typeof window.cropsHandler === "function") return window.cropsHandler;
-  if (typeof window.cropsHandler === "object" && typeof window.cropsHandler.calculate === "function") return window.cropsHandler.calculate;
+  if (
+    typeof window.cropsHandler === "object" &&
+    typeof window.cropsHandler.calculate === "function"
+  )
+    return window.cropsHandler.calculate;
   return null;
 }
 
 // Helper: get currently selected crop name from your UI
 function getSelectedCropName() {
   // try common selectors - change to your actual selector if different
-  const input = document.querySelector("#crop-name-input") || document.querySelector(".crop-name-input") || document.querySelector("input[name='crop']");
+  const input =
+    document.querySelector("#crop-name-input") ||
+    document.querySelector(".crop-name-input") ||
+    document.querySelector("input[name='crop']");
   if (input && input.value) return input.value.trim();
   // fallback: look for an element showing the selected crop name
-  const sel = document.querySelector(".selected-crop-name") || document.querySelector("#selectedCrop");
+  const sel =
+    document.querySelector(".selected-crop-name") ||
+    document.querySelector("#selectedCrop");
   if (sel && sel.textContent) return sel.textContent.trim();
   return null;
 }
@@ -445,29 +662,48 @@ function getSelectedCropName() {
 // Update tooltip fallback (simple). Replace this with your real tooltip updater.
 function updateTooltipWithProduct(productKey, productData) {
   // productData expected to include totalProfit, totalRevenue, expectedValue etc.
-  const tipEl = document.querySelector(".crop-tooltip") || document.querySelector("#crop-tooltip");
+  const tipEl =
+    document.querySelector(".crop-tooltip") ||
+    document.querySelector("#crop-tooltip");
   if (!tipEl) {
-    console.log("[tooltip] no tooltip element found for update. product:", productKey, productData);
+    console.log(
+      "[tooltip] no tooltip element found for update. product:",
+      productKey,
+      productData
+    );
     return;
   }
   const html = `
     <div><strong>${productKey.toUpperCase()}</strong></div>
-    <div>Expected per processed: ${Number(productData.expectedValue || productData.expected || 0).toFixed(2)}</div>
-    <div>Total revenue: ${Number(productData.totalRevenue || 0).toFixed(2)}</div>
-    <div>Total profit: ${Number(productData.totalProfit || productData.profit || 0).toFixed(2)}</div>
+    <div>Expected per processed: ${Number(
+      productData.expectedValue || productData.expected || 0
+    ).toFixed(2)}</div>
+    <div>Total revenue: ${Number(productData.totalRevenue || 0).toFixed(
+      2
+    )}</div>
+    <div>Total profit: ${Number(
+      productData.totalProfit || productData.profit || 0
+    ).toFixed(2)}</div>
   `;
   tipEl.innerHTML = html;
 }
 
 // Update graph fallback - replace with your real graph update function
 function updateGraphForProduct(productKey, productData) {
-  const graphEl = document.querySelector("#graph") || document.querySelector(".graph");
+  const graphEl =
+    document.querySelector("#graph") || document.querySelector(".graph");
   if (!graphEl) {
-    console.log("[graph] no graph element found. product:", productKey, productData);
+    console.log(
+      "[graph] no graph element found. product:",
+      productKey,
+      productData
+    );
     return;
   }
   // simple textual preview so you can confirm it's wired
-  graphEl.innerText = `${productKey}: profit ${Number(productData.totalProfit || productData.profit || 0).toFixed(2)}`;
+  graphEl.innerText = `${productKey}: profit ${Number(
+    productData.totalProfit || productData.profit || 0
+  ).toFixed(2)}`;
 }
 
 // Main handler when user clicks a processing button
@@ -476,7 +712,9 @@ async function handleProcessingSelect(type) {
 
   const cropName = getSelectedCropName();
   if (!cropName) {
-    console.warn("[processing] no selected crop found. Make sure you have an input or selection element that this script can read.");
+    console.warn(
+      "[processing] no selected crop found. Make sure you have an input or selection element that this script can read."
+    );
     return;
   }
 
@@ -488,7 +726,7 @@ async function handleProcessingSelect(type) {
       // try calling common signatures
       // prefer synchronous-first, but allow promises
       const res = calcFn.length > 0 ? calcFn(cropName) : calcFn(); // best-effort call
-      results = (res && typeof res.then === "function") ? await res : res;
+      results = res && typeof res.then === "function" ? await res : res;
     } catch (err) {
       console.error("[processing] error calling calc function:", err);
     }
@@ -510,16 +748,25 @@ async function handleProcessingSelect(type) {
   const artisan = (results && results.artisan) || results || {};
   // if results is not an object, bail with debug
   if (!artisan || typeof artisan !== "object") {
-    console.warn("[processing] artisan results not found or invalid. Inspect 'results' above.");
+    console.warn(
+      "[processing] artisan results not found or invalid. Inspect 'results' above."
+    );
     return;
   }
 
   // If user selected 'raw' show raw crop totals (fallback fields)
   if (type === "raw") {
     // prefer results.totalProfit or results.rawProfit etc.
-    const rawProfit = (results && (results.totalProfit || results.rawProfit || results.profit)) || 0;
+    const rawProfit =
+      (results &&
+        (results.totalProfit || results.rawProfit || results.profit)) ||
+      0;
     updateGraphForProduct("raw", { totalProfit: rawProfit });
-    updateTooltipWithProduct("raw", { expectedValue: results.cropPrice || results.crop || 0, totalRevenue: results.totalRevenue || 0, totalProfit: rawProfit });
+    updateTooltipWithProduct("raw", {
+      expectedValue: results.cropPrice || results.crop || 0,
+      totalRevenue: results.totalRevenue || 0,
+      totalProfit: rawProfit,
+    });
     return;
   }
 
@@ -527,9 +774,16 @@ async function handleProcessingSelect(type) {
   const prod = artisan[type] || artisan[type.toLowerCase()] || null;
 
   if (!prod) {
-    console.log(`[processing] product '${type}' not available for this crop. artisan keys:`, Object.keys(artisan));
+    console.log(
+      `[processing] product '${type}' not available for this crop. artisan keys:`,
+      Object.keys(artisan)
+    );
     // show a friendly message in tooltip/graph
-    updateTooltipWithProduct(type, { expectedValue: 0, totalRevenue: 0, totalProfit: 0 });
+    updateTooltipWithProduct(type, {
+      expectedValue: 0,
+      totalRevenue: 0,
+      totalProfit: 0,
+    });
     updateGraphForProduct(type, { totalProfit: 0 });
     return;
   }
@@ -552,7 +806,9 @@ function wireProcessingButtons() {
     const type = btn.getAttribute("data-type");
     if (!type) return;
     // visual active state
-    container.querySelectorAll(".processing-btn").forEach(b => b.classList.remove("active"));
+    container
+      .querySelectorAll(".processing-btn")
+      .forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
     handleProcessingSelect(type);
   });
@@ -574,6 +830,8 @@ function updateTable() {
       <td>${stats.seedPrice}</td>
       <td>${stats.cropPrice}</td>
       <td>${stats.growthDays}</td>
+      <td>${stats.cropYieldType || "-"}</td>
+      <td>${stats.cropCategory || "-"}</td>
       <td>${stats.regrowthEvery > 0 ? "Yes" : "No"}</td>
       <td>${stats.regrowthEvery > 0 ? stats.regrowthEvery : "-"}</td>
     `;
@@ -604,7 +862,11 @@ function refreshGraph() {
     updateTable();
     updateNoCropsUI();
     updateGraph();
-    showToast("Graph Updated", { id: "Toast_GraphUpdated", type: "success", duration: 4000 });
+    showToast("Graph Updated", {
+      id: "Toast_GraphUpdated",
+      type: "success",
+      duration: 4000,
+    });
   });
 }
 // ensure listener is registered after DOM is ready
@@ -622,7 +884,11 @@ cropForm.addEventListener("submit", function (event) {
   let cropRegrowthEvery = document.getElementById("crop-regrowth-every").value;
 
   if (!cropName || !seedPrice || !cropGrowthDays || !cropPrice) {
-    showToast("Please fill required fields", { id: "Toast_EmptySubmit", type: "error", duration: 4000 });
+    showToast("Please fill required fields", {
+      id: "Toast_EmptySubmit",
+      type: "error",
+      duration: 4000,
+    });
 
     return;
   }
@@ -638,7 +904,7 @@ cropForm.addEventListener("submit", function (event) {
   cropForm.reset();
   allowRegrowthLive.style.display = "none";
 });
- 
+
 // Single field
 document.getElementById("crop-submit").addEventListener("click", function (e) {
   e.preventDefault();
@@ -647,7 +913,11 @@ document.getElementById("crop-submit").addEventListener("click", function (e) {
     .getElementById("crop-singleTextField")
     .value.trim();
   if (!bulkInput) {
-    showToast("Please fill required fields", { id: "Toast_EmptySubmit", type: "error", duration: 4000 });
+    showToast("Please fill required fields", {
+      id: "Toast_EmptySubmit",
+      type: "error",
+      duration: 4000,
+    });
     return;
   }
 
@@ -715,13 +985,12 @@ document.getElementById("paste-submit").addEventListener("click", function () {
 });
 
 /*
-* ARTISAN GOODS | MULTIPLIERS 
-*/
-
+ * ARTISAN GOODS | MULTIPLIERS
+ */
 
 /*
-* INITIALIZE CHART
-*/
+ * INITIALIZE CHART
+ */
 function initializeChart() {
   if (window.myChart) {
     window.myChart.destroy();
@@ -929,18 +1198,23 @@ function updateGraph() {
     },
   });
 
-  if (window.myChart && window.myChart.canvas && typeof tippyInstance !== "undefined" && tippyInstance) {
-  window.myChart.canvas.addEventListener("mousemove", (event) => {
-    tippyInstance.setProps({
-      getReferenceClientRect: () => event.target.getBoundingClientRect(),
+  if (
+    window.myChart &&
+    window.myChart.canvas &&
+    typeof tippyInstance !== "undefined" &&
+    tippyInstance
+  ) {
+    window.myChart.canvas.addEventListener("mousemove", (event) => {
+      tippyInstance.setProps({
+        getReferenceClientRect: () => event.target.getBoundingClientRect(),
+      });
+      tippyInstance.show();
     });
-    tippyInstance.show();
-  });
 
-  window.myChart.canvas.addEventListener("mouseleave", () => {
-    tippyInstance.hide();
-  });
-}
+    window.myChart.canvas.addEventListener("mouseleave", () => {
+      tippyInstance.hide();
+    });
+  }
 }
 
 // Function to export cropDetails to a JSON file
@@ -951,15 +1225,13 @@ function exportCrops() {
   }
 
   try {
-    // Convert the cropDetails array to a JSON string
     const jsonString = JSON.stringify(cropDetails, null, 2); // null for replacer, 2 for indentation (readable format)
 
     // Create a Blob object representing the JSON data
     const blob = new Blob([jsonString], { type: "application/json" });
 
-    // Generate a filename (e.g., "cropData_20231027.json")
     const now = new Date();
-    const timestamp = now.toISOString().slice(0, 19).replace(/:/g, '-'); // Format: YYYY-MM-DDTHH-mm-ss
+    const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-"); // Format: YYYY-MM-DDTHH-mm-ss
     const filename = `cropData_${timestamp}.json`;
 
     // Create a temporary link element
@@ -973,32 +1245,34 @@ function exportCrops() {
     document.body.removeChild(link); // Remove the link from the body
 
     console.log("Crops exported successfully!");
-    showToast("Crops exported successfully!", { type: "success", duration: 3000 });
-
-    // Optional: Update the UI (table, graph) if needed after export (usually not necessary)
-    // updateTable();
-    // updateGraph();
+    showToast("Crops exported successfully!", {
+      type: "success",
+      duration: 3000,
+    });
 
   } catch (error) {
     console.error("Error exporting crops:", error);
-    showToast("Error exporting crops. Check console.", { type: "error", duration: 5000 });
+    showToast("Error exporting crops. Check console.", {
+      type: "error",
+      duration: 5000,
+    });
   }
 }
 
-// Example: Attach the export function to a button with ID 'export-button'
-// Add this button to your HTML if you don't have one
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   const exportButton = document.getElementById("export-button"); // Replace 'export-button' with your actual button ID
   if (exportButton) {
     exportButton.addEventListener("click", exportCrops);
   } else {
-    console.warn("Export button with ID 'export-button' not found. Add the button to your HTML.");
+    console.warn(
+      "Export button with ID 'export-button' not found. Add the button to your HTML."
+    );
   }
 });
 
 // Function to import cropDetails from a JSON file
 function importCrops(event) {
-  const file = event.target.files[0]; // Get the selected file from the input element
+  const file = event.target.files[0]; 
 
   if (!file) {
     console.error("No file selected for import.");
@@ -1007,7 +1281,10 @@ function importCrops(event) {
 
   // Optional: Validate file type
   if (file.type !== "application/json") {
-    showToast("Please select a valid JSON file.", { type: "error", duration: 4000 });
+    showToast("Please select a valid JSON file.", {
+      type: "error",
+      duration: 4000,
+    });
     console.error("Invalid file type selected for import:", file.type);
     // Reset the file input so the user can select again
     event.target.value = "";
@@ -1016,7 +1293,7 @@ function importCrops(event) {
 
   const reader = new FileReader();
 
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     try {
       // Get the content of the file (raw text)
       const content = e.target.result;
@@ -1039,22 +1316,30 @@ function importCrops(event) {
       updateGraph(); // This should now use the new cropDetails
 
       console.log("Crops imported successfully!");
-      showToast("Crops imported successfully!", { type: "success", duration: 3000 });
+      showToast("Crops imported successfully!", {
+        type: "success",
+        duration: 3000,
+      });
 
       // Clear the file input after successful import
       event.target.value = "";
-
     } catch (error) {
       console.error("Error parsing imported JSON:", error);
-      showToast("Error parsing imported file. Check console.", { type: "error", duration: 5000 });
+      showToast("Error parsing imported file. Check console.", {
+        type: "error",
+        duration: 5000,
+      });
       // Clear the file input even if there's an error
       event.target.value = "";
     }
   };
 
-  reader.onerror = function(e) {
+  reader.onerror = function (e) {
     console.error("Error reading file:", e);
-    showToast("Error reading file. Check console.", { type: "error", duration: 5000 });
+    showToast("Error reading file. Check console.", {
+      type: "error",
+      duration: 5000,
+    });
     event.target.value = ""; // Clear the input
   };
 
@@ -1064,7 +1349,7 @@ function importCrops(event) {
 
 // Example: Attach the import function to a file input element with ID 'import-file-input'
 // Add this input to your HTML if you don't have one
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   const importFileInput = document.getElementById("import-file-input"); // Replace 'import-file-input' with your actual input ID
   if (importFileInput) {
     // Use 'change' event for file inputs, not 'click'
@@ -1072,10 +1357,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     console.log("Import file input listener attached.");
   } else {
-    console.warn("Import file input with ID 'import-file-input' not found. Add the input to your HTML.");
+    console.warn(
+      "Import file input with ID 'import-file-input' not found. Add the input to your HTML."
+    );
   }
 });
-
 
 document.getElementById("list-search").addEventListener("input", function () {
   const searchQuery = this.value.toLowerCase();

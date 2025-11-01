@@ -76,9 +76,6 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
-  background-color: #65d10c;
-}
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -344,10 +341,7 @@ button:focus-visible {
   padding: 2px 8px;
 }
 
-#list-search {
-  height: 2rem;
-  width: 10rem;
-}
+
 .search-button {
   background-image: url("assets/magnifying-glass.png");
   background-size: contain;
@@ -360,11 +354,33 @@ button:focus-visible {
   padding: 0.4em 1.2em;
 }
 
+.list-container-search{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;        
+  gap: 1em;                       
+  width: 100%;
+}
+
+#list-search {
+  height: 2rem;
+  width: 16rem;
+}
+
+.list-search {
+  flex: 1;                        
+  max-width: 80%;                  
+  padding: 0.4em 0.6em;
+  font-size: 1em;
+}
+
 .list-button {
-  padding: 0.4em 0.5em;
+  padding: 0.4em 1em;
   font-size: 1em;
   font-weight: 500;
+  width: 20%;
 }
+
 
 .list-container .list-container-header {
   position: sticky;
@@ -425,6 +441,26 @@ button:focus-visible {
   text-align: center;
   background-color: #a2c5d0;
 }
+
+/* Toggle button used in modal to apply bulk Yield/Category */
+.toggle-btn {
+  background: #e6e6e6;
+  border: 1px solid #bdbdbd;
+  color: #222;
+  padding: 6px 10px;
+  margin-right: 6px;
+  border-radius: 4px;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.toggle-btn.active {
+  background: linear-gradient(180deg, #2f8f3a, #2b7f33);
+  color: #fff;
+  border-color: rgba(0,0,0,0.2);
+  cursor: pointer;
+  opacity: 1;
+}
+
 
 #crop-list-table tbody {
   color: black;
@@ -582,6 +618,11 @@ button:focus-visible {
   font-size: 1em;
   width: 50%;
   font-weight: bold;
+    vertical-align: middle;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  align-content: stretch;
 }
 
 .titleContent-end {
@@ -599,23 +640,18 @@ button:focus-visible {
 
 .titleContent th {
   background-color: #03a007;
-  color: rgb(14, 59, 74);
-  padding: 10px;
+  color: #fafafa;
+  padding: 2em 0em 2em 1em;
   width: 14vw;
-}
-
-.tippy-box[data-theme~="custom"] {
-  background: rgba(247, 71, 71, 0.9);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  color: #ca2828;
+  font-size: 0.8em;
+  box-sizing: border-box;
 }
 
 /* container for scrollable table */
 .tableContent {
   max-height: 50vh;
   overflow-y: auto;
-  width: 99%;
+  width: 100%;
   box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
     rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
 }
@@ -704,12 +740,7 @@ button:focus-visible {
   margin: 0.4em 0.4em;
 }
 
-#tableContent-cancel:hover {
-  background-color: #b0b0b0;
-}
-
 #tableContent-button2:hover {
-  background-color: #65d10c;
   color: white;
 }
 
@@ -777,7 +808,7 @@ button:focus-visible {
 button:hover {
   animation: gradientPulse 2.5s ease infinite;
   transform: translateY(-1px);
-  border: 2px solid #5abc09;
+  border: 2px solid #4a8916;
 }
 
 .crop-fieldButton:active {
@@ -1167,10 +1198,6 @@ button:hover {
   button {
     background-color: #03a007;
     color: #eeeeee;
-  }
-
-  button:hover {
-    background-color: #65d10c;
   }
 
   input,

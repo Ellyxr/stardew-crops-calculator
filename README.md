@@ -9,12 +9,12 @@
 
 <h3 align="center"> Stardew Crops Calculator</h3>
 
-  <p align="center">
-    This handy tool is designed to help Stardew Valley players maximize their farm profits by calculating earnings from crops, such as crops added by expansion mods or tax mods. 
+  <p>
+    This tool is designed to help Stardew Valley players maximize their farm profits by calculating earnings from crops, such as crops added by expansion mods or tax mods. Currently, it has an advanced settings for farm configuration with Tax settings on the way (trying to figure out how to do that). 
 
-I wanted to share this to other modded gameplay enjoyers, like me, to get the most profits. 
+I wanted to share this to other modded gameplay enjoyers, like me who have 150+ mods with over 7 expansion crops and tax collection, to get the most profits out of a playthrough.
     <br /><br />
-    <a href="https://quimpann.github.io/stardew-crops-calculator/"> 🌴 Use Calculator 🌴</a>
+    <a href="https://ellyxr.github.io/stardew-crops-calculator"> 🌴 Use Calculator 🌴</a>
   </p>
 </div>
 
@@ -27,9 +27,13 @@ Upcoming Features
 - [x] Show the highest profit organized from left to right.
 - [x] "Edit" and "Delete" will create a pop-up modal that allows the user to freely edit the contents.
 - [x] More tooltips for other qualities and types of produce.
-- [ ] Add Advanced Settings.
-- [ ] Export list and import said list for better UX.
+- [x] Add Advanced Settings.
+- [x] Export list and import said list for better UX.
+- [ ] Improve mobile responsiveness.
+- [ ] Add option to import and export CSV.
 - [ ] Auto-complete feature.
+- [ ] Improve UI.
+- [ ] Improve Changelog and add How it Works.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

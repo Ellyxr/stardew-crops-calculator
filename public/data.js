@@ -9,7 +9,7 @@ let cropData = [];
 let cropLabels = [];
 
 function getCurrentDuration() {
-  const durationInput = document.getElementById("AS_SeasonDuration");
+  const durationInput = document.getElementById("AS_Duration");
   const value = durationInput ? durationInput.value : "28";
   const parsedValue = parseInt(value);
   //Validate or provide a default if parsing fails
@@ -53,6 +53,11 @@ export function addCrop(cropInputData) {
 
   // read farm UI settings for cropsPerTile and fertilizer
   const cropsPerTile = Number.parseInt(document.getElementById("AS_Crops")?.value, 10) || 1;
+  const yieldTypeSelect = document.getElementById('crop-yield-type');
+  const categorySelect = document.getElementById('crop-category');
+  const selectYield = yieldTypeSelect ? yieldTypeSelect.value : 'single';
+  const selectCategory = categorySelect ? categorySelect.value : undefined;
+
   const fertSelect = document.getElementById("AS_FertilizerType");
   const fertilizerType = fertSelect
     ? (fertSelect.multiple ? (fertSelect.selectedOptions[0]?.value || "None") : (fertSelect.value || "None"))
@@ -63,6 +68,8 @@ export function addCrop(cropInputData) {
     agriculturist: !!document.getElementById('AS_Agriculturist')?.checked,
     artisan: !!document.getElementById('AS_Artisan')?.checked,
   };
+  const cropYieldType = document.getElementById('crop-yield-type')?.value || 'single';
+  const cropCategory = document.getElementById('crop-category')?.value || undefined;
 
   if (
     !Number.isFinite(seedPrice) ||
@@ -87,11 +94,23 @@ export function addCrop(cropInputData) {
     fertilizerType,
     farmingLevel,
     skills,
+    cropYieldType,
+    cropCategory,
   });
 
   if (stats.error) {
     showToast(`Error adding crop: ${stats.error}`, { type: "error", duration: 4000 });
     return;
+  }
+
+  // Preserve original input regrowth fields on the stored stats so future
+  // recalculations can reference the user's original intent.
+  try {
+    stats.cropRegrowth = cropRegrowth;
+    stats.cropRegrowthEvery = cropRegrowthEvery;
+  } catch (e) {
+    // defensive: if stats is frozen or non-extensible, skip attaching
+    console.warn('Could not attach input regrowth properties to stats object', e);
   }
 
   cropDetails.push(stats);
@@ -116,12 +135,14 @@ export function refreshCropDetailsFromTable() {
   const fertilizerType = fertSelect
     ? (fertSelect.multiple ? (fertSelect.selectedOptions[0]?.value || "None") : (fertSelect.value || "None"))
     : "None";
-  const farmingLevel = Number.parseInt(document.getElementById("AS_FarmingLevel")?.value, 10) || 1;
-  const skills = {
-    tiller: !!document.getElementById('AS_Tiller')?.checked,
-    agriculturist: !!document.getElementById('AS_Agriculturist')?.checked,
-    artisan: !!document.getElementById('AS_Artisan')?.checked,
-  };
+    const farmingLevel = Number.parseInt(document.getElementById("AS_FarmingLevel")?.value, 10) || 1;
+    const skills = {
+      tiller: !!document.getElementById('AS_Tiller')?.checked,
+      agriculturist: !!document.getElementById('AS_Agriculturist')?.checked,
+      artisan: !!document.getElementById('AS_Artisan')?.checked,
+    };
+    const cropYieldType = document.getElementById('crop-yield-type')?.value || 'single';
+    const cropCategory = document.getElementById('crop-category')?.value || undefined;
 
   const rows = document.querySelectorAll("#crop-list-table tbody tr");
   const newDetails = [];
@@ -130,13 +151,24 @@ export function refreshCropDetailsFromTable() {
     const seedPrice = row.cells[1].textContent.trim();
     const cropPrice = row.cells[2].textContent.trim();
     const growthDays = row.cells[3].textContent.trim();
-    const regrowth = row.cells[4].textContent.trim().toLowerCase() === "yes";
-    const regrowthEvery = regrowth ? row.cells[5].textContent.trim() : "0";
+    // table column layout: 0=name,1=seed,2=price,3=growth,4=yieldType,5=category,6=regrows,7=every
+    const tableYield = row.cells[4] ? row.cells[4].textContent.trim() : '';
+    const tableCategory = row.cells[5] ? row.cells[5].textContent.trim() : '';
+    const regrowth = row.cells[6] ? row.cells[6].textContent.trim().toLowerCase() === "yes" : false;
+    const regrowthEvery = regrowth ? (row.cells[7] ? row.cells[7].textContent.trim() : "0") : "0";
 
     if (!isNumeric(seedPrice) || !isNumeric(cropPrice) || !isNumeric(growthDays) || (regrowth && !isNumeric(regrowthEvery))) {
         console.warn("Skipping recalculation for crop due to invalid data in table row:", name, { seedPrice, cropPrice, growthDays, regrowth, regrowthEvery });
         return;
     }
+
+    // Map single-letter codes to canonical values if necessary
+    const normalizedYield = (tableYield || '').toLowerCase();
+    let yieldTypeToUse = normalizedYield;
+    if (['a','b','c'].includes(normalizedYield)) {
+      yieldTypeToUse = normalizedYield === 'a' ? 'single' : (normalizedYield === 'b' ? 'random_multi' : 'fixed_multi');
+    }
+    const categoryToUse = (tableCategory || '').toLowerCase() === 'f' ? 'fruit' : (tableCategory || '') || undefined;
 
     const stats = calculateCropStats({
       cropName: name,
@@ -150,6 +182,8 @@ export function refreshCropDetailsFromTable() {
       fertilizerType,
       farmingLevel,
       skills,
+      cropYieldType: yieldTypeToUse || document.getElementById('crop-yield-type')?.value || 'single',
+      cropCategory: categoryToUse || document.getElementById('crop-category')?.value || undefined,
     });
     newDetails.push(stats);
   });
@@ -192,7 +226,9 @@ export function editCrop(oldName, newInputData) {
       agriculturist: !!document.getElementById('AS_Agriculturist')?.checked,
       artisan: !!document.getElementById('AS_Artisan')?.checked,
     };
-    const newStats = calculateCropStats({...newInputData, seasonDuration: currentDuration, farmingLevel, skills}); //Advanced Settings FARM
+    const cropYieldType = document.getElementById('crop-yield-type')?.value || 'single';
+    const cropCategory = document.getElementById('crop-category')?.value || undefined;
+  const newStats = calculateCropStats({ ...newInputData, seasonDuration: currentDuration, farmingLevel, skills, cropYieldType, cropCategory }); //Advanced Settings FARM
     if (newStats.error) {
       showToast(`Error editing crop: ${newStats.error}`, {
         type: "error",
@@ -231,8 +267,27 @@ export function recalculateAllCrops(newDuration) {
     const seedPrice = Number.parseFloat(crop.seedPrice);
     const cropPrice = Number.parseFloat(crop.cropPrice);
     const cropGrowthDays = Number.parseInt(crop.growthDays, 10);
-    const cropRegrowth = !!crop.cropRegrowth;
-    const cropRegrowthEvery = cropRegrowth ? Number.parseInt(crop.regrowthEvery || crop.cropRegrowthEvery || 0, 10) : 0;
+    // Determine regrowth robustly: crop objects may come from input shapes or from
+    // calculateCropStats() output. Check multiple possible fields.
+    const inferredRegrowthFromString = (val) => {
+      if (!val && val !== 0) return false;
+      if (typeof val === 'string') {
+        const trimmed = val.trim();
+        if (trimmed === '--' || trimmed === '' || trimmed === '0') return false;
+        // if string contains digits (e.g. " 4 Days"), treat as regrowth
+        return /\d+/.test(trimmed);
+      }
+      return Boolean(val);
+    };
+
+    const cropRegrowth = (
+      typeof crop.cropRegrowth === 'boolean' ? crop.cropRegrowth :
+      inferredRegrowthFromString(crop.regrowth) || Number(crop.regrowthEvery || crop.regrowthEverySpecified || 0) > 0
+    );
+
+    const cropRegrowthEvery = cropRegrowth
+      ? Number.parseInt(crop.regrowthEvery ?? crop.regrowthEverySpecified ?? (typeof crop.regrowth === 'string' ? (crop.regrowth.match(/\d+/) || [0])[0] : 0), 10) || 0
+      : 0;
 
     if (
       !Number.isFinite(seedPrice) ||
@@ -256,6 +311,8 @@ export function recalculateAllCrops(newDuration) {
       fertilizerType,
       farmingLevel,
       skills,
+      cropYieldType,
+      cropCategory,
     });
 
     if (!newStats.error) recalculated.push(newStats);
