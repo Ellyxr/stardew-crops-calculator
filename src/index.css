@@ -102,12 +102,12 @@ button:focus-visible {
 }
 
 .title {
-  background-image: url("assets/title.png");
+  background-image: url("assets/428.png");
   background-size: contain;
   background-position: start;
   background-repeat: no-repeat;
   width: 80%;
-  height: 50%;
+  height: 70%;
   margin: 0em 0em;
 }
 
@@ -145,7 +145,7 @@ button:focus-visible {
 .content-container {
   display: flex;
   width: 90%;
-  height: 120%;
+  height: 130%;
   gap: 1rem;
   justify-content: center;
 }
@@ -181,7 +181,7 @@ button:focus-visible {
 .Calculator-container {
   display: flex;
   flex-direction: column;
-  background-color: rgba(208, 235, 253, 0.8);
+  background-color: rgba(208, 235, 253, 0.9);
   color: #1a1a1a;
   flex: 1.6;
   max-width: 100%;
@@ -206,6 +206,14 @@ button:focus-visible {
 .Calculator-container-form .form-group {
   display: flex;
   padding: 0.4em 0.6em;
+}
+
+#crop-form {
+  font-size: 0.8em;
+}
+
+#crop-form span {
+  color: red;
 }
 
 #allowRegrowthLive {
@@ -253,7 +261,7 @@ button:focus-visible {
 .graph-container {
   display: flex;
   flex-direction: column;
-  background-color: rgba(208, 235, 253, 0.8);
+  background-color: rgba(208, 235, 253, 0.9);
   flex: 1;
   color: #1a1a1a;
   min-width: 80%;
@@ -269,7 +277,7 @@ button:focus-visible {
 .list-container {
   display: flex;
   flex-direction: column;
-  background-color: rgba(208, 235, 253, 0.8);
+  background-color: rgba(208, 235, 253, 0.9);
   color: #1a1a1a;
   flex: 2;
   min-height: 12rem;
@@ -341,7 +349,6 @@ button:focus-visible {
   padding: 2px 8px;
 }
 
-
 .search-button {
   background-image: url("assets/magnifying-glass.png");
   background-size: contain;
@@ -354,11 +361,11 @@ button:focus-visible {
   padding: 0.4em 1.2em;
 }
 
-.list-container-search{
+.list-container-search {
   display: flex;
   justify-content: space-between;
-  align-items: center;        
-  gap: 1em;                       
+  align-items: center;
+  gap: 1em;
   width: 100%;
 }
 
@@ -368,8 +375,8 @@ button:focus-visible {
 }
 
 .list-search {
-  flex: 1;                        
-  max-width: 80%;                  
+  flex: 1;
+  max-width: 80%;
   padding: 0.4em 0.6em;
   font-size: 1em;
 }
@@ -380,7 +387,6 @@ button:focus-visible {
   font-weight: 500;
   width: 20%;
 }
-
 
 .list-container .list-container-header {
   position: sticky;
@@ -456,11 +462,10 @@ button:focus-visible {
 .toggle-btn.active {
   background: linear-gradient(180deg, #2f8f3a, #2b7f33);
   color: #fff;
-  border-color: rgba(0,0,0,0.2);
+  border-color: rgba(0, 0, 0, 0.2);
   cursor: pointer;
   opacity: 1;
 }
-
 
 #crop-list-table tbody {
   color: black;
@@ -556,12 +561,14 @@ button:focus-visible {
 
 /* * MODALS */
 .modalPopUp,
-.changeLogModal {
+.changeLogModal, .tutorialModal {
   display: flex;
   position: fixed;
   z-index: 999;
   left: 0;
   top: 0;
+  right: 0;
+  bottom: 0;
   width: 100vw;
   height: 100%;
   background-color: rgb(0, 0, 0);
@@ -569,22 +576,20 @@ button:focus-visible {
   backdrop-filter: blur(2px);
 }
 
-/* Details container styling: make it a right-side column in the main content layout */
 .content-container {
   display: grid;
-  grid-template-columns: 360px 1fr 340px; /* calculator | main (graph + list) | details */
+  grid-template-columns: 360px 1fr 340px;
   gap: 1rem;
   align-items: start;
 }
-/* details column is styled later to match other containers */
 
 .modalPopUpContent,
-.changeLogModalContent {
+.changeLogModalContent, .tutorialModalContent {
   z-index: 999;
   background-color: rgba(244, 244, 244, 0.992);
   backdrop-filter: blur(10px);
-  margin: 8% auto;
-  padding: 20px;
+  margin: 6% auto;
+  padding: 18px;
   border: 1px solid #03a007;
   width: 50%;
   border-radius: 8px;
@@ -608,17 +613,17 @@ button:focus-visible {
 }
 
 .changeLogContent {
-  border: 1px solid rgba(96, 55, 27);
+  border: 1px solid rgb(27, 96, 46, 0.6);
   border-radius: 4px;
   width: 100%;
-  background-color: #f1ebd5;
+  background-color: rgba(208, 235, 253, 0.6);
 }
 
 .titleContent-start {
   font-size: 1em;
   width: 50%;
   font-weight: bold;
-    vertical-align: middle;
+  vertical-align: middle;
   text-align: center;
   display: flex;
   align-items: center;
@@ -647,7 +652,6 @@ button:focus-visible {
   box-sizing: border-box;
 }
 
-/* container for scrollable table */
 .tableContent {
   max-height: 50vh;
   overflow-y: auto;
@@ -656,7 +660,6 @@ button:focus-visible {
     rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
 }
 
-/* table styling */
 .tableContent table {
   width: 100%;
   table-layout: fixed;
@@ -670,7 +673,6 @@ button:focus-visible {
   background: white;
 }
 
-/* cell alignment */
 .tableContent th,
 .tableContent td {
   padding: 0px;
@@ -758,7 +760,6 @@ button:focus-visible {
   cursor: pointer;
 }
 
-/* for clicking cells in modal */
 .selected {
   background-color: #29b52d;
   font-weight: bold;
@@ -818,7 +819,6 @@ button:hover {
 .advancedSettingsForm {
   display: flex;
   flex-direction: column;
-  
 }
 
 .AdvancedSettings_Buttons {
@@ -848,7 +848,6 @@ button:hover {
   opacity: 1;
 }
 
-/* Advanced Settings container: handle background/padding so the Submit button sits inside the same background */
 .AdvancedSettings_Farm {
   display: flex;
   flex-direction: column;
@@ -864,11 +863,9 @@ button:hover {
   padding: 1em 1em;
   background-color: rgba(1, 120, 5, 0.12);
   border-radius: 4px;
-  /* Use a single-column layout for all sizes */
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
-  /* ensure the farm settings do not create an internal scroll */
   overflow: visible;
   max-height: none;
 }
@@ -886,7 +883,6 @@ button:hover {
   width: 100%;
 }
 
-/* Submit button below the two columns, inside Advanced Settings background */
 .AdvancedSettings_Farm > #AS_Farm_Button {
   display: block;
   margin: 0.5rem auto 0;
@@ -910,7 +906,6 @@ button:hover {
   gap: 2em;
   width: 100%;
   margin: 0.4em 0em 0 0;
-  /* ensure inputs don't create inner scrollbars */
   overflow: visible;
 }
 
@@ -928,26 +923,29 @@ button:hover {
   box-sizing: border-box;
 }
 
-/* Style selects inside advanced settings to look like compact dropdowns */
-.AS_FarmContent_Container select {
+.AS_FarmContent_Container select,
+.select-item select {
   width: 100%;
   padding: 0.4rem 0.6rem;
   border-radius: 6px;
-  border: 1px solid rgba(0,0,0,0.08);
-  background-color: rgba(255,255,255,0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: #eeeeee;
   color: #1a1a1a;
   box-sizing: border-box;
   -webkit-appearance: menulist;
   appearance: menulist;
 }
 
-/* ensure label/input alignment remains tight and readable */
-.AS_FarmContent_Container label {
-  width: 9ch; /* slightly wider so labels don't wrap */
+.AS_FarmContent_Container label,
+.select-item label {
+  width: 9ch;
   margin-right: 0.6rem;
 }
 
-/* Tweak checkbox group in farm settings for spacing/readability */
+.adjustWidth {
+  padding: 0.1em 0.6em !important;
+}
+
 #AS_FarmerSkill_Container input[type="checkbox"] {
   margin-right: 0.35rem;
 }
@@ -1030,6 +1028,8 @@ button:hover {
   width: 100%;
   padding: 10px;
   overflow-x: scroll;
+  max-height: 6em;
+  max-width: 100%;
 }
 
 .crop-singleField button {
@@ -1054,12 +1054,15 @@ button:hover {
 
 .form-group-row small {
   width: 100%;
-  align-self: flex-start;
   font-size: 0.9em;
+  background-color: rgba(3, 160, 7, 0.12);
+  align-items: center;
+  align-self: center;
+  vertical-align: middle;
 }
 
 .form-group-row button {
-  width: 40%;
+  width: 30%;
   align-self: flex-end;
   margin: 0em 0em 0.2em 0em;
   padding: 0.4em 0.3em;
@@ -1072,7 +1075,7 @@ button:hover {
   border-radius: 6px;
   color: rgb(57, 57, 57);
   font-size: 14px;
-  max-width: 460px; /* wider so processed info fits horizontally */
+  max-width: 460px; 
 }
 
 .tippy-box[data-theme~="custom"] .tippy-content {
@@ -1085,28 +1088,24 @@ button:hover {
   flex-direction: column;
 }
 
-/* allow interactive scrolling inside tooltip body when content is long */
 .tippy-box[data-theme~="custom"] .tippy-content .tippyBody {
   max-height: 60vh;
   overflow: auto;
 }
 
-/* Details pane styles (in-layout right column) */
 .details-pane {
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
     rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
-  background-color: rgba(208, 235, 253, 0.8);
+  background-color: rgba(208, 235, 253, 0.9);
   color: #1a1a1a;
   display: flex;
   flex-direction: column;
-  /* match other containers' spacing */
   min-height: 12rem;
   max-height: 100%;
-  /* max-height: calc(100vh - 20em); */
   overflow: hidden;
   box-sizing: border-box;
-  align-self: start; /* align with top of adjacent columns */
+  align-self: start;
 }
 
 .details-pane-title {
@@ -1151,32 +1150,6 @@ button:hover {
   margin-top: 2em;
 }
 
-@media (max-width: 980px) {
-  .details-pane {
-    width: 100%;
-    border-left: none;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-  }
-  /* Stack the advanced settings columns on smaller screens */
-  /* Advanced settings are single-column by default; nothing to change here */
-  .AdvancedSettings_Farm > #AS_Farm_Button {
-    width: 100%;
-    justify-self: stretch;
-  }
-}
-
-.tippy-box[data-theme~="custom"] .tippy-content .tippyBody span {
-  font-weight: 600;
-  margin: 0.2em 0em 0.1em 0em;
-  color: rgb(2, 26, 8);
-}
-
-.tippy-box[data-theme~="custom"] .tippy-content .tippyBody .tippySection {
-  margin: 0.5em 0em 0em 0em;
-  border-radius: 10px;
-  padding: 4px;
-}
-
 /*arrow only, style*/
 .tippy-box[data-theme~="custom"] .tippy-arrow {
   color: rgba(197, 214, 221, 0.9);
@@ -1204,6 +1177,39 @@ button:hover {
   textarea {
     background-color: #eeeeee;
     border-color: transparent;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    background-color: #fefefe;
+  }
+}
+
+@media (max-width: 1400px) {
+  .content-container {
+    grid-template-columns: minmax(240px, 0.7fr) 1fr minmax(240px, 0.7fr);
+    gap: 0.8rem;
+  }
+}
+
+@media (max-width: 1100px) {
+  .content-container {
+    grid-template-columns: minmax(220px, 0.6fr) 1fr minmax(220px, 0.6fr);
+    gap: 0.6rem;
+  }
+}
+
+@media (max-width: 980px) {
+  .details-pane {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .AdvancedSettings_Farm > #AS_Farm_Button {
+    width: 100%;
+    justify-self: stretch;
   }
 }
 
@@ -1243,6 +1249,7 @@ button:hover {
   }
 
   .content-container {
+    grid-template-columns: 1fr;
     margin-top: 0px;
     flex-wrap: wrap;
   }
@@ -1266,6 +1273,7 @@ button:hover {
 
   .form-group input {
     width: 100%;
+    background-color: #eeeeee;
   }
 
   .form-group-row small {
@@ -1357,11 +1365,6 @@ button:hover {
     height: 90%;
   }
 
-  .content-container {
-    width: 100%;
-    flex-direction: column;
-  }
-
   /* modal */
   .list-container {
     margin-bottom: 1em;
@@ -1382,22 +1385,18 @@ button:hover {
   }
 }
 
-/* For very wide viewports, collapse Advanced Settings to a single vertically scrollable column
-   This is for displays >= 1700px width: the panel will become one column and scroll vertically
-   while keeping the Submit button visible (sticky) at the bottom of the Advanced Settings area. */
 @media (min-width: 1700px) {
   .AdvancedSettings_Farm_Left {
-    grid-template-columns: 1fr; /* single column */
+    grid-template-columns: 1fr;
     gap: 0.75rem;
   }
 
   .AdvancedSettings_Farm {
-    max-height: 80vh; /* constrain height so the area can scroll vertically */
+    max-height: 80vh;
     overflow-y: auto;
     overflow-x: hidden;
   }
 
-  /* keep the submit button visible inside the scrollable area */
   .AdvancedSettings_Farm > #AS_Farm_Button {
     position: sticky;
     bottom: 0;
@@ -1405,6 +1404,6 @@ button:hover {
     width: 90%;
     max-width: 480px;
     z-index: 5;
-    background-color: rgba(3,160,7,0.08);
+    background-color: rgba(3, 160, 7, 0.08);
   }
 }

@@ -18,14 +18,14 @@ import { recalculateAllCrops } from "./data.js";
 let cropListTableBody = null;
 let tippyInstance = null;
 let ctx = null;
-let windowMyChart = null; // Store chart instance locally in this module
+let windowMyChart = null; 
 
 document.addEventListener("DOMContentLoaded", function () {
   // * LOADING SCREEN PLACEHOLDER ---------------------
   const loadingScreen = document.getElementById("loading-screen");
 
   if (loadingScreen) {
-    loadingScreen.style.transition = "opacity 0.5s ease-out"; // Add a smooth fade-out
+    loadingScreen.style.transition = "opacity 0.5s ease-out"; 
     loadingScreen.style.opacity = "0";
     setTimeout(() => {
       loadingScreen.remove();
@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // ! END LOADING SCREEN PLACEHOLDER ---------------------
 
-  // Initialize frequently used elements
   cropListTableBody = document.querySelector("#crop-list-table tbody");
 
   const canvasElement = document.getElementById("crop-canvas");
@@ -45,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ctx = canvasElement.getContext("2d");
   } else {
     console.error("Canvas element with ID 'crop-canvas' not found.");
-    return; // Stop initialization if canvas is missing
+    return; 
   }
 
   ctx = document.getElementById("crop-canvas").getContext("2d");
@@ -65,6 +64,7 @@ function attachEventListeners() {
   document.getElementById("Toast_EmptySubmit").style.display = "none";
   document.getElementById("modalPopUp").style.display = "none";
   document.getElementById("changeLogModal").style.display = "none";
+  document.getElementById("tutorialModal").style.display = "none";
   document.getElementById("advancedSettingsForm").style.display = "none";
   document.getElementById("AdvancedSettings_Tax").style.display = "none";
 
@@ -86,14 +86,12 @@ function attachEventListeners() {
   if (agricCheckbox && artisanCheckbox) {
     agricCheckbox.addEventListener("change", () => {
       if (agricCheckbox.checked && artisanCheckbox.checked) {
-        // enforce mutual exclusion: uncheck artisan if agric selected
         artisanCheckbox.checked = false;
       }
     });
 
     artisanCheckbox.addEventListener("change", () => {
       if (artisanCheckbox.checked && agricCheckbox.checked) {
-        // enforce mutual exclusion: uncheck agric if artisan selected
         agricCheckbox.checked = false;
       }
     });
@@ -111,6 +109,9 @@ function attachEventListeners() {
     ?.addEventListener("click", modalPopDown);
   document
     .getElementById("tableContent-cancel")
+    ?.addEventListener("click", modalPopDown);
+  document
+    .getElementById("closeTutorial")
     ?.addEventListener("click", modalPopDown);
 
   // * --- Edit/Delete in Modal ---
@@ -150,6 +151,13 @@ function attachEventListeners() {
     toggleVisibility(changeLogModal, changeLogButton)
   );
 
+  // *Tutorial Modal
+  const tutorialButton = document.getElementById("tutorialButton");
+  const tutorialModal = document.getElementById("tutorialModal");
+  tutorialButton?.addEventListener("click", () =>
+    toggleVisibility(tutorialModal, tutorialButton)
+  );
+
   // * --- Paste Button ---
   document
     .getElementById("paste-submit")
@@ -172,7 +180,7 @@ function attachEventListeners() {
   );
   const AdvancedSettings_Tax = document.getElementById("AdvancedSettings_Tax");
 
-  // helper to toggle active/inactive classes for the advanced settings buttons
+  // * helper to toggle active/inactive classes for the advanced settings buttons
   function setAdvancedActive(btn) {
     const container = document.querySelector(".AdvancedSettings_Buttons");
     if (container) {
@@ -200,16 +208,16 @@ function attachEventListeners() {
     setAdvancedActive(AdvancedSettings_TaxButton);
   });
 
-  // ensure initial classes (farm active by default)
   if (AdvancedSettings_FarmButton)
     setAdvancedActive(AdvancedSettings_FarmButton);
 }
+
+// ! END OF ATTACH EVENT LISTENERS
 
 //* ADVANCED SETTINGS
 function handleFarmSettingsSubmit() {
   console.log("Advanced Farm Settings Submitted");
 
-  //optional: validate inputs here if needed
   const currentDayInput = document.getElementById("AS_CurrentDay");
   const durationInput = document.getElementById("AS_Duration");
   if (!durationInput || !currentDayInput) {
@@ -263,18 +271,15 @@ function handleFarmSettingsSubmit() {
     const tillerChecked = tillerCheckbox ? tillerCheckbox.checked : false;
 
     if (agricChecked || artisanChecked) {
-      // Auto-apply tiller
       if (tillerCheckbox) tillerCheckbox.checked = true;
       farmingLevelVal = Math.max(farmingLevelVal, 10);
     } else if (tillerChecked) {
       farmingLevelVal = Math.max(farmingLevelVal, 5);
     }
 
-    // Cap farming level at 10
     farmingLevelVal = Math.min(farmingLevelVal, 10);
     if (farmingLevelInput) farmingLevelInput.value = farmingLevelVal;
 
-    // Use numeric duration if possible
     const durationNumber = Number.isFinite(Number(duration))
       ? Number.parseInt(duration, 10)
       : null;
@@ -294,8 +299,6 @@ function handleFarmSettingsSubmit() {
     duration: 4000,
   });
 }
-
-// ! END OF ATTACH EVENT LISTENERS
 
 // * --- Individual Handler Functions ---
 function handleMultipleFieldFormSubmit(event) {
@@ -504,9 +507,9 @@ function handlePasteClick() {
   button.disabled = true;
   if (small && textarea) {
     let content = small.textContent.trim().replace(/^\[|\]$/g, "");
-    content += "\n"; //creates new line
-    textarea.value += content; //adds content to textarea
-    textarea.focus(); //focuses on textarea
+    content += "\n";
+    textarea.value += content; 
+    textarea.focus();
     button.textContent = "✓";
     button.style.backgroundColor = "#4CAF50";
     setTimeout(() => {
@@ -543,9 +546,14 @@ function showCropsModal() {
   populateModalTable();
 }
 
+function showTutorialModal() {
+  document.getElementById("tutorialModal").style.display = "block";
+}
+
 function modalPopDown() {
   document.getElementById("modalPopUp").style.display = "none";
   document.getElementById("changeLogModal").style.display = "none";
+  document.getElementById("tutorialModal").style.display = "none";
 }
 
 function populateModalTable() {
@@ -567,7 +575,7 @@ function populateModalTable() {
   });
 }
 
-// -* -- Edit Logic ---
+// * -- Edit Logic ---
 async function handleEditClick() {
   const tableContentEdit = document.getElementById("tableContent-edit");
   const isEditing = tableContentEdit.textContent === "Save Edit";
@@ -622,7 +630,6 @@ async function handleEditClick() {
           type: "error",
           duration: 4000,
         });
-        // Re-enable editing and return
         rows.forEach((row) =>
           row
             .querySelectorAll("td")
@@ -709,7 +716,6 @@ function handleDeleteClick() {
   updateNoCropsUI();
   updateGraph();
 
-  // Remove rows from modal view as well
   selectedRows.forEach((row) => row.remove());
   showToast(`Deleted ${namesToDelete.length} crop(s).`, {
     type: "info",
@@ -719,7 +725,7 @@ function handleDeleteClick() {
 
 // *--- UI Update Functions ---
 export function updateTable() {
-  if (!cropListTableBody) return; // Check if element exists
+  if (!cropListTableBody) return; 
   cropListTableBody.innerHTML = "";
   getCropDetails().forEach((stats) => {
     const newRow = document.createElement("tr");
@@ -758,7 +764,7 @@ function updateToggleButtonsState() {
   }
 }
 
-// Small popup chooser: builds a small floating menu near the button
+// * Modal popup for Yield and Category
 function showChoicePopup(anchorButton, options = [], onChoose) {
   const existing = document.getElementById("modal-chooser-popup");
   if (existing) existing.remove();
@@ -799,7 +805,7 @@ function showChoicePopup(anchorButton, options = [], onChoose) {
   setTimeout(() => document.addEventListener("click", onDocClick), 10);
 }
 
-// Apply chosen yield value to selected modal rows and sync to main table rows
+// * Apply chosen yield value to selected modal rows and sync to main table rows
 function applyYieldToSelectedRows(value) {
   const modalTableBody = document.getElementById("modal-crop-table-body");
   const mainBody = document.querySelector("#crop-list-table tbody");
@@ -861,13 +867,12 @@ function exportCrops() {
     const blob = new Blob([jsonString], { type: "application/json" });
 
     const now = new Date();
-    const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-"); // Format: YYYY-MM-DDTHH-mm-ss
+    const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-"); // * Format: YYYY-MM-DDTHH-mm-ss
     const filename = `Crop Details_${timestamp}.json`;
 
-    // Create a temporary link element
     const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob); // Creates URL for the blob
-    link.download = filename; // Sets desired filename
+    link.href = URL.createObjectURL(blob);
+    link.download = filename; 
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -910,7 +915,6 @@ function importCrops(event) {
     try {
       const content = e.target.result;
 
-      // Parse the text as JSON
       let importedData = JSON.parse(content);
 
       if (!Array.isArray(importedData)) {
@@ -924,7 +928,6 @@ function importCrops(event) {
 
         for (const item of importedData) {
 
-          // Use the exact key names from your export function
           const cropName = item["Crop Name"];
           const seedPrice = item["Seed Price"];
           const cropPrice = item["Crop Price"];
@@ -951,29 +954,22 @@ function importCrops(event) {
             cropGrowthDays: growthDays,
             cropRegrowth: cropRegrowth,
             cropRegrowthEvery: cropRegrowthEvery,
-            // Pass imported meta-data if needed by the stats object structure (though calculateCropStats might not use them directly for calc)
             cropYieldType: yieldType,
             cropCategory: category,
           });
 
-          // Add the fully calculated object to the new array
           transformedData.push(fullCropStats);
         }
-        importedData = transformedData; // Replace the imported array with the transformed one
+        importedData = transformedData; 
         console.log("Transformation complete, number of crops:", transformedData.length);
       } else {
           console.log("Detected full format import, using data as-is.");
-          // Optional: Add validation here to ensure the objects have the expected structure
-          // This is harder without a strict schema, but you could check for a few key properties.
       }
       // * END NEW: Transformation block
 
       // * Update the main cropDetails array managed by data.js using the setter
-      // This should trigger updates in data.js for cropData and cropLabels
-      setCropDetails(importedData);
 
-      // Update the UI (table and graph) to reflect the new data
-      // These functions should now get the updated data via getCropDetails() from data.js
+      setCropDetails(importedData);
       updateTable();
       updateNoCropsUI();
       updateGraph();
@@ -984,7 +980,6 @@ function importCrops(event) {
         duration: 3000,
       });
 
-      // Clear the file input after successful import
       event.target.value = "";
 
     } catch (error) {
@@ -993,7 +988,7 @@ function importCrops(event) {
         type: "error",
         duration: 5000,
       });
-      // Clear the file input even if there's an error
+
       event.target.value = "";
     }
   };
@@ -1004,14 +999,14 @@ function importCrops(event) {
       type: "error",
       duration: 5000,
     });
-    event.target.value = ""; // Clear the input
+    event.target.value = ""; 
   };
 
-  // Start reading the file as text
+  // Read the file as text
   reader.readAsText(file);
 }
 
-// Apply chosen category value to selected modal rows and sync to main table rows
+// * Apply chosen category value to selected modal rows and sync to main table rows
 function applyCategoryToSelectedRows(value) {
   const modalTableBody = document.getElementById("modal-crop-table-body");
   const mainBody = document.querySelector("#crop-list-table tbody");
@@ -1046,7 +1041,7 @@ function applyCategoryToSelectedRows(value) {
   updateToggleButtonsState();
 }
 
-// wire the modal toggle buttons after DOM ready
+// * wire the modal toggle buttons after DOM ready
 document.addEventListener("DOMContentLoaded", function () {
   const yieldBtn = document.getElementById("tableContent-toggle-yield");
   const catBtn = document.getElementById("tableContent-toggle-category");
@@ -1121,7 +1116,7 @@ export function updateGraph() {
     windowMyChart = null;
   }
 
-  // Check if there's data to display
+
   if (!cropDetails || cropDetails.length === 0) {
     console.log(
       "No crop details to display on graph. Clearing canvas if possible."
@@ -1130,7 +1125,6 @@ export function updateGraph() {
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     }
   } else {
-    // Build and sort data for the chart using the data from the module
     console.log("Processing cropDetails for chart...");
     const processingType = window.currentProcessing || "raw";
     const combinedData = cropDetails.map((detail) => {
@@ -1138,12 +1132,11 @@ export function updateGraph() {
       if (processingType === "raw") {
         profit = parseFloat(detail.totalProfit) || 0;
       } else {
-        // processed products are stored under detail.artisan[productType]
+        // * processed products are stored under detail.artisan[productType]
         const prod = detail.artisan && detail.artisan[processingType];
         if (prod && prod.totalProfit !== undefined) {
           profit = parseFloat(prod.totalProfit) || 0;
         } else {
-          // fallback to 0 when product not applicable
           profit = 0;
         }
       }
@@ -1202,7 +1195,6 @@ export function updateGraph() {
             axis: "x",
           },
           onHover: (event, chartElements) => {
-            // chartElements is an array of active elements
             if (
               event &&
               event.native &&
@@ -1210,7 +1202,6 @@ export function updateGraph() {
               chartElements.length
             ) {
               const activeIndex = chartElements[0].index;
-              // Highlight hovered bar
               const dataset = windowMyChart.data.datasets[0];
               dataset.backgroundColor = sortedLabels.map((_, index) =>
                 index === activeIndex
@@ -1247,7 +1238,6 @@ export function updateGraph() {
       console.error("Error creating chart:", error);
     }
 
-    // Attach tippy events to canvas (if needed, similar to original)
     if (windowMyChart && windowMyChart.canvas && tippyInstance) {
       windowMyChart.canvas.addEventListener("mousemove", (event) => {
         tippyInstance.setProps({
@@ -1277,7 +1267,7 @@ export function updateNoCropsUI() {
     graphButtonField.style.display = empty ? "none" : "block";
 }
 
-// --- Helper UI Functions ---
+// * --- Helper UI Functions ---
 function toggleVisibility(element, button) {
   if (!element) return;
   if (element.style.display === "none" || !element.style.display) {
@@ -1305,7 +1295,7 @@ function toggleInputForm(button) {
   }
 }
 
-// Render detail HTML used by both the details pane and (optionally) the tooltip
+// * Render detail HTML used by both the details pane and (optionally) the tooltip
 function renderDetailHTML(crop) {
   if (!crop) return "<div>No data</div>";
   const proc = window.currentProcessing || "raw";

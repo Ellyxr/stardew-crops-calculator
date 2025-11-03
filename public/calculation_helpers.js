@@ -1,13 +1,5 @@
-// calculation_helpers.js
-// Non-invasive helper stubs and a sanity-check scanner for formula presence.
-// These are lightweight, non-destructive helpers intended to make the main
-// `calculateCropStats` easier to reason about. They do not change existing logic.
-
+// ! FOR DEBUGGING
 import { expectedFromQuality } from './util.js';
-
-/*
- Required TODO token: // TODO: STARD EW VALLEY FORMULA CHECK
-*/
 
 // parse and normalize inputs
 export function parseAndValidateInputs(params = {}) {
@@ -26,7 +18,6 @@ export function parseAndValidateInputs(params = {}) {
 
 // speed reduction from fertilizer (Speed-Gro family)
 export function computeSpeedReduction(fertilizerType) {
-  // TODO: STARD EW VALLEY FORMULA CHECK - return Speed-Gro reductions
   const map = {
     'Speed-Gro': 0.10,
     'Deluxe Speed-Gro': 0.25,
@@ -36,7 +27,6 @@ export function computeSpeedReduction(fertilizerType) {
 }
 
 export function applyGrowthModifiers(growthDays, regrowEvery, speedReduction, skills = {}) {
-  // TODO: STARD EW VALLEY FORMULA CHECK - apply agriculturist 10% faster logic
   let effGrowth = Math.max(1, Math.ceil(growthDays * (1 - (speedReduction || 0))));
   let effRegrow = Math.max(0, Math.ceil((regrowEvery || 0) * (1 - (speedReduction || 0))));
   if (skills && skills.agriculturist) {
@@ -47,14 +37,11 @@ export function applyGrowthModifiers(growthDays, regrowEvery, speedReduction, sk
 }
 
 export function fertilizerLevelFromType(fertilizerType) {
-  // TODO: STARD EW VALLEY FORMULA CHECK - mapping levels used for quality formula
   const map = { None: 0, Basic_Fertilizer: 1, Quality_Fertilizer: 2, Deluxe_Fertilizer: 3 };
   return map[fertilizerType] ?? 0;
 }
 
 export function buildQualityProbabilities(level, fertilizerLevel) {
-  // TODO: STARD EW VALLEY FORMULA CHECK - implement wiki formula (gold/silver/normal/iridium)
-  // Minimal placeholder that follows a sequential model: iridium -> gold -> silver -> normal
   let pGold = 0.2 * (level / 10) + 0.2 * (fertilizerLevel) * ((level + 2) / 12) + 0.01;
   pGold = Math.max(0, Math.min(pGold, 0.99));
   let pSilverParam = Math.min(0.75, 2 * pGold);
@@ -68,17 +55,13 @@ export function buildQualityProbabilities(level, fertilizerLevel) {
 }
 
 export function qualityValueMultipliers() {
-  // TODO: STARD EW VALLEY FORMULA CHECK - verify multipliers
   return { normal: 1.0, silver: 1.25, gold: 1.5, iridium: 2.0 };
 }
 
-// Wrapper (or fallback) to reuse util.expectedFromQuality if available
 export function expectedFromQualityHelper(valuesByTier, probabilities) {
-  // TODO: STARD EW VALLEY FORMULA CHECK - decide whether to reuse util.expectedFromQuality
   try {
     return expectedFromQuality(valuesByTier, probabilities);
   } catch (e) {
-    // simple fallback
     return (valuesByTier.normal || 0) * (probabilities.normal || 0) +
       (valuesByTier.silver || 0) * (probabilities.silver || 0) +
       (valuesByTier.gold || 0) * (probabilities.gold || 0) +
@@ -87,7 +70,6 @@ export function expectedFromQualityHelper(valuesByTier, probabilities) {
 }
 
 export function calculateHarvestCount(growthDays, regrowEvery, seasonDuration, isRegrow) {
-  // TODO: STARD EW VALLEY FORMULA CHECK - ensure off-by-one logic matches game
   if (isRegrow && regrowEvery > 0) {
     const remaining = seasonDuration - growthDays;
     return remaining >= 0 ? 1 + Math.floor(remaining / regrowEvery) : 0;
@@ -96,7 +78,6 @@ export function calculateHarvestCount(growthDays, regrowEvery, seasonDuration, i
 }
 
 export function computePerHarvestExpectedValue(meta = {}, cropsPerHarvest = 1, isChanceMulti = false, isFixedMulti = false, level = 1, fertilizerLevel = 0, skills = {}) {
-  // TODO: STARD EW VALLEY FORMULA CHECK - implement handling for "fertilizer only affects first unit"
   // Minimal placeholder: compute expected using provided meta and multipliers
   const multipliers = qualityValueMultipliers();
   const probsFirst = buildQualityProbabilities(level, fertilizerLevel);
@@ -109,7 +90,6 @@ export function computePerHarvestExpectedValue(meta = {}, cropsPerHarvest = 1, i
 }
 
 export function computeTotalRevenueCostProfit(expectedPerHarvest, harvests, seedPrice, isRegrow, cropsPerTile, fertilizerCostPerTile = 0) {
-  // TODO: STARD EW VALLEY FORMULA CHECK - include fertilizer cost per tile correctly
   const totalRevenue = expectedPerHarvest * harvests;
   const totalCost = isRegrow ? seedPrice : seedPrice * harvests;
   const totalCostWithFert = totalCost + (fertilizerCostPerTile || 0);
@@ -118,14 +98,12 @@ export function computeTotalRevenueCostProfit(expectedPerHarvest, harvests, seed
 }
 
 export function breakEvenHarvestsCalculation(seedPrice, adjustedValuePerHarvest, isRegrow) {
-  // TODO: STARD EW VALLEY FORMULA CHECK - match original logic for break-even.
   if (isRegrow) return adjustedValuePerHarvest !== 0 ? seedPrice / adjustedValuePerHarvest : Infinity;
   const denom = adjustedValuePerHarvest - seedPrice;
   return denom !== 0 ? seedPrice / denom : Infinity;
 }
 
 export function getArtisanProductBaseValues(category, basePriceAfterTiller) {
-  // TODO: STARD EW VALLEY FORMULA CHECK - verify artisan multipliers for categories
   const price = Number(basePriceAfterTiller) || 0;
   const out = {};
   if (category === 'fruit') {
@@ -161,7 +139,6 @@ export function computeArtisanExpectedValues(artisanBaseVals, probabilitiesWithF
 }
 
 export function formatOutput(stats = {}, precision = 2) {
-  // TODO: STARD EW VALLEY FORMULA CHECK - safe toFixed wrapper for all numeric outputs
   const out = {};
   for (const [k, v] of Object.entries(stats)) {
     out[k] = (typeof v === 'number') ? Number(v.toFixed(precision)) : v;
@@ -225,7 +202,6 @@ export function runTestSkeletons() {
   console.log('Test skeletons complete. These are scaffolding outputs; replace with assertions in real tests.');
 }
 
-// Quick actionable summary function
 export function helperSummary() {
   console.log('Helper stubs added: parseAndValidateInputs, computeSpeedReduction, applyGrowthModifiers, fertilizerLevelFromType, buildQualityProbabilities, qualityValueMultipliers, expectedFromQualityHelper, calculateHarvestCount, computePerHarvestExpectedValue, computeTotalRevenueCostProfit, breakEvenHarvestsCalculation, getArtisanProductBaseValues, computeArtisanExpectedValues, formatOutput.');
   console.log('Sanity scanner: scanForFormulas(sourceText) added. Run on file contents to see missing formula pieces.');

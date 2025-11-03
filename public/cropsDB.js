@@ -1,5 +1,5 @@
 // cropsDB.js
-// minimal, extensible local DB. Add more fields as needed.
+// minimal, extensible local DB
 export const cropsDB = [
   // Fruits
   {
@@ -44,6 +44,4 @@ export const cropsDB = [
     basePrice: 75,
   },
 
-  // Example modded crop (you can add mod crops here)
-  // { id: "tomberry", name: "Tomberry", category: "fruit", basePrice: 80, source: "mod:coolcrops" },
 ];

@@ -7,15 +7,13 @@ export const GAME_CONSTANTS = {
     normal: 0.97,
     silver: 0.02,
     gold: 0.01,
-    // iridium: 0.00 // Example, if needed later
   },
   ARTISAN_MULTIPLIERS: {
-    // These are now calculated dynamically in calculations.js, but you could define base multipliers here if needed
-    // e.g., WINE_BASE_MULTIPLIER: 3,
+
   }
 };
-
-// --- minimal local crops DB (add more crops here or import from another file) ---
+ 
+// --- minimal local crops DB // will be expanded later on ---
 export const cropsDB = [
   { id: "strawberry", name: "Strawberry", category: "fruit", basePrice: 120 },
   { id: "blueberry", name: "Blueberry", category: "fruit", basePrice: 50 },

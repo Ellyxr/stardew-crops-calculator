@@ -1,15 +1,4 @@
-/*
-TODO:
-* Feature
-> allow user to export a list and import said list for better ux 
-- [ ] add comparison between crops (like, crops vs crops)
-- [ ] fix footer, add kofi
-- [ ] in the changelog, at the top, add a suggestion box
 
-* Aesthetic:
-- [ ] get the time and if its daytime at the user place, change the bg to daytime
-
-*/
 
 import { calculateCropStats as moduleCalculateCropStats } from "./calculation.js";
 

@@ -46,21 +46,20 @@
             <form id="crop-formField" class="crop-singleField">
 
               <div class="form-group" id="form-group-SingleField">
-                <label for="crop-singleTextField">Crop Guide</label>
-                <small>[Name SeedPrice CropPrice GrowthDays YieldType(a|b|c)
-                  CropCategory(f|v|m) Regrows?(yes/no) EveryWhatDays]</small> <small>(a=single, b=random_multi, c=fixed_multi; f=fruit, v=vegetable,
-                  m=mushroom)</small>
+                <label for="crop-singleTextField">Crop Format Guide</label>
+                <small>Name SeedPrice CropPrice GrowthDays YieldType(a|b|c)
+                  CropCategory(f|v|m) Regrows?(yes/no) EveryWhatDays</small>
 
                 <div class="form-group-row">
 
-                  <small> Strawberry 100 120 8 a f yes 4, </small>
+                  <small> Strawberry 100 120 8 b f yes 4, </small>
                   <br />
 
                   <button id="paste-submit"> ▼ </button>
                 </div>
 
                 <textarea type="text" id="crop-singleTextField" name="cropName"
-                  placeholder="Strawberry 100 120 8 a f yes 4," rows="4"></textarea>
+                  placeholder="Strawberry 100 120 8 b f yes 4," rows="4"></textarea>
               </div>
 
               <button class="crop-submit" id="crop-submit"> Add to list</button>
@@ -70,22 +69,22 @@
             <form id="crop-form">
 
               <div class="form-group">
-                <label for="crop-name">Crop Name</label>
+                <label for="crop-name">Crop Name<span>*</span></label>
                 <input type="text" id="crop-name" name="cropName" placeholder="Press Tab, Strawberry">
               </div>
 
               <div class="form-group">
-                <label for="seed-price">Seed Price</label>
+                <label for="seed-price">Seed Price<span>*</span></label>
                 <input type="number" id="seed-price" name="cropPrice" placeholder="100">
               </div>
 
               <div class="form-group">
-                <label for="crop-price">Crop Price</label>
+                <label for="crop-price">Crop Price<span>*</span></label>
                 <input type="number" id="crop-price" name="cropQuantity" placeholder="120">
               </div>
 
               <div class="form-group">
-                <label for="crop-growth-days"> Growth Days</label>
+                <label for="crop-growth-days"> Growth Days<span>*</span></label>
                 <input type="number" id="crop-growth-days" name="cropGrowthDays" placeholder="10">
 
               </div>
@@ -101,7 +100,7 @@
                 <input type="number" id="crop-regrowth-every" name="cropRegrowthEvery" placeholder="3">
 
               </div>
-              <div class="form-group">
+              <div class="form-group select-item adjustWidth">
                 <label for="crop-yield-type">Yield Type</label>
                 <select id="crop-yield-type" name="cropYieldType">
                   <option value="single">Single yield</option>
@@ -110,7 +109,7 @@
                 </select>
               </div>
 
-              <div class="form-group">
+              <div class="form-group select-item">
                 <label for="crop-category">Crop Category</label>
                 <select id="crop-category" name="cropCategory">
                   <option value="fruit">Fruit</option>
@@ -274,7 +273,7 @@
               <button type="submit" id="export-button">Export list (JSON)</button>
               <br><br>
 
-
+              <!-- * Changelog Modal-->
               <modal class="changeLogModal" id="changeLogModal">
                 <div class="changeLogModalContent">
 
@@ -282,7 +281,7 @@
                     <div class="titleContent-header" id="changeLogHeader">
                       <div class="titleContent-start">Changelog</div>
                       <div class="titleContent-end">
-                        <button id="modalPopDown"> ❌ </button>
+                        <button id="modalPopDown"> X </button>
                       </div>
                     </div>
                   </div>
@@ -291,6 +290,25 @@
                     <iframe src="changelog.html" width="100%" height="400px" style="border:none;"></iframe>
                   </div>
 
+                </div>
+              </modal>
+
+              <!-- * Tutorial Modal-->
+              <modal class="tutorialModal" id="tutorialModal">
+                <div class="tutorialModalContent">
+
+                  <div class="titleContent">
+                    <div class="titleContent-header" id="tutorialHeader">
+                      <div class="titleContent-start"> How it works </div>
+                      <div class="titleContent-end">
+                        <button id="closeTutorial"> X </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="changeLogContent">
+                    <iframe src="Tutorial.html" width="100%" height="400px" style="border:none;"></iframe>
+                  </div>
                 </div>
               </modal>
 
@@ -363,7 +381,7 @@
 
               <div class="list-container-search">
                 <input type="text" class="list-search " id="list-search" name="listSearch" placeholder="Search Crops..">
-                <button class="crop-fieldButton list-button " id="list-button">Edit </button>
+                <button class="crop-fieldButton list-button " id="list-button">Edit Table</button>
               </div>
               </form>
 

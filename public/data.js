@@ -39,7 +39,7 @@ export function setCropLabels(newLabels) {
 }
 
 /**
- * Adds a new crop to the cropDetails array after calculating its stats.
+ * * Adds a new crop to the cropDetails array after calculating its stats.
  * @param {Object} cropInputData - Raw input data for the crop.
  */
 export function addCrop(cropInputData) {
@@ -104,7 +104,6 @@ export function addCrop(cropInputData) {
   }
 
   // Preserve original input regrowth fields on the stored stats so future
-  // recalculations can reference the user's original intent.
   try {
     stats.cropRegrowth = cropRegrowth;
     stats.cropRegrowthEvery = cropRegrowthEvery;
@@ -124,7 +123,6 @@ export function addCrop(cropInputData) {
 
 /**
  * Updates the cropDetails array based on the current state of the main table UI.
- * Useful after editing or deleting from the modal.
  */
 export function refreshCropDetailsFromTable() {
   const currentDuration = getCurrentDuration();
@@ -162,7 +160,6 @@ export function refreshCropDetailsFromTable() {
         return;
     }
 
-    // Map single-letter codes to canonical values if necessary
     const normalizedYield = (tableYield || '').toLowerCase();
     let yieldTypeToUse = normalizedYield;
     if (['a','b','c'].includes(normalizedYield)) {
@@ -234,7 +231,7 @@ export function editCrop(oldName, newInputData) {
         type: "error",
         duration: 4000,
       });
-      return; // Don't update if calculation failed
+      return; 
     }
     cropDetails[index] = newStats;
     // Update derived arrays after edit
@@ -274,7 +271,6 @@ export function recalculateAllCrops(newDuration) {
       if (typeof val === 'string') {
         const trimmed = val.trim();
         if (trimmed === '--' || trimmed === '' || trimmed === '0') return false;
-        // if string contains digits (e.g. " 4 Days"), treat as regrowth
         return /\d+/.test(trimmed);
       }
       return Boolean(val);

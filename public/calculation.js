@@ -1,9 +1,6 @@
-// calculations.js - Functions related to crop calculations
 
 import { GAME_CONSTANTS, cropsDB as CONFIG_CROPS_DB } from './config.js';
 import { findCropInDBByName, guessCategory, expectedFromQuality } from './util.js';
-// Non-destructive integration: import helper stubs to compute parallel values for
-// verification before fully switching logic. These helpers live in calculation_helpers.js
 import * as CH from './calculation_helpers.js';
 
 /**
@@ -26,17 +23,14 @@ export function calculateCropStats({
   cropYieldType = 'single',
   cropCategory = undefined,
 }) {
-  // parse and validate
   const Seed_Price = Number.parseFloat(seedPrice);
   const originalGrowthDays = Number.parseInt(cropGrowthDays, 10);
   const regrowthEveryRaw = Number.parseInt(cropRegrowthEvery || 0, 10) || 0;
   const Crop_Price = Number.parseFloat(cropPrice);
   const duration = Number.parseInt(seasonDuration, 10) || GAME_CONSTANTS.SEASON_LENGTH || 28;
   const cropsMultiplier = Math.max(1, Number.parseInt(cropsPerTile, 10) || 1);
-  // cap farming level at 10 per wiki/testing
   const level = Math.min(10, Math.max(1, Number.parseInt(farmingLevel, 10) || 1));
 
-  // Ensure a profession is active at level 10: if none selected, default to Agriculturist
   if (level >= 10) {
     if (!skills || (!skills.agriculturist && !skills.artisan)) {
       skills = { ...skills, agriculturist: true };
@@ -47,7 +41,6 @@ export function calculateCropStats({
     return { name: cropName || '?', error: 'Invalid numeric inputs' };
   }
 
-  // fertilizer mapping (levels used in probability formula)
   const FERTILIZER_LEVELS = {
     None: 0,
     Basic_Fertilizer: 1,
@@ -56,9 +49,6 @@ export function calculateCropStats({
   };
   const fertilizerLevel = FERTILIZER_LEVELS[fertilizerType] ?? 0;
 
-  
-
-  // value multiplier from fertilizer (affects sale price values)
   const QUALITY_FERT_VALUE = {
     None: 1.0,
     Basic_Fertilizer: 1.05,
@@ -66,7 +56,6 @@ export function calculateCropStats({
     Deluxe_Fertilizer: 1.25,
   }[fertilizerType] ?? 1.0;
 
-  // speed-gro effects (optional mapping)
   const SPEEDGRO_REDUCTION = {
     'Speed-Gro': 0.10,
     'Deluxe Speed-Gro': 0.25,
@@ -74,7 +63,6 @@ export function calculateCropStats({
   };
   const speedReduction = SPEEDGRO_REDUCTION[fertilizerType] || 0;
 
-  // effective growth/regrowth with Speed-Gro and Agriculturist
   let effectiveGrowthDays = Math.max(1, Math.ceil(originalGrowthDays * (1 - speedReduction)));
   let effectiveRegrowthEvery = Math.max(0, Math.ceil(regrowthEveryRaw * (1 - speedReduction)));
   if (skills.agriculturist) {
@@ -82,13 +70,8 @@ export function calculateCropStats({
     if (effectiveRegrowthEvery > 0) effectiveRegrowthEvery = Math.max(1, Math.floor(effectiveRegrowthEvery * 0.9));
   }
 
-  // tiller increases base crop price by 10%
   const basePriceAfterTiller = skills.tiller ? Crop_Price * 1.10 : Crop_Price;
 
-  // --- Helper-derived snapshot (non-destructive) ---
-  // Compute helper versions of key intermediate values so we can compare and
-  // validate behavior without changing the active calculation path. Inserted
-  // after dependent variables (e.g. basePriceAfterTiller) are available.
   try {
     const parsedInputs = CH.parseAndValidateInputs({
       seedPrice: Seed_Price,
@@ -126,19 +109,12 @@ export function calculateCropStats({
     if (typeof console !== 'undefined' && console.warn) console.warn('calculation helpers snapshot failed', e);
   }
 
-  // helper: build drop rates according to wiki formula and sequential model
   function buildQualityRates(levelForCalc, fertilizerLevelForCalc) {
-    // chanceGold = 0.2*(level/10) + 0.2*(fertilizerLevel)*((level+2)/12) + 0.01
     let pGold = 0.2 * (levelForCalc / 10) + 0.2 * (fertilizerLevelForCalc) * ((levelForCalc + 2) / 12) + 0.01;
     pGold = Math.max(0, Math.min(pGold, 0.99));
-
-    // chanceSilver = min(0.75, 2 * chanceGold) (applied after gold fails in sequential model)
     let pSilverParam = Math.min(0.75, 2 * pGold);
-
-    // iridium only possible with Deluxe fertilizer
     let pIridiumParam = fertilizerLevelForCalc >= 3 ? pGold / 2 : 0;
 
-    // sequential allocation: iridium -> gold -> silver -> normal
     let remaining = 1.0;
     const pIridium = Math.min(pIridiumParam, remaining);
     remaining -= pIridium;
@@ -156,7 +132,6 @@ export function calculateCropStats({
   const dropRatesWithFert = buildQualityRates(level, fertilizerLevel);
   const dropRatesNoFert = buildQualityRates(level, 0);
 
-  // Quality multipliers
   const qualityMultipliers = { normal: 1.0, silver: 1.25, gold: 1.5, iridium: 2.0 };
 
   // quality values for first unit (fertilized) and other units
@@ -191,19 +166,15 @@ export function calculateCropStats({
     harvests = Math.floor(duration / Math.max(1, effectiveGrowthDays));
   }
 
-  // Ensure harvests is an integer and round up fractional results to avoid decimal harvests in UI
   harvests = Math.max(0, Math.ceil(harvests));
 
-  // number of crops sold (integer)
   const cropsSold = Math.ceil(harvests * cropsMultiplier);
-
   const totalRevenue = adjustedValuePerHarvest * harvests;
   const totalCost = cropRegrowth ? Seed_Price : Seed_Price * harvests;
   const totalProfit = totalRevenue - totalCost;
   const roi = totalCost !== 0 ? totalProfit / totalCost : 0;
   const profitPerDay = totalProfit / Math.max(1, duration);
 
-  // break-even
   let breakEvenHarvests;
   if (cropRegrowth) breakEvenHarvests = adjustedValuePerHarvest !== 0 ? Seed_Price / adjustedValuePerHarvest : Infinity;
   else {
@@ -233,7 +204,6 @@ export function calculateCropStats({
   }
 
   const cropEntry = findCropInDBByName(cropName, CONFIG_CROPS_DB) || null;
-  // allow explicit override from UI input
   const category = cropCategory || (cropEntry ? cropEntry.category : guessCategory(cropName));
   const baseForArtisan = basePriceAfterTiller || (cropEntry && cropEntry.basePrice) || 0;
   const artisanBase = getArtisanValues(baseForArtisan, category);
@@ -307,7 +277,7 @@ export function calculateCropStats({
     dropRatesFirst: dropRatesWithFert,
     dropRatesOther: dropRatesNoFert,
     qualityTiers: {
-      // detailed per-first/other breakdown
+
       normal: { valueFirst: qualityValuesFirst.normal, valueOther: qualityValuesOther.normal, rateFirst: dropRatesWithFert.normal, rateOther: dropRatesNoFert.normal },
       silver: { valueFirst: qualityValuesFirst.silver, valueOther: qualityValuesOther.silver, rateFirst: dropRatesWithFert.silver, rateOther: dropRatesNoFert.silver },
       gold: { valueFirst: qualityValuesFirst.gold, valueOther: qualityValuesOther.gold, rateFirst: dropRatesWithFert.gold, rateOther: dropRatesNoFert.gold },
@@ -316,11 +286,11 @@ export function calculateCropStats({
       expectedValueOther: expectedOther.toFixed(2),
       expectedValuePerHarvest: expectedValuePerHarvest.toFixed(2),
       adjustedValuePerHarvest: adjustedValuePerHarvest.toFixed(2),
-      // Backwards-compatible fields used by existing UI/tooltips
+
       normalValue: qualityValuesFirst.normal,
       silverValue: qualityValuesFirst.silver,
       goldValue: qualityValuesFirst.gold,
-      // Legacy shape: `.normal.value`, `.silver.value`, `.gold.value`
+
       normal: { value: qualityValuesFirst.normal, rate: dropRatesWithFert.normal },
       silver: { value: qualityValuesFirst.silver, rate: dropRatesWithFert.silver },
       gold: { value: qualityValuesFirst.gold, rate: dropRatesWithFert.gold },

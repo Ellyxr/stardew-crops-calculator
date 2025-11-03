@@ -1,0 +1,301 @@
+<head>
+    <link rel="stylesheet" href="src/style/tutorial.css">
+</head>
+
+<body>
+    <div class="TSC_WholeContainer">
+        <!-- * Disclaimer Container -->
+        <div class="tutorialSectionContainer">
+            <span class="TSC_Heading"> How it works </span>
+            <span class="TSC_SecHeading" id="TSC_Caveat"> Disclaimer </span>
+            <span class="TSC_SecHeading"> This website is still in development! Please check the <b>Changelog</b> for
+                upcoming updates and the
+                <b>repository</b>
+                for the full roadmap. If you find any bugs or persistent issues, please open an issue on the repo. It
+                will help to
+                improve
+                the tool! </span>
+        </div>
+
+        <!-- * Calculator Container -->
+        <div class="tutorialContentContainer">
+            <div class="TSC_ContentHeading">
+                <span> Page Overview </span>
+            </div>
+            <div class="TSC_ContentBody">
+                <div class="TSC_Image">
+                </div>
+                <div class="TSC_TextContainer">
+                    <span> The site is made up of four main sections: </span>
+                    <div class="TSC_Heading">
+                        <span> Crop Calculator </span>
+                    </div>
+                    <div class="TSC_Body">
+                        <span> Here you can add crops using two methods, <b> Single Field</b> or
+                            <b>Multiple Fields. </b>You’ll
+                            enter basic info like: <br>
+
+                            <section class="Body_HighlightContainer">
+                                <b>Crop Name</b><br>
+                                <b>Seed Price and Crop Price</b><br>
+                                <b>Growth Days and
+                                    Regrowth time</b><br>
+                                <b> Yield and Crop Category type</b>
+                            </section>
+                        </span>
+                        <span> Only the Crop name, Prices, and Growth days are required but adding Yield and Category
+                            can
+                            help
+                            to make your results more accurate. Both input types work the same! The difference is just
+                            how
+                            you
+                            enter the data. </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- * Graph Container -->
+        <div class="tutorialContentContainer">
+            <div id="Graph">
+            </div>
+            <div class="TSC_TextContainer">
+                <div class="TSC_Heading">
+                    <span> Graph Container </span>
+                </div>
+                <div class="TSC_Body">
+                    <span> Once you submit your crops, they’ll appear on both the and <b> List</b> and the
+                        <b>Graph.</b> <br> </span>
+                    <section class="Body_HighlightContainer">
+                        <span>- Hover over any bar to see its details in the Crop Details panel.</span><br>
+                        <span>- Toggle artisan goods to see the processed value of each crop. If the graph doesn’t
+                            refresh
+                            automatically, click “Refresh Graph.”
+
+                        </span><br>
+                        <span>- Use Advanced Settings to adjust farm settings and click Submit to update the
+                            graph.</span>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- * List Container -->
+        <div class="tutorialContentContainer">
+            <div id="List">
+            </div>
+            <div class="TSC_TextContainer">
+                <div class="TSC_Heading">
+                    <span> List Container </span>
+                </div>
+                <div class="TSC_Body">
+                    <span> This is where all your added crops are displayed. You can: </span><br>
+                    <section class="Body_HighlightContainer">
+                        <span>- Export your current crop list and Import it later (no need to re-enter
+                            everything!)</span><br>
+                        <span>- Search crops in real time.
+                    </section>
+                    </span>
+                    <span>Edit or delete crops directly:
+                    </span>
+                    <section class="Body_HighlightContainer">
+                        <span><b>To delete: </b>select one or more crops and press Delete.</span><br>
+                        <span><b>To edit yield type or category: </b>just click and update — no need to enter edit
+                            mode.</span><br>
+                        <span><b>To edit other details: </b>click Edit, make your changes, then Save Edit and close the
+                            modal.</span>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- * Crop Details Container -->
+        <div class="tutorialContentContainer">
+            <div id="CropDetails">
+            </div>
+            <div class="TSC_TextContainer">
+                <div class="TSC_Heading">
+                    <span> List Container </span>
+                </div>
+                <div class="TSC_Body">
+                    <span>Each bar on the graph represents one crop. Hovering over a bar shows its detailed stats below.
+                        Each part means: <br></span>
+                    <section class="Body_HighlightContainer">
+                        <span class="Table_Heading"> Harvest Summary </span>
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                                <th>Meaning</th>
+                            </tr>
+                            <tr>
+                                <td>Total Profit</td>
+                                <td>How much gold you’ll earn in total after subtracting seed costs.</td>
+                            </tr>
+                            <tr>
+                                <td>ROI Percent</td>
+                                <td>“Return on Investment.” The higher the number, the more gold you’re getting back for
+                                    what you spent.</td>
+                            </tr>
+                            <tr>
+                                <td>Total Profit</td>
+                                <td>How much gold you’ll earn in total after subtracting seed costs.</td>
+                            </tr>
+                            <tr>
+                                <td>Profit per Day</td>
+                                <td>Average daily profit over the season or duration.</td>
+                            </tr>
+                            <tr>
+                                <td>Crops Sold</td>
+                                <td>Total number of crops harvested and sold during the season.</td>
+                            </tr>
+                        </table>
+
+                        <!-- * Crop Quality-->
+                        <span class="Table_Heading"> Crop Quality & Value </span>
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                                <th>Meaning</th>
+                            </tr>
+                            <tr>
+                                <td>Normal / Silver / Gold / Iridium</td>
+                                <td>Show the base selling price per quality tier.</td>
+                            </tr>
+                            <tr>
+                                <td>Expected AVG</td>
+                                <td>The weighted average price per crop, factoring in your fertilizer and farming level
+                                    chances.</td>
+                            </tr>
+                            <tr>
+                                <td>Adjusted Value</td>
+                                <td>The expected average after penalties (if any) or small rounding adjustments.</td>
+                            </tr>
+                        </table>
+
+                        <!-- * Seed & Sell Prices-->
+                        <span class="Table_Heading"> Seed & Sell Prices </span>
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                                <th>Meaning</th>
+                            </tr>
+                            <tr>
+                                <td>Seed Cost</td>
+                                <td>The price you pay per seed (or single plant).</td>
+                            </tr>
+                            <tr>
+                                <td>Base Crop Price</td>
+                                <td>The base selling price before any quality or skill bonuses.</td>
+                            </tr>
+                            <tr>
+                                <td>Total Revenue</td>
+                                <td>All gold earned from every harvest combined.</td>
+                            </tr>
+                            <tr>
+                                <td>Total Cost</td>
+                                <td>The total gold spent on seeds for that season.</td>
+                            </tr>
+                        </table>
+
+                        <!-- * Growth & Harvest Info-->
+                        <span class="Table_Heading"> Growth & Harvest Info </span>
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                                <th>Meaning</th>
+                            </tr>
+                            <tr>
+                                <td>Growth Days</td>
+                                <td>How many days it takes for the first harvest to grow.</td>
+                            </tr>
+                            <tr>
+                                <td>Harvests per Season</td>
+                                <td>How many full harvests you can get within one 28-day season.</td>
+                            </tr>
+                            <tr>
+                                <td>Break-Even Point</td>
+                                <td>How many harvests it takes to make back what you spent on seeds.</td>
+                            </tr>
+                            <tr>
+                                <td>Regrows Every</td>
+                                <td>For crops that regrow. It shows how many days between harvests.</td>
+                            </tr>
+                        </table>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- * Abt this website -->
+        <div class="tutorialContentContainer">
+            <div class="TSC_TextContainer">
+                <div class="TSC_Heading">
+                    <span> About This Website </span>
+                </div>
+                <div class="TSC_Body">
+                    <span> This tool helps Stardew Valley players, especially modded farm enjoyers, track and maximize
+                        crop profits. It supports both vanilla and modded crops, with tax support in the making.
+                    </span><br> <br>
+
+                    I built this with players who use multiple modded crops in mind as it can be tricky to decide
+                    which crops to plant when using several expansion mods. This tool aims to help you plan your
+                    farm with the same <del> precision </del> passion you put into your layouts!
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- * Credits -->
+        <div class="tutorialContentContainer">
+            <div class="TSC_TextContainer">
+                <div class="TSC_Heading">
+                    <span> Credits </span>
+                </div>
+                <div class="TSC_Body">
+                    <span> This project would not exist without community inspiration and resources. <br>
+
+                        <section class="Body_HighlightContainer">
+                            This site was inspired by <a
+                                href="https://thorinair.github.io/Stardew-Profits/#produce_0-equipment_0-sellRaw_false-sellExcess_false-aging_0-planted_1-maxSeedMoney_0-days_28-fertilizer_0-level_0-season_0-buySeed_false-replant_false-nextyear_false-buyFert_false-average_0-fertilizerSource_0-seeds_(pierre_true-joja_true-special_true)-skills_(till_false-agri_false-arti_false-gatherer_false-botanist_false)-foodIndex_0-foodLevel_0-extra_true-disableLinks_false-byHarvest_false-crossSeason_false-foragingLevel_0"
+                                target="_blank">Stardew
+                                Profits</a> created by <a href="https://x.com/thorinair_music"
+                                target="_blank">Thorinaire</a>, a tool I used
+                            for ages before side loading modded crops from <a
+                                href="https://www.nexusmods.com/games/stardewvalley" target="_blank">Nexus</a>. The
+                            experience inspired me to create a
+                            calculator
+                            that supports custom crops. <br><br>
+
+                            <a href="https://www.stardewvalley.net">Stardew Valley </a>and all related assets, such as
+                            the
+                            background image, belong to <a href="https://x.com/ConcernedApe"
+                                target="_blank">ConcernedApe</a>.
+                    </span></section>
+                </div>
+            </div>
+        </div>
+
+        <!-- * Contact -->
+        <div class="tutorialContentContainer">
+            <div class="TSC_TextContainer">
+                <div class="TSC_Heading">
+                    <span> Contact Me </span>
+                </div>
+                <div class="TSC_Body">
+                    <span> Got any questions, ideas, or found a persistent bug? <br>
+                        <section class="Body_HighlightContainer">
+                            Reach out at 📩 <a
+                                href="https://mail.google.com/mail/?view=cm&fs=1&to=ellyxdesigned@gmail.com"
+                                target="_blank">ellyxdesigned@gmail.com</a>, or let's connect on <a
+                                href="https://github.com/Ellyxr" target="_blank">
+                                GitHub </a>and <a href="https://www.codedex.io/@Ellyxr" target="_blank"> Codex </a> (I
+                            follow back!). This
+                            website is a small side project I made to learn the fundamentals of programming, so please
+                            be
+                            kind (´∇｀''). Thank you and have fun! <br>
+                    </span></section>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

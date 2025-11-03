@@ -12,57 +12,97 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 .CL_Container {
   display: flex;
   flex-direction: column;
   z-index: 999;
 }
 
-.CL_Top 
-{
+.CL_ContentContainer {
+  background-color: rgba(152, 190, 240, 0.367);
+  border: 1px solid rgba(39, 113, 166, 0.203);
+  padding: 0.4em 0.6em 0.4em 0.6em;
+  color: rgba(9, 85, 102, 0.921);
+  border-radius: 4px;
+  margin-bottom: 0.6em;
+}
+.CL_Top {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem 0.2rem 0.8rem;
   align-items: center;
 }
- .CL_Title 
- {
-   padding: 0.1em 0em;
-   color:rgba(140, 88, 53);
-   font-weight: bold;
- }
+.CL_Title {
+  padding: 0.1em 0em;
+  color: rgb(32, 97, 117);
+  font-weight: bold;
+}
 
-.CL_Category 
-{
-  background-color:  rgba(140, 88, 53, 0.6); 
+.CL_CategoryContainer {
+  display: flex;
+  gap: 0.2em;
+}
+.CL_Category {
+  background-color: rgba(53, 130, 140, 0.6);
   border-radius: 4px;
-  border: 1px solid #542910;
+  border: 1px solid #268392;
   padding: 0.1em 0.3em;
   font-size: small;
   vertical-align: middle;
   display: inline-flex;
   align-items: center;
-  
+  color: #eeeeee;
 }
 
-.CL_Bottom 
-{
+#ui {
+  background-color: rgba(210, 125, 106, 0.6);
+  border: 1px solid #922626b6;
+  color: #b62323;
+}
+
+#feature {
+  background-color: rgba(51, 130, 144, 0.6);
+  border: 1px solid #1a5478b6;
+  color: #f7f7f7;
+}
+
+#fix {
+  background-color: rgba(106, 210, 118, 0.6);
+  border: 1px solid #26922fb6;
+  color: #097709;
+}
+
+#revise {
+  background-color: rgba(210, 181, 106, 0.6);
+  border: 1px solid #927026b6;
+  color: #847410;
+}
+
+.CL_NextUpdate {
+background-color: rgba(51, 130, 144, 0.6);
+padding: 0.2em 1em 0em 1em;
+color:#e4e4e4;
+border-radius: 4px;
+}
+
+.NU_Heading {
+color: #eeeeee;
+}
+
+.CL_Bottom {
   display: grid;
   width: 100%;
 }
 
-.CL_Date
-{
-  color:rgba(140, 88, 53, 0.8);
+.CL_Date {
+  color: rgba(92, 129, 146, 0.8);
   padding: 0rem 1rem;
   font-size: small;
 }
 
-.CL_Body
-{
+.CL_Body {
   padding: 0rem 1rem;
-  color:rgba(140, 88, 53);
+  color: rgb(35, 90, 112);
   font-size: 0.9em;
 }
