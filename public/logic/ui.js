@@ -1068,11 +1068,11 @@ document.addEventListener("DOMContentLoaded", function () {
       showChoicePopup(
         this,
         [
-          { value: "Fruit", label: "Fruit" },
-          { value: "Vegetable", label: "Vegetable" },
-          { value: "Mushroom", label: "Mushroom" },
-          { value: "Flower", label: "Flower" },
-          { value: "Unknown", label: "Unknown" },
+          { value: "fruit", label: "Fruit" },
+          { value: "vegetable", label: "Vegetable" },
+          { value: "mushroom", label: "Mushroom" },
+          { value: "flower", label: "Flower" },
+          { value: "unknown", label: "Unknown" },
         ],
         applyCategoryToSelectedRows
       );
