@@ -53,7 +53,7 @@ body {
   place-items: center;
   min-width: 100vw;
   min-height: 100vh;
-  background-image: url("assets/background.png");
+  background-image: url("/assets/background.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -102,7 +102,7 @@ button:focus-visible {
 }
 
 .title {
-  background-image: url("assets/428.png");
+  background-image: url("/assets/428.png");
   background-size: contain;
   background-position: start;
   background-repeat: no-repeat;
@@ -350,7 +350,7 @@ button:focus-visible {
 }
 
 .search-button {
-  background-image: url("assets/magnifying-glass.png");
+  background-image: url("/assets/magnifying-glass.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;

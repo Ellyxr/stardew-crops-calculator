@@ -84,7 +84,7 @@
 }
 
 .TSC_Image {
-  background-image: url(/src/assets/TSC_Page.png);
+  background-image: url(/assets/TSC_Page.png);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center; 

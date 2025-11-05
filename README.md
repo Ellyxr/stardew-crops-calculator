@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="src/assets/title.png" alt="Logo" width="auto" height="auto">
+    <img src="src/assets/428.png" alt="Logo" width="auto" height="auto">
   </a>
 
 <h3 align="center"> Stardew Crops Calculator</h3>
@@ -14,9 +14,75 @@
 
 I wanted to share this to other modded gameplay enjoyers, like me who have 150+ mods with over 7 expansion crops and tax collection, to get the most profits out of a playthrough.
     <br /><br />
-    <a href="https://ellyxr.github.io/stardew-crops-calculator"> 🌴 Use Calculator 🌴</a>
+    <a href="https://stardew-crops-calculator.vercel.app" target="_blank"> 🌴 Use Calculator 🌴</a>
   </p>
 </div>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- USAGE EXAMPLES -->
+## Usage
+
+### 🌾 Crop Calculator  
+Add crops using **Single Field** or **Multiple Fields** input modes.  
+Enter basic details such as:
+
+- **Crop Name**  
+- **Seed Price & Crop Price**  
+- **Growth Days & Regrowth Time**  
+- **Yield & Category (optional)**  
+
+Only the crop name, prices, and growth days are required. Including yield and category improves accuracy.  Both input types work the same, the difference is in how you input the data!
+
+---
+
+### 🌾 Graph Container  
+After submitting crops, they appear on both the **List** and **Graph** sections.  
+
+You can:  
+- Hover over any bar to view crop details in the **Crop Details** panel.  
+- Toggle **Artisan Goods** to compare processed values.  
+- Click **Refresh Graph** if the chart doesn’t auto-update.  
+- Adjust farm settings in **Advanced Settings** and click **Submit** to recalculate.
+
+---
+
+### 🌾 List Container  
+View and manage all added crops here.  
+
+You can:  
+- **Export** your crop list or **Import** it later (no need to re-enter data).  
+- **Search** crops in real time.  
+- **Edit or Delete** crops directly.  
+
+Editing options:  
+- **Delete:** Select one or more rows, then press *Delete*.  
+- **Edit yield or category:** Click the value and update it directly.  
+- **Edit other details:** Click *Edit*, make changes, then *Save Edit* and close the modal.
+
+---
+
+### 🌾 Crop Details  
+
+Each bar on the graph represents a crop. Hovering over a bar reveals its detailed stats below.
+
+| **Category** | **Name** | **Description** |
+|--------------|-----------|-----------------|
+| **Harvest Summary** | Total Profit | Gold earned after subtracting seed costs. |
+|  | ROI Percent | Return on Investment — higher means more profit per cost. |
+|  | Profit per Day | Average daily profit for the season. |
+|  | Crops Sold | Number of harvested crops sold. |
+| **Crop Quality & Value** | Normal / Silver / Gold / Iridium | Base selling prices per quality tier. |
+|  | Expected AVG | Weighted average price factoring fertilizer and farming level. |
+|  | Adjusted Value | Average price after rounding or penalty adjustments. |
+| **Seed & Sell Prices** | Seed Cost | Gold spent per seed. |
+|  | Base Crop Price | Base selling price before bonuses. |
+|  | Total Revenue | Combined gold earned from all harvests. |
+|  | Total Cost | Total gold spent on seeds. |
+| **Growth & Harvest Info** | Growth Days | Days required for the first harvest. |
+|  | Harvests per Season | Number of harvests within 28 days. |
+|  | Break-Even Point | Harvests needed to recover seed cost. |
+|  | Regrows Every | Days between harvests for regrowable crops. |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -34,6 +100,32 @@ Upcoming Features
 - [ ] Auto-complete feature.
 - [ ] Improve UI.
 - [ ] Improve Changelog and add How it Works.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- CONTACT -->
+## Contact
+
+[Codedex] Ellyxr - [@Ellyxr](https://www.codedex.io/@Ellyxr) - ellyxdesigned@gmail.com
+
+[Discord] Elliex- [@ellyxdesigned](https://x.com/ellyxdesigned)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## 🌾 Credits
+
+This project would not exist without the inspiration and resources provided by the Stardew Valley community.
+
+- Inspired by [**Stardew Profits**](https://thorinair.github.io/Stardew-Profits/#produce_0-equipment_0-sellRaw_false-sellExcess_false-aging_0-planted_1-maxSeedMoney_0-days_28-fertilizer_0-level_0-season_0-buySeed_false-replant_false-nextyear_false-buyFert_false-average_0-fertilizerSource_0-seeds_(pierre_true-joja_true-special_true)-skills_(till_false-agri_false-arti_false-gatherer_false-botanist_false)-foodIndex_0-foodLevel_0-extra_true-disableLinks_false-byHarvest_false-crossSeason_false-foragingLevel_0)  
+  Created by [**Thorinaire**](https://x.com/thorinair_music), a tool I used for years before side-loading modded crops from [**Nexus Mods**](https://www.nexusmods.com/games/stardewvalley). The experience inspired me to build a calculator that supports **custom crops**.  
+
+- Additional resources from the [**Stardew Valley VERY Expanded Collection**](https://www.nexusmods.com/games/stardewvalley/collections/tckf0m?utm_source=site&utm_medium=referral&utm_content=share_button&utm_campaign=share_collectioni) on Nexus Mods.
+
+- **Stardew Valley** and all related assets (such as the background image) belong to [**ConcernedApe**](https://x.com/ConcernedApe).
+
+---
+
+This README was formatted using the [**Best README Template**](https://github.com/othneildrew/Best-README-Template) by *othneildrew*.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

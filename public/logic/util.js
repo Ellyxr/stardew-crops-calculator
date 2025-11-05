@@ -6,8 +6,7 @@
  * @param {Object} options - Options for the toast (e.g., type, duration).
  */
 export function showToast(message, options = {}) {
-  // Your existing showToast implementation goes here
-  // Example placeholder:
+
   const TOAST_CONTAINER_ID = "toast-container";
   function ensureToastContainer() {
     let c = document.getElementById(TOAST_CONTAINER_ID);
@@ -47,7 +46,6 @@ export function showToast(message, options = {}) {
   toast.querySelector(".toast-close").addEventListener("click", hide);
   if (duration > 0) setTimeout(hide, duration);
   return toast;
-  // Implement the actual toast creation logic here (e.g., creating divs, setting styles, timeouts)
 }
 
 /**
@@ -89,7 +87,7 @@ export function guessCategory(name) {
     return "fruit";
   if (/\b(mushroom|morel|fungus)\b/.test(n)) return "mushroom";
   if (/\b(flower|sunflower)\b/.test(n)) return "flower";
-  return "vegetable"; // default fallback; change to "unknown" if you prefer
+  return "vegetable"; 
 }
 
 /**

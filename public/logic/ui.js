@@ -18,7 +18,8 @@ import { recalculateAllCrops } from "./data.js";
 let cropListTableBody = null;
 let tippyInstance = null;
 let ctx = null;
-let windowMyChart = null; 
+let windowMyChart = null;
+let changesMade = false;
 
 document.addEventListener("DOMContentLoaded", function () {
   // * LOADING SCREEN PLACEHOLDER ---------------------
@@ -1091,17 +1092,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
-  if (importButton || importFileInput) {
-    importFileInput.addEventListener("change", importCrops);
-    importButton.addEventListener("click", function (event) {
-      console.log("Import button clicked, triggering file input click.");
-      importFileInput.click(); 
-    });
-  } else {
-    console.warn(
-      "Import button or file input element not found. Check your HTML."
-    );
-  }
 });
 
 export function updateGraph() {
