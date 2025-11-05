@@ -1,0 +1,139 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.TSC_WholeContainer {
+  color: rgb(26, 26, 26);
+  font-size: 0.8em;
+}
+
+.TSC_WholeContainer b {
+  color: rgba(11, 109, 131, 0.921);
+}
+
+.TSC_WholeContainer table {
+  color: black;
+  padding: 0.2em 0.2em 0.2em 0.2em;
+  font-size: 0.8em;
+}
+
+.tutorialSectionContainer {
+  display: flex;
+  flex-direction: column;
+  margin: 0em 0em 1em 0em;
+}
+
+.tutorialSectionContainer {
+  line-height: 1.6em;
+}
+
+.tutorialContentContainer {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
+}
+
+.TSC_ContentHeading,
+.TSC_Heading {
+  background-color: #03a007;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+  width: 100%;
+  text-align: center;
+  color: #eeeeee;
+  font-weight: bold;
+  padding: 0.4rem 0rem;
+  border-radius: 10px 10px 0px 0px;
+  margin: 0.2em 0em 0.2em 0em;
+}
+
+.TSC_SecHeading {
+  padding: 0.1em 0.4em;
+  background-color: rgba(152, 190, 240, 0.295);
+  border: 1px solid rgba(39, 113, 166, 0.078);
+}
+
+#TSC_Caveat {
+  color: rgba(11, 127, 153, 0.921);
+  font-weight: bold;
+}
+
+.TSC_ContentBody {
+  gap: 1em;
+  display: flex;
+  flex-direction: column;
+  padding: 0.1em 0.4em;
+}
+
+.Body_HighlightContainer {
+  background-color: rgba(152, 190, 240, 0.295);
+  border: 1px solid rgba(39, 113, 166, 0.078);
+  padding: 0.4em 0.6em 0.4em 0.6em;
+  color: rgba(9, 85, 102, 0.921);
+  border-radius: 4px;
+}
+
+.TSC_Image {
+  background-image: url(/assets/TSC_Page.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center; 
+  width: 80%;
+  height: 20em;
+  margin: 0 auto; 
+  display: block; 
+}
+
+.Table_Heading {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: rgba(9, 85, 102, 0.921);
+}
+
+.TSC_TextContainer {
+  width: 100%;
+  height: 100%;
+}
+
+.TSC_Heading {
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+.TSC_Body table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 0.4em;
+}
+
+.TSC_Body tr {
+  background-color: rgba(255, 255, 255, 0.785);
+}
+
+.TSC_Body td {
+  padding: 0.2em 1em 0.4em 1em;
+}
+
+.TSC_Body tr:hover {
+  background-color: #e3e3e3;
+}
+
+.TSC_Body th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding: 1em;
+  text-align: left;
+  background-color: #03a007;
+  background-color: rgba(10, 105, 152, 0.74);
+  color:  #eeeeee;
+}

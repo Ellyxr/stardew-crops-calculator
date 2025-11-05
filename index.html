@@ -3,21 +3,42 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="src\assets\icon3.png" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icon3.png" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="A Stardew Valley calculator for modded playthrough tax and crops" />
   <meta http-equiv='cache-control' content='no-cache'>
   <meta http-equiv='expires' content='0'>
   <meta http-equiv='pragma' content='no-cache'>
 
+  <!-- * Primary -->
+  <meta name="title" content="Stardew Crops Calculator — Optimize Modded Farm Profits" />
+  <meta name="description"
+    content="Plan, compare, and maximize your Stardew Valley farm profits — including support for modded crops and artisan goods. A simple yet powerful tool built for modded playthroughs." />
+
+  <!-- * Open Graph/Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://stardew-crops-calculator.vercel.app/" />
+  <meta property="og:title" content="Stardew Crops Calculator — Optimize Modded Farm Profits & Taxes" />
+  <meta property="og:description"
+    content="A Stardew Valley calculator designed for modded playthroughs. Track yields and profits easily across custom and vanilla crops." />
+  <meta property="og:image" content="https://stardew-crops-calculator.vercel.app/assets/428.png" />
+
+  <!-- * Twt -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://stardew-crops-calculator.vercel.app/" />
+  <meta name="twitter:title" content="Stardew Crops Calculator — Optimize Modded Farm Profits & Taxes" />
+  <meta name="twitter:description"
+    content="Plan, calculate, and compare Stardew Valley crops for both modded and vanilla farms. Includes profit tracking and artisan good values." />
+  <meta name="twitter:image" content="https://stardew-crops-calculator.vercel.app/assets/428.png" />
+
+
   <title> Stardew Crops Calculator</title>
   <link rel="stylesheet" href="src/index.css">
 
-<script src="https://unpkg.com/@popperjs/core@2"></script>
-<script src="https://unpkg.com/tippy.js@6"></script>
-<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -26,9 +47,11 @@
     <div class="Main-container-content">
       <div class="header">
         <figure class="title"><span>&nbsp;</span></figure>
-        <p> 🌙</p>
-        <button class="changeLog"> Changelog </button>
-
+        <div class="title-right">
+          <button class="title-button" id="toggleMode"> 🌙</button>
+          <button class="title-button" id="tutorialButton"> How it works </button>
+          <button class="title-button" id="changeLogButton"> Changelog </button>
+        </div>
       </div>
       <div class="content-container">
 
@@ -44,16 +67,20 @@
             <form id="crop-formField" class="crop-singleField">
 
               <div class="form-group" id="form-group-SingleField">
-                <label for="crop-singleTextField">Crop Details</label>
-                <small>Crop name, Seed price, Growth days, Regrowth?, Every # days, Crop price</small> <br />
+                <label for="crop-singleTextField">Crop Format Guide</label>
+                <small>Name SeedPrice CropPrice GrowthDays YieldType(a|b|c)
+                  CropCategory(f|v|m) Regrows?(yes/no) EveryWhatDays</small>
 
                 <div class="form-group-row">
-                <small> [Strawberry 100 8 no 9 120,] </small>
-                <button id="paste-submit"> Paste ↓ </button>
+
+                  <small> Strawberry 100 120 8 b f yes 4, </small>
+                  <br />
+
+                  <button id="paste-submit"> ▼ </button>
                 </div>
-                
-                <textarea type="text" id="crop-singleTextField" name="cropName" placeholder="strawberry 100 8 no 0 120"
-                  rows="4"></textarea>
+
+                <textarea type="text" id="crop-singleTextField" name="cropName"
+                  placeholder="Strawberry 100 120 8 b f yes 4," rows="4"></textarea>
               </div>
 
               <button class="crop-submit" id="crop-submit"> Add to list</button>
@@ -63,81 +90,197 @@
             <form id="crop-form">
 
               <div class="form-group">
-                <label for="crop-name">Crop Name</label>
-                <input type="text" id="crop-name" name="cropName" placeholder="Strawberry">
+                <label for="crop-name">Crop Name<span>*</span></label>
+                <input type="text" id="crop-name" name="cropName" placeholder="Press Tab, Strawberry">
               </div>
 
               <div class="form-group">
-                <label for="seed-price">Seed Price</label>
+                <label for="seed-price">Seed Price<span>*</span></label>
                 <input type="number" id="seed-price" name="cropPrice" placeholder="100">
               </div>
 
               <div class="form-group">
-                <label for="crop-price">Crop Price</label>
+                <label for="crop-price">Crop Price<span>*</span></label>
                 <input type="number" id="crop-price" name="cropQuantity" placeholder="120">
               </div>
 
               <div class="form-group">
-                <label for="crop-growth-days"> Growth Days</label>
+                <label for="crop-growth-days"> Growth Days<span>*</span></label>
                 <input type="number" id="crop-growth-days" name="cropGrowthDays" placeholder="10">
 
               </div>
 
-              <div class="form-group">
+              <div class="form-group" id="Regrowth_Style">
                 <label for="crop-regrowth">Regrows? </label>
                 <input type="checkbox" id="crop-regrowth" name="cropRegrowth">
 
               </div>
 
               <div class="form-group" id="allowRegrowthLive" style="display: none;">
-                <label for="crop-regrowth-days"> Every </label>
+                <label for="crop-regrowth-days"> Every ___ Days </label>
                 <input type="number" id="crop-regrowth-every" name="cropRegrowthEvery" placeholder="3">
-                <label for="crop-regrowth-every"> Days</label>
+
+              </div>
+              <div class="form-group select-item adjustWidth">
+                <label for="crop-yield-type">Yield Type</label>
+                <select id="crop-yield-type" name="cropYieldType">
+                  <option value="single">Single yield</option>
+                  <option value="random_multi">Multiple (random)</option>
+                  <option value="fixed_multi">Multiple (fixed per harvest)</option>
+                </select>
+              </div>
+
+              <div class="form-group select-item">
+                <label for="crop-category">Crop Category</label>
+                <select id="crop-category" name="cropCategory">
+                  <option value="fruit">Fruit</option>
+                  <option value="vegetable">Vegetable</option>
+                  <option value="mushroom">Mushroom</option>
+                </select>
               </div>
 
               <button type="submit" id="crop-submit" class="crop-submit "> Add to list</button>
 
             </form>
-            
-              
+
+
           </div>
         </div>
 
         <div class="columnScroll">
-          
+
           <div class="graph-container">
             <section class="graph-container-header">
               <span>
                 Graph Container
               </span>
-              <!-- Place this anywhere in your body (will be positioned dynamically) -->
+
               <div id="chartjs-tooltip" style="pointer-events: none; position: absolute; opacity: 0;"></div>
             </section>
-            <div class="graph-container-graph">
 
+            <div class="Chart_RefreshGraphCntr">
+              <span id="Chart_Note"> ❗Profits between 0-1 will not show up in the canvas!
+              </span>
+              <button id="Chart_RefreshGraph"> ↻ Refresh Graph</button>
+            </div>
+
+            <div class="graph-container-graph">
               <p id="no-crops-yet"> No added crops yet!
               </p>
               <div class="chart-container">
                 <canvas id="crop-canvas"></canvas>
               </div>
-              
-              <p> Note: Profits that are between 0-1 will not show up in the canvas!
-              </p>
-              <div class="graphButtonField">
-                <button class="crop-fieldButton graphField" id="advancedSettings">Advanced Settings</button> <br />
-                <div class="graphRowField">
-                  <div>
-                  <button> Raw Crops </button>
-                  <button> Wine </button>
-                  <button> Juice </button>
-                  <button> Jelly </button>
-                  <button> Dehydrated </button>
+
+
+              <div class="graphButtonField" id="graphButtonField">
+
+                <div class="graphRowField" id="graphRowField">
+                  <div id="processing-control">
+                    <button class="processing-btn" data-type="raw"> <img src="/assets/Giant_Melon.png"
+                        class="graphRowField_Image" alt="Giant Melon"> Raw Crops</button>
+                    <button class="processing-btn" data-type="wine"> <img src="/assets/Wine.png"
+                        class="graphRowField_Image" alt="Giant Melon icon"> Wine</button>
+                    <button class="processing-btn" data-type="juice"> <img src="/assets/Juice.png"
+                        class="graphRowField_Image" alt="Juice icon"> Juice</button>
+                    <button class="processing-btn" data-type="jelly"> <img src="/assets/jelly.png"
+                        class="graphRowField_Image" alt="Preserves icon"> Preserves </button>
+                    <button class="processing-btn" data-type="dehydrated"> <img src="/assets/Dehydrator.png"
+                        class="graphRowField_Image" alt="Dehydrator icon"> Dehydrated</button>
                   </div>
                 </div>
+
+                <button class="crop-fieldButton graphField" id="advancedSettingsButton">Advanced Settings ▼</button>
+
+                <section class="advancedSettingsForm" id="advancedSettingsForm">
+                  <div class="AdvancedSettings_Buttons" id="AdvancedSettings_Buttons">
+                    <button id="AdvancedSettings_FarmButton"> Farm Settings </button>
+                    <button id="AdvancedSettings_TaxButton"> Tax Settings </button>
+                  </div>
+
+                  <!-- FARM -->
+                  <div class="AdvancedSettings_Farm" id="AdvancedSettings_Farm">
+                    <div class="AdvancedSettings_Farm_Left">
+                      <!-- Left column: Current Day, Duration, Crops, Farmer Level -->
+                      <div class="AS_FarmContent_Left">
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_CurrentDay">Current Day</label>
+                          <input type="number" id="AS_CurrentDay" name="AS_CurrentDay" placeholder="1">
+                        </div>
+
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_Duration"> Duration </label>
+                          <input type="number" id="AS_Duration" name="AS_Duration" placeholder="28">
+                        </div>
+
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_Crops"> Crops </label>
+                          <input type="number" id="AS_Crops" name="AS_Crops" placeholder="1">
+                        </div>
+
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_FarmingLevel"> Farmer Level </label>
+                          <input type="number" id="AS_FarmingLevel" name="AS_FarmingLevel" placeholder="1">
+                        </div>
+                      </div>
+
+                      <!-- Right column: Fertilizer dropdown and Farmer Skill checkboxes -->
+                      <div class="AS_FarmContent_Right">
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_Fertilizer"> Fertilizer </label>
+                          <select name="AS_Fertilizer" id="AS_FertilizerType">
+                            <option value="None"> None </option>
+                            <option value="Basic_Fertilizer"> Basic Fertilizer </option>
+                            <option value="Quality_Fertilizer"> Quality Fertilizer </option>
+                            <option value="Deluxe_Fertilizer"> Deluxe Fertilizer </option>
+                          </select>
+                        </div>
+
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_Fertilizer"> Pay for Fertilizer </label>
+                          <select name="AS_Fertilizer_Pay" id="AS_Fertilizer_Pay">
+                            <option value="No"> No </option>
+                            <option value="Yes"> Yes </option>
+                          </select>
+                        </div>
+
+                        <div class="AS_FarmContent_Container">
+                          <label for="AS_FarmerSkill"> Farmer Skill </label>
+                          <div id="AS_FarmerSkill_Container">
+                            <input type="checkbox" id="AS_Tiller" name="AS_Tiller" value="Tiller">
+                            <label for="AS_Tiller"> Tiller </label> <br>
+
+                            <input type="checkbox" id="AS_Agriculturist" name="AS_Agriculturist" value="Agriculturist">
+                            <label for="AS_Agriculturist"> Agriculturist </label> <br>
+
+                            <input type="checkbox" id="AS_Artisan" name="AS_Artisan" value="Artisan">
+                            <label for="AS_Artisan"> Artisan </label>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                    <button id="AS_Farm_Button"> Submit </button>
+
+                    <div class="AdvancedSettings_Farm_Right">
+
+                    </div>
+
+                  </div>
+
+                  <!-- TAX -->
+                  <div class="AdvancedSettings_Tax" id="AdvancedSettings_Tax">
+                    <span> In development! </span>
+                  </div>
+
+                </section>
+
+                <br />
+
+
               </div>
             </div>
           </div>
-          
+
           <br />
 
           <div class="list-container">
@@ -147,35 +290,71 @@
               </span>
             </section>
             <div class="list-container-form">
-              <button type="submit">Import list </button>
-              <button type="submit">Export list</button>
+              <input type="file" id="import-file" accept=".json">
+              <button type="submit" id="export-button">Export list (JSON)</button>
               <br><br>
-              <button class="list-button crop-fieldButton" id="list-button">Edit </button>
+
+              <!-- * Changelog Modal-->
+              <modal class="changeLogModal" id="changeLogModal">
+                <div class="changeLogModalContent">
+
+                  <div class="titleContent">
+                    <div class="titleContent-header" id="changeLogHeader">
+                      <div class="titleContent-start">Changelog</div>
+                      <div class="titleContent-end">
+                        <button id="modalPopDown"> X </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="changeLogContent">
+                    <iframe src="/modal/changelog.html" width="100%" height="400px" style="border:none;"></iframe>
+                  </div>
+
+                </div>
+              </modal>
+
+              <!-- * Tutorial Modal-->
+              <modal class="tutorialModal" id="tutorialModal">
+                <div class="tutorialModalContent">
+
+                  <div class="titleContent">
+                    <div class="titleContent-header" id="tutorialHeader">
+                      <div class="titleContent-start"> How it works </div>
+                      <div class="titleContent-end">
+                        <button id="closeTutorial"> X </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="changeLogContent">
+                    <iframe src="/modal/Tutorial.html" width="100%" height="400px" style="border:none;"></iframe>
+                  </div>
+                </div>
+              </modal>
 
               <div class="modalPopUp" id="modalPopUp">
                 <div class="modalPopUpContent">
                   <section class="titleContent">
                     <div class="titleContent-header">
-
-
                       <div class="titleContent-start">
                         <span> Configure Crops </span>
                       </div>
 
                       <div class="titleContent-end">
-                        <span id="modalDelete"> ⛔ </span>
-                        <span id="modalPopDown"> ❌ </span>
-
+                        <button id="modalClose"> X </button>
                       </div>
                     </div>
 
-                    <table id="crop-list-table">
+                    <table id="modal-crop-table-head">
                       <thead>
                         <tr>
                           <th>Crop Name</th>
                           <th>Seed Price</th>
                           <th>Crop Price</th>
                           <th>Growth Days</th>
+                          <th>Yield Type</th>
+                          <th>Category</th>
                           <th>Regrows</th>
                           <th>Every # Days</th>
                         </tr>
@@ -193,19 +372,25 @@
                     <div class="tableContent-button">
 
                       <div class="tableContent-flex-left">
-                        <span> Clicking Delete or ⛔ will immediately reflect on the list! </span>
+                        <span> Deleting or updating Yield or Category will update the list automatically. No need to
+                          Edit or Save Edit. </span>
 
                       </div>
 
                       <div class="tableContent-flex-format">
                         <div class="tableContent-flex-right">
+                          <button id="tableContent-toggle-yield" class="toggle-btn" disabled
+                            title="Set Yield Type">Yield ▼</button>
+                          <button id="tableContent-toggle-category" class="toggle-btn" disabled
+                            title="Set Category">Category ▼</button>
+
                           <button id="tableContent-edit"> Edit</button>
 
                           <button id="tableContent-delete"> Delete </button>
                         </div>
 
                         <div class="tableContent-flex-bottom">
-                          <button id="tableContent-cancel"> Nevermind </button>
+                          <button id="tableContent-cancel"> Close </button>
                         </div>
                       </div>
                     </div>
@@ -215,8 +400,10 @@
                 </div>
               </div>
 
-              <input type="text" id="list-search" name="listSearch" placeholder="Search Crops..">
-
+              <div class="list-container-search">
+                <input type="text" class="list-search " id="list-search" name="listSearch" placeholder="Search Crops..">
+                <button class="crop-fieldButton list-button " id="list-button">Edit Table</button>
+              </div>
               </form>
 
               <table id="crop-list-table">
@@ -226,6 +413,8 @@
                     <th>Seed Price</th>
                     <th>Crop Price</th>
                     <th>Growth Days</th>
+                    <th>Yield Type</th>
+                    <th>Category</th>
                     <th>Regrows</th>
                     <th>Every # Days</th>
                   </tr>
@@ -238,12 +427,77 @@
           </div>
 
         </div>
+
+        <aside id="details-pane" class="details-pane" aria-hidden="true">
+          <div class="details-pane-header">
+            <div id="details-pane-title" class="details-pane-title">Details</div>
+
+          </div>
+          <div id="details-pane-content" class="details-pane-content">
+            <!-- Content filled dynamically by ui.js -->
+            <div class="details-loading">Hover a crop bar to see details here.</div>
+          </div>
+        </aside>
+
       </div>
+
+      <footer class="Credits">
+        <a href="https://github.com/Ellyxr/stardew-crops-calculator" target="_blank">
+          Made casually by Ellyxr 
+        </a>
+
+        <img src="/assets\icon3.png" alt="icon" width="20" height="20">
+
+        <a href="https://www.stardewvalley.net" target="_blank">
+           Stardew Valley 
+        </a>
+
+        <a href="https://x.com/ConcernedApe" target="_blank">
+          @ ConcernedApe 
+        </a>
+
+        <img src="/assets\icon3.png" alt="icon" width="20" height="20">
+
+        <a href="https://stardewvalleywiki.com/Stardew_Valley_Wiki" target="_blank">
+           Stardew Valley Wiki 
+        </a>
+
+        <img src="/assets\icon3.png" alt="icon" width="20" height="20">
+
+        <a href="https://thorinair.github.io/Stardew-Profits/#produce_0-equipment_0-sellRaw_false-sellExcess_false-aging_0-planted_1-maxSeedMoney_0-days_28-fertilizer_0-level_0-season_0-buySeed_false-replant_false-nextyear_false-buyFert_false-average_0-fertilizerSource_0-seeds_(pierre_true-joja_true-special_true)-skills_(till_false-agri_false-arti_false-gatherer_false-botanist_false)-foodIndex_0-foodLevel_0-extra_true-disableLinks_false-byHarvest_false-crossSeason_false-foragingLevel_0"
+          target="_blank">
+           Inspired by Stardew Profits @ Thorinaire 
+        </a>
+
+        <img src="/assets\icon3.png" alt="icon" width="20" height="20">
+
+        <a href="https://www.nexusmods.com/games/stardewvalley/collections/tckf0m?utm_source=site&utm_medium=referral&utm_content=share_button&utm_campaign=share_collectioni"
+          target="_blank">
+           Stardew Valley VERY Expanded Collection
+        </a>
+
+      </footer>
+    </div>
+
+  </div>
+
+  <div id="Toast_GraphUpdated"> Graph updated </div>
+  <div id="Toast_EmptySubmit"> Make sure to fill fields first! </div>
+
+  <!---* LOADING SCREEN PLACEHOLDER-->
+  <div id="loading-screen"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #1a1a1a; display: flex; justify-content: center; align-items: center; z-index: 9999;">
+    <div class="loader">
+
+      <div
+        style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite;">
+      </div>
+      <p style="color: white; margin-left: 10px;">Loading...</p>
     </div>
   </div>
-  <div id="Toast"> Make sure to fill fields first! </div>
 
-  <script src="src/logic/cropsHandler.js"></script>
+  <script src="public/logic/moduleHandler.js" type="module"></script>
+
 </body>
 
 </html>
