@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Ellyxr/stardew-crops-calculator"> <!-- LOOOL -->
-    <img src="/assets/428.png" alt="Logo" width="auto" height="auto">
+    <img src="public\assets\428.png" alt="Logo" width="auto" height="auto">
   </a>
 
 <h3 align="center"> Stardew Crops Calculator</h3>
