@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="src/assets/428.png" alt="Logo" width="auto" height="auto">
+    <img src="/assets/428.png" alt="Logo" width="auto" height="auto">
   </a>
 
 <h3 align="center"> Stardew Crops Calculator</h3>
@@ -108,7 +108,7 @@ Upcoming Features
 
 [Codedex] Ellyxr - [@Ellyxr](https://www.codedex.io/@Ellyxr) - ellyxdesigned@gmail.com
 
-[Discord] Elliex- [@ellyxdesigned](https://x.com/ellyxdesigned)
+[Discord] Elliex - [@ellyxdesigned](https://x.com/ellyxdesigned)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

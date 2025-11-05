@@ -186,18 +186,18 @@ export function calculateCropStats({
   function getArtisanValues(basePrice, category) {
     const price = Number(basePrice) || 0;
     const out = {};
-    if (category === 'Fruit') {
+    if (category === 'fruit') {
       out.wine = 3 * price;
       // Dried (dehydrated) uses 5 fruit per dehydrator use. The per-fruit sell price
       // (before artisan profession) is (1.5 * base + 5). Total per-use = per-fruit * 5.
       out.dehydrated = (1.5 * price + 5) * 5;
       out.jelly = 2 * price + 50;
     }
-    if (category === 'Vegetable') {
+    if (category === 'vegetable') {
       out.juice = 2.25 * price;
       out.jelly = 2 * price + 50;
     }
-    if (category === 'Mushroom') {
+    if (category === 'mushroom') {
       out.dehydrated = 7.5 * price + 25;
     }
     return out;
